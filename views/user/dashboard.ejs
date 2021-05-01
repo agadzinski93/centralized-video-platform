@@ -1,0 +1,43 @@
+<h1>Topics</h1>
+<% if (topics.length > 0) { %> <% for (topic of topics) { %>
+<div style="border: solid 1px black">
+  <p><%= topic.name %></p>
+  <p><%= topic.difficulty %></p>
+  <p><%= topic.description %></p>
+  <form
+    action="/topics/<%= user.username %>/delete/<%= topic.name %>"
+    method="POST"
+  >
+    <button>Delete</button>
+  </form>
+</div>
+<% } %> <% } %>
+<h2>Create New Topic</h2>
+<p><%= error %></p>
+<p><%= success %></p>
+<form action="/topics/<%= user.username %>/create" method="POST">
+  <label for="name">Name: </label>
+  <input
+    type="text"
+    id="name"
+    name="topic[name]"
+    placeholder="Enter Topic Title Here"
+    required
+  />
+  <label for="difficulty">Difficulty: </label>
+  <select name="topic[difficulty]" id="difficulty">
+    <option value="Beginner">Beginner</option>
+    <option value="Intermediate">Intermediate</option>
+    <option value="Advanced">Advanced</option>
+  </select>
+  <label for="description">Description: </label>
+  <textarea
+    id="description"
+    name="topic[description]"
+    maxlength="512"
+    rows="10"
+    cols="40"
+    required
+  ></textarea>
+  <button>Add</button>
+</form>

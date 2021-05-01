@@ -1,27 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= snippet.title %></title>
-  </head>
-  <body>
-    <% if (req.user) { %>
-    <p>Hello, <%= req.user.username %></p>
-    <% } %>
-    <h1><%= snippet.title %></h1>
-    <iframe
-      width="560"
-      height="315"
-      src="https://www.youtube.com/embed/<%= vidId %>"
-      title="YouTube video player"
-      frameborder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen
-    ></iframe>
-    <p><%= snippet.description %></p>
-    <p>Views: <%= stats.viewCount %></p>
-    <p>Likes: <%= stats.likeCount %></p>
-  </body>
-</html>
+<% if (req.user) { %>
+<p>Hello, <%= req.user.username %></p>
+<% } %>
+<h1><%= snippet.title %></h1>
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/<%= vidId %>"
+  title="YouTube video player"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+></iframe>
+<p><%= snippet.description %></p>
+<p>Views: <%= stats.viewCount %></p>
+<p>Likes: <%= stats.likeCount %></p>
