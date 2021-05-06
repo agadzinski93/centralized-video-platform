@@ -10,6 +10,7 @@ module.exports = {
   getUser: async (username) => {
     try {
       const db = await getDatabase();
+      if (db instanceof AppError) return db;
       const user = await db.execute(
         `SELECT * FROM users WHERE username = '${username}'`
       );
@@ -32,6 +33,7 @@ module.exports = {
   usernameMatch: async (loggedUsername, urlUsername) => {
     try {
       const db = await getDatabase();
+      if (db instanceof AppError) return db;
       const user = await db.execute(
         `SELECT username FROM users WHERE username = '${urlUsername}'`
       );

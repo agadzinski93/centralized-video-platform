@@ -1,6 +1,5 @@
 const AppError = require("../utilities/AppError");
-const { escapeHTML, containsHTML } = require("../utilities/helpers/sanitizers");
-const { getDatabase } = require("../utilities/mysql-connect");
+const { escapeHTML } = require("../utilities/helpers/sanitizers");
 const { getUser } = require("../utilities/helpers/authHelpers");
 
 module.exports = {
@@ -24,13 +23,13 @@ module.exports = {
       user,
     });
   },
-  renderUserDashboard: async (req, res) => {
-    const { getTopics } = require("../utilities/helpers/topicHelpers");
+  renderUserDashboard: async (req, res, next) => {
+    const { getUserTopics, getAllTopics } = require("../utilities/helpers/topicHelpers");
     const username = escapeHTML(req.params.username);
     const user = await getUser(username);
     if (user instanceof AppError) return next(user);
 
-    const topics = await getTopics();
+    const topics = await getUserTopics(username);
     if (topics instanceof AppError) return next(topics);
 
     res.render("user/dashboard", {
@@ -39,4 +38,18 @@ module.exports = {
       topics,
     });
   },
+  renderUserTopic: async (req, res, next) => {
+    const {getTopicVideos} = require("../utilities/helpers/videoHelpers");
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username);
+    if (user instanceof AppError) return next(user);
+
+    const topic = escapeHTML(req.params.topic);
+    const videos = await getTopicVideos(topic);
+    if (videos instanceof AppError) return next(videos);
+    else {
+      res.render('user/topic', {title: topic, user, videos});
+    }
+    
+  }
 };

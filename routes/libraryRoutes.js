@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router({ caseSensitive: false, strict: false });
 const {
   renderLibrary,
-  renderLibaryCategory,
+  renderLibaryTopic,
 } = require("../controllers/libraryCont");
 
 router.get("/", renderLibrary);
 
-router.get("/:id", renderLibaryCategory);
+router.get("/:topic", renderLibaryTopic);
 
 module.exports = router;

@@ -51,17 +51,18 @@ app.use(pp.session());
 app.use(require("./utilities/flash")); //Flash messages
 
 //Routes
-app.get("/", async (req, res) => {
+app.get("/", async (req, res, next) => {
   try {
-    res.render("index", { title: "Home Page", req });
+    res.render("index", { title: "Home Page", user: req.user });
   } catch (err) {
-    console.log(err.message);
+    next(new AppError(500, err.message));
   }
 });
 app.use("/", require("./routes/userAuthRoutes"));
 app.use("/lib", require("./routes/libraryRoutes"));
 app.use("/user", require("./routes/userRoutes"));
 app.use("/topics", require("./routes/topicsRoutes"));
+app.use("/video", require("./routes/videoRoutes"));
 
 app.all("*", (req, res, next) => {
   return next(new AppError(404, "Page Not Found"));
@@ -70,7 +71,8 @@ app.all("*", (req, res, next) => {
 //Error Handler
 app.use((err, req, res, next) => {
   res.locals.message = err.message;
-  res.status(err.status).render("error", { title: `${err.status} Error` });
+  const status = err.status || 500;
+  res.status(status).render("error", { title: `${status} Error` });
 });
 
 //Port

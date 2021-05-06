@@ -2,6 +2,7 @@ const mysql = require("mysql2/promise");
 const bluebird = require("bluebird");
 const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
+const AppError = require("./AppError");
 
 /**
  * Establishes the connection to a MySQL database
@@ -19,7 +20,7 @@ async function getConnection() {
       Promise: bluebird,
     });
   } catch (err) {
-    console.log(err.message);
+    return new AppError(500, err.message);
   }
 }
 
@@ -32,7 +33,7 @@ module.exports = {
     try {
       return await getConnection();
     } catch (err) {
-      console.log(err.message);
+      return new AppError(500, err.message);
     }
   },
   sessionStore: new MySQLStore({

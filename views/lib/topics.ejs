@@ -1,0 +1,10 @@
+
+<h1>Library</h1>
+<% if (topics.length > 0) { %> <% for (topic of topics) { %>
+<a href="/lib/<%= topic.name %>"><div style="border: solid 1px black">
+  <p><%= topic.name %></p>
+  <p>Created by <%= topic.username %></p>
+  <p><%= topic.difficulty %></p>
+  <p><%= topic.description %></p>
+</div></a>
+<% } %> <% } %>

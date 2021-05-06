@@ -18,7 +18,8 @@ module.exports = {
       req.flash("error", "Topic Already Exists");
       res.redirect(`/user/${req.user.username}/dashboard`);
     } else {
-      await insertTopic(topicName, topicDifficulty, topicDescription);
+      const error = await insertTopic(topicName, topicDifficulty, topicDescription, req.user.username);
+      if (error instanceof AppError) return next(error);
       req.flash("success", "Topic Created");
       res.redirect(`/user/${req.user.username}/dashboard`);
     }

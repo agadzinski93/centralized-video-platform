@@ -1,0 +1,17 @@
+<h1><%= topic.name %></h1>
+<p><%= topic.difficulty %></p>
+<p><%= topic.description %></p>
+
+<% if (videos.length > 0) { %>
+    <h2>Videos</h2>
+    <% for (video of videos) {  %>
+        <div style="border:solid 1px black;">
+            <p><%= video.title %></p>
+            <p><%= video.description %></p>
+            <p>Views: <%= video.views %></p>
+            <p>Likes: <%= video.likes %></p>
+        </div>
+    <% } %>
+<% } else { %>
+    <h2>No Videos in this Playlist</h2>
+<% } %>

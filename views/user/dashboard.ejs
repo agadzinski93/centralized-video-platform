@@ -1,6 +1,6 @@
 <h1>Topics</h1>
 <% if (topics.length > 0) { %> <% for (topic of topics) { %>
-<div style="border: solid 1px black">
+<a href="/user/<%= user.username %>/dashboard/<%= topic.name %>"><div style="border: solid 1px black">
   <p><%= topic.name %></p>
   <p><%= topic.difficulty %></p>
   <p><%= topic.description %></p>
@@ -11,6 +11,7 @@
     <button>Delete</button>
   </form>
 </div>
+</a>
 <% } %> <% } %>
 <h2>Create New Topic</h2>
 <p><%= error %></p>

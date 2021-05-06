@@ -3,6 +3,7 @@ const localStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 const { getDatabase } = require("./mysql-connect");
 const flash = require("connect-flash");
+const AppError = require("./AppError");
 
 passport.use(
   new localStrategy(
@@ -10,6 +11,7 @@ passport.use(
     async (username, password, done) => {
       try {
         const db = await getDatabase();
+        
         const user = await db.execute(`SELECT user_id, username, password 
         FROM users 
         WHERE username = '${username}'`);
@@ -31,7 +33,7 @@ passport.use(
           }
         });
       } catch (err) {
-        return done(err);
+        return done(new AppError(500, "Error Loggin User"));
       }
     }
   )

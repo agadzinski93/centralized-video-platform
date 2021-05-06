@@ -1,0 +1,23 @@
+<h1>Videos</h1>
+<p><%= success %></p>
+<p><%= error %></p>
+<% if (videos.length > 0) { %>
+    <h2>Videos</h2>
+    <% for (video of videos) {  %>
+        <div style="border:solid 1px black;">
+            <p><%= video.title %></p>
+            <p><%= video.description %></p>
+            <p>Views: <%= video.views %></p>
+            <p>Likes: <%= video.likes %></p>
+            <form action="/video/<%= user.username %>/<%= title %>/<%= video.id %>/delete" method="POST">
+                <button>Delete</button>
+            </form>
+        </div>
+    <% } %>
+<% } %>
+<h2>Add Video</h2>
+<form action="/video/<%= user.username %>/<%= title %>/create" method="POST">
+    <label for="ytUrl">youtube.com/watch?v=</label>
+    <input type="text" name="ytUrl" id="ytUrl" placeholder="Enter Video ID Here" required>
+    <button>Add Video</button>
+</form>

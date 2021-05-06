@@ -68,6 +68,7 @@ module.exports = {
       return next(new AppError(400, "No HTML Allowed in password!"));
 
     const db = await getDatabase();
+    if (db instanceof AppError) return next(db);
 
     let exists = false;
     let results;
