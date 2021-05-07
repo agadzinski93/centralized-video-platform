@@ -1,21 +1,22 @@
-<h1>Topics</h1>
+<%- include("../partials/navbar.ejs") %>
+<h1 class="topicHeader">Topics</h1>
+<%- include("../partials/flashError.ejs") %>
+<%- include("../partials/flashSuccess.ejs") %>
 <% if (topics.length > 0) { %> <% for (topic of topics) { %>
-<a href="/user/<%= user.username %>/dashboard/<%= topic.name %>"><div style="border: solid 1px black">
-  <p><%= topic.name %></p>
-  <p><%= topic.difficulty %></p>
-  <p><%= topic.description %></p>
+<a href="/user/<%= user.username %>/dashboard/<%= topic.name %>"><div class="topicContainer">
+  <p class="topicName"><%= topic.name %></p>
+  <p class="topicDifficulty"><%= topic.difficulty %></p>
+  <p class="topicDescription"><%= topic.description %></p>
   <form
     action="/topics/<%= user.username %>/delete/<%= topic.name %>"
     method="POST"
   >
-    <button>Delete</button>
+    <button class="btnTopicDelete">Delete</button>
   </form>
 </div>
 </a>
 <% } %> <% } %>
-<h2>Create New Topic</h2>
-<p><%= error %></p>
-<p><%= success %></p>
+<h2 class="createTopicHeader">Create New Topic</h2>
 <form action="/topics/<%= user.username %>/create" method="POST">
   <label for="name">Name: </label>
   <input

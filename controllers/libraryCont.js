@@ -7,10 +7,9 @@ module.exports = {
       const topics = await getAllTopics();
       if (topics instanceof AppError) return next(topics);
 
-      res.render("lib/topics", {title: "Library", topics});
+      res.render("lib/topics", {title: "Library", user: req.user, topics});
   },
   renderLibaryTopic: async (req, res, next) => {
-    //res.send(`${req.params.topic} Page`);
     const {getTopic} = require('../utilities/helpers/topicHelpers');
     const {getTopicVideos} = require("../utilities/helpers/videoHelpers");
     let topicName = escapeHTML(req.params.topic);
@@ -20,8 +19,6 @@ module.exports = {
     const videos = await getTopicVideos(topicName);
     if (videos instanceof AppError) return next(videos);
 
-    console.log(topic);
-
-    res.render("lib/videos", {title: `${topicName} Playlist`, topic: topic[0], videos});
+    res.render("lib/videos", {title: `${topicName} Playlist`, user: req.user , topic: topic[0], videos});
   },
 };

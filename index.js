@@ -72,7 +72,7 @@ app.all("*", (req, res, next) => {
 app.use((err, req, res, next) => {
   res.locals.message = err.message;
   const status = err.status || 500;
-  res.status(status).render("error", { title: `${status} Error` });
+  res.status(status).render("error", { title: `${status} Error`, user: req.user });
 });
 
 //Port

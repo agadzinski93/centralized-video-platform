@@ -1,0 +1,17 @@
+<div class="navbar">
+    <ul>
+        <li><a href="/">Home</a></li>
+        <% if (user === undefined) { %>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
+        <% } else { %>
+            <li><a href="/user/<%= user.username %>"><%= user.username %></a>
+                <ul class="userSubmenu">
+                    <a href="/user/<%= user.username %>/dashboard"><li>Dashboard</li></a>
+                    <a href="/user/<%= user.username %>/settings"><li>Settings</li></a>
+                    <a href="/logout"><li>Logout</li></a>
+                </ul>
+            </li>
+        <% } %>
+    </ul>
+</div>

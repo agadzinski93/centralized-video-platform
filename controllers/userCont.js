@@ -10,7 +10,7 @@ module.exports = {
 
     res.render("user/userPage", {
       title: `${user.username}'s Page`,
-      user,
+      user: req.user,
     });
   },
   renderUserSettings: async (req, res) => {
@@ -20,7 +20,7 @@ module.exports = {
 
     res.render("user/settings", {
       title: `${user.username}'s Settings`,
-      user,
+      user: req.user,
     });
   },
   renderUserDashboard: async (req, res, next) => {
@@ -48,7 +48,7 @@ module.exports = {
     const videos = await getTopicVideos(topic);
     if (videos instanceof AppError) return next(videos);
     else {
-      res.render('user/topic', {title: topic, user, videos});
+      res.render('user/topic', {title: topic, user: req.user, videos});
     }
     
   }

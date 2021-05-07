@@ -1,0 +1,48 @@
+.navbar {
+    background-color:#333;
+    
+}
+.navbar ul {
+    display:flex;
+    justify-content: flex-start;
+    list-style-type: none;
+    
+}
+.navbar > ul > li {
+    width:8rem;
+    text-align:center;
+}
+.navbar > ul > li a {
+    display:block;
+    width:100%;
+    color:#aaa;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+.navbar > ul > li a {
+    padding:1rem 0;
+}
+.navbar li:first-child {
+    margin-right:auto;
+}
+
+.navbar > ul > li:hover .userSubmenu {
+    display:flex;
+    color:green;
+}
+
+.navbar .userSubmenu {
+    display:none;
+    color:green;
+    position:absolute;
+    flex-direction: column;
+    width:8rem;
+    background-color:#333;
+}
+.userSubmenu li {
+    margin:0 auto;
+    position:relative;
+}
+.userSubmenu a:hover {
+    background-color:#555;
+}

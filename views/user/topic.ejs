@@ -1,6 +1,7 @@
+<%- include("../partials/navbar.ejs") %>
 <h1>Videos</h1>
-<p><%= success %></p>
-<p><%= error %></p>
+<%- include("../partials/flashError.ejs") %>
+<%- include("../partials/flashSuccess.ejs") %>
 <% if (videos.length > 0) { %>
     <h2>Videos</h2>
     <% for (video of videos) {  %>

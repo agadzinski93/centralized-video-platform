@@ -23,7 +23,7 @@ module.exports = {
    * @param {*} res
    */
   renderLogin: (req, res) => {
-    res.render("login", { title: "Login", req });
+    res.render("login", { title: "Login", user: req.user});
   },
   /**
    * Logs in the user using Passport. If successful, redirect to originally requested URL
@@ -57,7 +57,7 @@ module.exports = {
    * @param {*} res
    */
   renderRegistration: (req, res) => {
-    res.render("register", { title: "Register" });
+    res.render("register", { title: "Register", user: req.user });
   },
   registerUser: async (req, res, next) => {
     if (containsHTML(req.body.reg.username))

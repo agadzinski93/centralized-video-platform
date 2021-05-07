@@ -1,5 +1,6 @@
+<%- include("./partials/navbar.ejs") %>
 <h1>Login</h1>
-<%= error %>
+<%- include("./partials/flashError.ejs") %>
 <form action="/login" method="POST">
   <label for="username">Username: </label>
   <input

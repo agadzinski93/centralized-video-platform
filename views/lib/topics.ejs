@@ -1,4 +1,5 @@
 
+<%- include("../partials/navbar.ejs") %>
 <h1>Library</h1>
 <% if (topics.length > 0) { %> <% for (topic of topics) { %>
 <a href="/lib/<%= topic.name %>"><div style="border: solid 1px black">
