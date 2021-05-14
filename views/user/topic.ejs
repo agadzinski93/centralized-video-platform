@@ -1,24 +1,42 @@
-<%- include("../partials/navbar.ejs") %>
-<h1>Videos</h1>
-<%- include("../partials/flashError.ejs") %>
-<%- include("../partials/flashSuccess.ejs") %>
-<% if (videos.length > 0) { %>
-    <h2>Videos</h2>
-    <% for (video of videos) {  %>
-        <div style="border:solid 1px black;">
-            <p><%= video.title %></p>
-            <p><%= video.description %></p>
-            <p>Views: <%= video.views %></p>
-            <p>Likes: <%= video.likes %></p>
-            <form action="/video/<%= user.username %>/<%= title %>/<%= video.id %>/delete" method="POST">
-                <button>Delete</button>
-            </form>
-        </div>
-    <% } %>
-<% } %>
-<h2>Add Video</h2>
-<form action="/video/<%= user.username %>/<%= title %>/create" method="POST">
+<div class="dashboardTopicVideoPageContainer">
+  <%- include("../partials/navbar.ejs") %>
+  <h1 class="dashboardTopicVideoHeader">Videos</h1>
+  <%- include("../partials/flashError.ejs") %> <%-
+  include("../partials/flashSuccess.ejs") %> <% if (videos.length > 0) { %>
+  <div class="dashboardTopicVideosList">
+    <% for (video of videos) { %>
+    <div class="dashboardTopicVideoContainer">
+      <div class="dashboardTopicVideoContainerFirstRow">
+        <p class="dashboardVideoTitle"><%= video.title %></p>
+        <form
+          action="/video/<%= user.username %>/<%= title %>/<%= video.id %>/delete"
+          method="POST"
+        >
+          <button class="btnVideoDelete">
+            <img class="icon" src="/assets/svg/trash.svg" alt="delete" />
+            <span>Delete Video</span>
+          </button>
+        </form>
+      </div>
+      <p class="dashboardVideoDescription"><%= video.description %></p>
+      <div class="dashboardVideoViewsLikes">
+        <p class="dashboardVideoViews">Views: <%= video.views %></p>
+        <p class="dashboardVideoLikes">Likes: <%= video.likes %></p>
+      </div>
+    </div>
+    <% } %> <% } %>
+  </div>
+
+  <h2>Add Video</h2>
+  <form action="/video/<%= user.username %>/<%= title %>/create" method="POST">
     <label for="ytUrl">youtube.com/watch?v=</label>
-    <input type="text" name="ytUrl" id="ytUrl" placeholder="Enter Video ID Here" required>
+    <input
+      type="text"
+      name="ytUrl"
+      id="ytUrl"
+      placeholder="Enter Video ID Here"
+      required
+    />
     <button>Add Video</button>
-</form>
+  </form>
+</div>

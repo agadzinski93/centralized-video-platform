@@ -1,18 +1,28 @@
-<%- include("../partials/navbar.ejs") %>
-<h1><%= topic.name %></h1>
-<p><%= topic.difficulty %></p>
-<p><%= topic.description %></p>
-
-<% if (videos.length > 0) { %>
-    <h2>Videos</h2>
-    <% for (video of videos) {  %>
-        <div style="border:solid 1px black;">
-            <p><%= video.title %></p>
-            <p><%= video.description %></p>
-            <p>Views: <%= video.views %></p>
-            <p>Likes: <%= video.likes %></p>
+<div class="topicContainer">
+  <%- include("../partials/navbar.ejs") %>
+  <div class="topicVideoContainer">
+    <div class="topicHeader">
+      <div class="topicInfo">
+        <div class="topicTitleDifficulty">
+          <p class="libraryTopicTitle"><%= topic.name %></p>
+          <p class="libraryTopicDifficulty"><%= topic.difficulty %></p>
         </div>
-    <% } %>
-<% } else { %>
-    <h2>No Videos in this Playlist</h2>
-<% } %>
+        <p class="libraryTopicDescription"><%= topic.description %></p>
+      </div>
+    </div>
+    <div class="topicVideoList">
+      <% if (videos.length > 0) { %> <% for (video of videos) { %>
+      <div class="topicVideo">
+        <p class="topicVideoTitle"><%= video.title %></p>
+        <p class="topicVideoDescription"><%= video.description %></p>
+        <div class="topicVideoViewsLikes">
+          <p class="topicVideoViews">Views: <%= video.views %></p>
+          <p class="topicVideoLikes">Likes: <%= video.likes %></p>
+        </div>
+      </div>
+      <% } %> <% } else { %>
+      <h2>No Videos in this Playlist</h2>
+      <% } %>
+    </div>
+  </div>
+</div>

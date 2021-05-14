@@ -14,7 +14,12 @@ module.exports = {
       return new AppError(500, err.message);
     }
   },
-  insertTopic: async (topicName, topicDifficulty, topicDescription, username) => {
+  insertTopic: async (
+    topicName,
+    topicDifficulty,
+    topicDescription,
+    username
+  ) => {
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
@@ -23,7 +28,7 @@ module.exports = {
         VALUES('${topicName}', '${topicDescription}', '${topicDifficulty}', '${username}')`
       );
     } catch (err) {
-      return new AppError(500, "Error creating topic");
+      return new AppError(500, `Error creating topic: ${err.message}`);
     }
   },
   getAllTopics: async () => {
@@ -45,7 +50,7 @@ module.exports = {
       let topics = await db.execute(`SELECT name, description, difficulty 
       FROM topics WHERE username = '${username}' LIMIT 10`);
       return topics[0].map((o) => Object.assign({}, o));
-    } catch(err) {
+    } catch (err) {
       return new AppError(500, `Error Retrieving ${username}'s topics`);
     }
   },
@@ -58,6 +63,24 @@ module.exports = {
       return topics[0].map((o) => Object.assign({}, o));
     } catch (err) {
       return new AppError(500, `Error Retrieving Topic`);
+    }
+  },
+  updateTopic: async (
+    topicName,
+    topicDifficulty,
+    topicDescription,
+    originalTopicName
+  ) => {
+    const db = await getDatabase();
+    if (db instanceof AppError) return db;
+    await db.execute(
+      `UPDATE topics 
+      SET name = '${topicName}', difficulty = '${topicDifficulty}', description = '${topicDescription}'
+      WHERE name = '${originalTopicName}'`
+    );
+    try {
+    } catch (err) {
+      return new AppError(500, `Error Updating Topic`);
     }
   },
   removeTopic: async (topic) => {

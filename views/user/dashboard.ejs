@@ -1,45 +1,154 @@
-<%- include("../partials/navbar.ejs") %>
-<h1 class="topicHeader">Topics</h1>
-<%- include("../partials/flashError.ejs") %>
-<%- include("../partials/flashSuccess.ejs") %>
-<% if (topics.length > 0) { %> <% for (topic of topics) { %>
-<a href="/user/<%= user.username %>/dashboard/<%= topic.name %>"><div class="topicContainer">
-  <p class="topicName"><%= topic.name %></p>
-  <p class="topicDifficulty"><%= topic.difficulty %></p>
-  <p class="topicDescription"><%= topic.description %></p>
-  <form
-    action="/topics/<%= user.username %>/delete/<%= topic.name %>"
-    method="POST"
-  >
-    <button class="btnTopicDelete">Delete</button>
+<div class="dashboardTopicPageContainer">
+  <%- include("../partials/navbar.ejs") %>
+  <h1 class="dashboardTopicHeader">Topics</h1>
+  <%- include("../partials/flashError.ejs") %> <%-
+  include("../partials/flashSuccess.ejs") %>
+  <div class="dashboardTopicList">
+    <% if (topics.length > 0) { %> <% for (topic of topics) { %>
+    <div class="dashboardTopicWrapper" id="<%=topic.name%>">
+      <section class="topicButtons">
+        <button class="btnTopicEdit" id="btnEdit<%=topic.name%>">
+          <img class="icon" src="/assets/svg/edit.png" alt="edit" />
+          <span>Edit Topic</span>
+        </button>
+        <form
+          action="/topics/<%= user.username %>/delete/<%= topic.name %>"
+          method="POST"
+        >
+          <button class="btnTopicDelete">
+            <img class="icon" src="/assets/svg/trash.svg" alt="delete" />
+            <span>Delete Topic</span>
+          </button>
+        </form>
+      </section>
+      <a href="/user/<%= user.username %>/dashboard/<%=topic.name%>"
+        ><div class="dashboardTopicContainer">
+          <section id="topicInfo">
+            <div class="dashboardTopicFirstRow">
+              <p class="topicName"><%= topic.name %></p>
+            </div>
+            <p class="topicDifficulty"><%= topic.difficulty %></p>
+            <p class="topicDescription" id="<%= topic.name %>Description">
+              <%= topic.description %>
+            </p>
+          </section>
+        </div>
+      </a>
+    </div>
+    <div class="dashboardTopicWrapper removeDisplay" id="edit<%=topic.name%>">
+      <form
+        action="/topics/<%= user.username %>/edit/<%=topic.name%>"
+        method="POST"
+      >
+        <section class="topicButtons">
+          <button class="btnTopicDelete">
+            <img class="icon" src="/assets/svg/accept.png" alt="save changes" />
+            <span>Save Changes</span>
+          </button>
+
+          <button
+            type="button"
+            class="btnTopicEdit"
+            id="btnCancelEdit<%=topic.name%>"
+          >
+            <img class="icon" src="/assets/svg/cancel.png" alt="cancel" />
+            <span>Cancel</span>
+          </button>
+        </section>
+        <label for="topicName" class="lblTopicName">Topic Name</label>
+        <input
+          type="text"
+          name="topic[name]"
+          id="topicName"
+          placeholder="<%= topic.name %>"
+        />
+        <label for="difficulty" class="lblTopicDifficulty">Difficulty</label>
+        <select name="topic[difficulty]" id="difficulty">
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+        </select>
+        <label for="topicDescription" class="lblTopicDescription"
+          >Description</label
+        >
+        <textarea
+          name="topic[description]"
+          id="<%= topic.name %>DescriptionInput"
+          cols="50"
+          rows="5"
+          maxlength="255"
+        ></textarea>
+      </form>
+    </div>
+
+    <% } %> <% } %>
+  </div>
+
+  <h2 class="createTopicHeader">Create New Topic</h2>
+  <form action="/topics/<%= user.username %>/create" method="POST">
+    <label for="name">Name: </label>
+    <input
+      type="text"
+      id="name"
+      name="topic[name]"
+      placeholder="Enter Topic Title Here"
+      required
+    />
+    <label for="difficulty">Difficulty: </label>
+    <select name="topic[difficulty]" id="difficulty">
+      <option value="Beginner">Beginner</option>
+      <option value="Intermediate">Intermediate</option>
+      <option value="Advanced">Advanced</option>
+    </select>
+    <label for="description">Description: </label>
+    <textarea
+      id="description"
+      name="topic[description]"
+      maxlength="512"
+      rows="10"
+      cols="40"
+      required
+    ></textarea>
+    <button>Add</button>
   </form>
 </div>
-</a>
-<% } %> <% } %>
-<h2 class="createTopicHeader">Create New Topic</h2>
-<form action="/topics/<%= user.username %>/create" method="POST">
-  <label for="name">Name: </label>
-  <input
-    type="text"
-    id="name"
-    name="topic[name]"
-    placeholder="Enter Topic Title Here"
-    required
-  />
-  <label for="difficulty">Difficulty: </label>
-  <select name="topic[difficulty]" id="difficulty">
-    <option value="Beginner">Beginner</option>
-    <option value="Intermediate">Intermediate</option>
-    <option value="Advanced">Advanced</option>
-  </select>
-  <label for="description">Description: </label>
-  <textarea
-    id="description"
-    name="topic[description]"
-    maxlength="512"
-    rows="10"
-    cols="40"
-    required
-  ></textarea>
-  <button>Add</button>
-</form>
+
+<script>
+  const addEditEvent = (btn, topicName) => {
+    btn.addEventListener("click", () => {
+      let topicInfo = document.getElementById(`${topicName}`);
+      let form = document.getElementById(`edit${topicName}`);
+      topicInfo.classList.add("removeDisplay");
+      form.classList.remove("removeDisplay");
+    });
+  };
+  const addCancelEditEvent = (btn, topicName) => {
+    btn.addEventListener("click", () => {
+      let topicInfo = document.getElementById(`${topicName}`);
+      let form = document.getElementById(`edit${topicName}`);
+      topicInfo.classList.remove("removeDisplay");
+      form.classList.add("removeDisplay");
+    });
+  };
+  const setDescriptionOnEditForm = (textArea, text) => {
+    textArea.textContent = text.trim();
+  };
+  let topics = document.getElementsByClassName("topicName");
+
+  for (let i = 0; i < topics.length; i++) {
+    addEditEvent(
+      document.getElementById(`btnEdit${topics[i].textContent}`),
+      topics[i].textContent,
+      i
+    );
+    addCancelEditEvent(
+      document.getElementById(`btnCancelEdit${topics[i].textContent}`),
+      topics[i].textContent,
+      i
+    );
+    setDescriptionOnEditForm(
+      document.getElementById(`${topics[i].textContent}DescriptionInput`),
+      document.getElementById(`${topics[i].textContent}Description`).textContent
+    );
+  }
+</script>

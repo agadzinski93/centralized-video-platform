@@ -1,48 +1,413 @@
+.removeDisplay {
+  display: none;
+}
+.icon + span {
+  display: none;
+  position: absolute;
+  border: solid 1px black;
+  background-color: #fff4cf;
+  font-size: 0.75rem;
+  padding: 0.25rem;
+}
+.icon:hover + span {
+  display: block;
+}
+.flashError {
+  width: 96%;
+  margin-top: 1rem;
+  padding: 0.5rem 1%;
+  background-color: #fcbdbc;
+}
+.flashSuccess {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.25rem 2%;
+  background-color: #72db96;
+}
 .navbar {
-    background-color:#333;
-    
+  background-color: rgba(6, 111, 255, 1);
 }
 .navbar ul {
-    display:flex;
-    justify-content: flex-start;
-    list-style-type: none;
-    
+  display: flex;
+  justify-content: flex-start;
+  list-style-type: none;
 }
 .navbar > ul > li {
-    width:8rem;
-    text-align:center;
+  width: 8rem;
+  text-align: center;
 }
 .navbar > ul > li a {
-    display:block;
-    width:100%;
-    color:#aaa;
-    text-decoration: none;
-    text-transform: uppercase;
+  display: block;
+  width: 100%;
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
 }
 .navbar > ul > li a {
-    padding:1rem 0;
+  padding: 1rem 0;
 }
 .navbar li:first-child {
-    margin-right:auto;
+  margin-right: auto;
 }
 
 .navbar > ul > li:hover .userSubmenu {
-    display:flex;
-    color:green;
+  display: flex;
 }
 
 .navbar .userSubmenu {
-    display:none;
-    color:green;
-    position:absolute;
-    flex-direction: column;
-    width:8rem;
-    background-color:#333;
+  display: none;
+  position: absolute;
+  flex-direction: column;
+  width: 8rem;
+  background-color: #333;
 }
 .userSubmenu li {
-    margin:0 auto;
-    position:relative;
+  margin: 0 auto;
+  position: relative;
 }
 .userSubmenu a:hover {
-    background-color:#555;
+  background-color: #555;
+}
+.homeContainer {
+  background-color: #333;
+}
+.homeTopSection {
+  background-color: rgba(6, 111, 255, 1);
+  height: 40rem;
+}
+.loggingContainer {
+  background: rgb(37, 194, 194);
+  background: linear-gradient(
+    22deg,
+    rgba(37, 194, 194, 1) 33%,
+    rgba(13, 156, 223, 1) 100%
+  );
+  height: 100vh;
+}
+.loggingFormContainer {
+  background-color: rgba(255, 255, 255, 1);
+  width: 40rem;
+  margin: 5rem auto 0;
+  padding: 2rem 2rem;
+  box-shadow: #333;
+}
+.loggingHeader {
+  color: #3284e7;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: bold;
+}
+.loggingLabel {
+  display: block;
+  padding: 1rem 0 0.5rem 0;
+  text-transform: uppercase;
+  color: #777;
+  font-weight: bold;
+}
+.loggingText {
+  width: 98%;
+  height: 2rem;
+  background-color: #eee;
+  border: solid 1px #d8d8d9;
+  padding-left: 1%;
+}
+.loggingTextError {
+  border: solid 2px red;
+}
+.loggingTextErrorMessage {
+  display: none;
+  margin-top: 0.5rem;
+  color: red;
+}
+.loggingTextErrorMessageShow {
+  display: block;
+}
+.btnLogin {
+  width: 100%;
+  margin: 2rem 0 0.5rem 0;
+  padding: 0.5rem 0;
+  border: none;
+  background-color: #3284e7;
+  color: #fff;
+  text-transform: uppercase;
+}
+.btnLoginError {
+  background-color: #4f94aa;
+  pointer-events: none;
+}
+.signUpContainer {
+  width: 42rem;
+  margin: 0.5rem auto 0;
+  color: #fff;
+  text-align: right;
+}
+.signUpContainer a {
+  color: #fff;
+  text-decoration: none;
+}
+.libraryContainer {
+  background: rgb(37, 194, 194);
+  background: linear-gradient(
+    22deg,
+    rgba(37, 194, 194, 1) 33%,
+    rgba(13, 156, 223, 1) 100%
+  );
+  height: 100vh;
+}
+.libraryHeader {
+  text-align: center;
+}
+.librarySearchContainer {
+  text-align: center;
+  margin: 1rem 0;
+}
+.libraryTopicsList {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.libraryTopicsList > a {
+  flex-basis: 45%;
+  text-decoration: none;
+}
+.libraryTopic {
+  background-color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+}
+.topicImage {
+  flex-basis: 20%;
+}
+.topicInfo {
+  flex-basis: 80%;
+}
+.topicTitleDifficulty {
+  display: flex;
+  margin-top: 1rem;
+}
+.libraryTopicTitle {
+  margin-left: 1rem;
+  margin-right: auto;
+  font-size: 2rem;
+}
+.libraryTopicDifficulty {
+  margin-top: 0.5rem;
+  margin-right: 2%;
+}
+.libraryTopicDescription {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+.libraryTopicCreator {
+  margin-top: 1rem;
+  margin-right: 2%;
+  padding-bottom: 1rem;
+  text-align: right;
+}
+.topicContainer {
+  background: rgb(37, 194, 194);
+  background: linear-gradient(
+    22deg,
+    rgba(37, 194, 194, 1) 33%,
+    rgba(13, 156, 223, 1) 100%
+  );
+  height: 100vh;
+}
+.topicVideoContainer {
+  margin: 3rem auto 0 auto;
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.topicHeader {
+  flex-basis: 45%;
+  background-color: #fff;
+  padding-bottom: 1rem;
+}
+.topicVideoList {
+  flex-basis: 45%;
+  display: flex;
+  flex-flow: column;
+}
+.topicVideo {
+  background-color: #fff;
+}
+.topicVideoTitle {
+  margin-top: 1rem;
+  margin-left: 1rem;
+  font-weight: bold;
+}
+.topicVideoDescription {
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+.topicVideoViewsLikes {
+  display: flex;
+  padding-bottom: 1rem;
+}
+.topicVideoViews {
+  margin: 1rem auto 0 1rem;
+}
+.topicVideoLikes {
+  margin-top: 1rem;
+  margin-right: 1rem;
+}
+.dashboardTopicPageContainer {
+  background: rgb(37, 194, 194);
+  background: linear-gradient(
+    22deg,
+    rgba(37, 194, 194, 1) 33%,
+    rgba(13, 156, 223, 1) 100%
+  );
+  height: 100vh;
+}
+.dashboardTopicHeader {
+  margin-top: 3rem;
+  font-size: 2rem;
+  text-align: center;
+}
+.dashboardTopicList {
+  width: 80%;
+  margin: 1rem auto 0 auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.dashboardTopicList > .dashboardTopicWrapper {
+  background-color: #fff;
+  flex-basis: 45%;
+  padding-bottom: 2rem;
+}
+.dashboardTopicList > .dashboardTopicWrapper a {
+  text-decoration: none;
+}
+.dashboardTopicWrapper:hover .btnTopicEdit {
+  display: inline;
+}
+.dashboardTopicWrapper:hover .btnTopicDelete {
+  display: inline;
+}
+.dashboardTopicFirstRow {
+  display: flex;
+}
+.topicName {
+  margin-left: 1rem;
+  margin-right: auto;
+  font-size: 2rem;
+}
+.topicDifficulty {
+  margin-top: 0.5rem;
+  margin-left: 1rem;
+}
+.topicButtons {
+  display: flex;
+  position: absolute;
+  transform: translateX(39rem);
+}
+.btnTopicEdit {
+  border: none;
+  background-color: #fff;
+  margin-left: auto;
+  display: none;
+  margin-top: 0.5rem;
+  margin-right: 1rem;
+}
+.btnTopicEdit img {
+  width: 1rem;
+}
+.btnTopicDelete {
+  border: none;
+  margin-top: 0.5rem;
+  margin-right: 1rem;
+  background-color: #fff;
+  display: none;
+}
+.btnTopicDelete img {
+  width: 1rem;
+}
+.topicDescription {
+  margin-top: 1rem;
+  margin-left: 1rem;
+  padding-bottom: 1rem;
+}
+.lblTopicName,
+.lblTopicName + input {
+  margin-top: 1.5rem;
+  margin-left: 1rem;
+}
+.lblTopicDifficulty,
+.lblTopicDescription + select {
+  margin-top: 1.5rem;
+  margin-left: 1rem;
+}
+.lblTopicDescription {
+  display: block;
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+.lblTopicDescription + textarea {
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+.dashboardTopicVideoPageContainer {
+  background: rgb(37, 194, 194);
+  background: linear-gradient(
+    22deg,
+    rgba(37, 194, 194, 1) 33%,
+    rgba(13, 156, 223, 1) 100%
+  );
+  height: 100vh;
+}
+.dashboardTopicVideoHeader {
+  margin-top: 3rem;
+  font-size: 2rem;
+  text-align: center;
+}
+.dashboardTopicVideosList {
+  display: flex;
+  width: 80%;
+  margin: 1rem auto 0 auto;
+}
+.dashboardTopicVideoContainer {
+  background-color: #fff;
+  flex-basis: 45%;
+}
+.dashboardTopicVideoContainerFirstRow {
+  display: flex;
+}
+.dashboardVideoTitle {
+  margin: 0.5rem auto 0 1rem;
+  font-weight: bold;
+}
+.btnVideoDelete {
+  padding: 0.5rem;
+  border: none;
+  margin-top: 0.5rem;
+  margin-right: 1rem;
+  background-color: #fff;
+}
+.btnVideoDelete:hover {
+  background-color: #ffcfd0;
+}
+.btnVideoDelete img {
+  width: 1rem;
+}
+.dashboardVideoDescription {
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+.dashboardVideoViewsLikes {
+  display: flex;
+  padding-bottom: 1rem;
+  margin-top: 1rem;
+}
+.dashboardVideoViews {
+  margin: 0 auto 0 1rem;
+}
+.dashboardVideoLikes {
+  margin-right: 1rem;
 }

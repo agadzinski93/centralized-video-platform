@@ -6,9 +6,9 @@ module.exports = Joi.object({
       "string.min": "Title must be at least 3 characters",
       "string.max": "Title must be no more than 45 characters",
     }),
-    description: Joi.string().min(3).max(255).required().messages({
+    description: Joi.string().min(3).max(512).required().messages({
       "string.min": "Description must be at least 3 characters",
-      "string.max": "Description must be no more than 255 characters",
+      "string.max": "Description must be no more than 512 characters",
     }),
     difficulty: Joi.string()
       .required()

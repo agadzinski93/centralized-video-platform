@@ -1,21 +1,31 @@
-<%- include("./partials/navbar.ejs") %>
-<h1>Login</h1>
-<%- include("./partials/flashError.ejs") %>
-<form action="/login" method="POST">
-  <label for="username">Username: </label>
-  <input
-    name="reg[username]"
-    type="text"
-    placeholder="Enter username"
-    required
-  />
-  <label for="regpassword">Password: </label>
-  <input
-    name="reg[password]"
-    type="password"
-    placeholder="Enter password"
-    required
-  />
-  <button>Login</button>
-</form>
-<a href="/register">Register</a>
+<div class="loggingContainer">
+  <%- include("./partials/navbar.ejs") %>
+  <div class="loggingFormContainer">
+    <h1 class="loggingHeader">Account Login</h1>
+    <%- include("./partials/flashError.ejs") %>
+    <form action="/login" method="POST">
+      <label class="loggingLabel" for="username">Username</label>
+      <input
+        name="reg[username]"
+        id="username"
+        type="text"
+        placeholder="Enter username"
+        class="loggingText"
+        required
+      />
+      <label class="loggingLabel" for="regpassword">Password</label>
+      <input
+        name="reg[password]"
+        id="regpassword"
+        type="password"
+        placeholder="Enter password"
+        class="loggingText"
+        required
+      />
+      <button class="btnLogin">Log In</button>
+    </form>
+  </div>
+  <div class="signUpContainer">
+    <a href="/register">Need an account? Sign up</a>
+  </div>
+</div>

@@ -2,6 +2,7 @@
 .npmrc
 /assets
 /node_modules
+/public/assets
 
 # Compiled source #
 ###################

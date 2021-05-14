@@ -23,7 +23,7 @@ module.exports = {
    * @param {*} res
    */
   renderLogin: (req, res) => {
-    res.render("login", { title: "Login", user: req.user});
+    res.render("login", { title: "Login", user: req.user });
   },
   /**
    * Logs in the user using Passport. If successful, redirect to originally requested URL

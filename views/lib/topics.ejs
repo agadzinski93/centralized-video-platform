@@ -1,11 +1,32 @@
+<div class="libraryContainer">
+  <%- include("../partials/navbar.ejs") %>
+  <h1 class="libraryHeader">Library</h1>
+  <div class="librarySearchContainer">
+    <form action="" method="GET">
+      <input type="text" placeholder="Search Topics" />
+      <button>Search</button>
+    </form>
+  </div>
 
-<%- include("../partials/navbar.ejs") %>
-<h1>Library</h1>
-<% if (topics.length > 0) { %> <% for (topic of topics) { %>
-<a href="/lib/<%= topic.name %>"><div style="border: solid 1px black">
-  <p><%= topic.name %></p>
-  <p>Created by <%= topic.username %></p>
-  <p><%= topic.difficulty %></p>
-  <p><%= topic.description %></p>
-</div></a>
-<% } %> <% } %>
+  <% if (topics.length > 0) { %>
+  <div class="libraryTopicsList">
+    <% for (topic of topics) { %>
+    <a href="/lib/<%= topic.name %>">
+      <div class="libraryTopic">
+        <div class="topicImage"></div>
+        <div class="topicInfo">
+          <div class="topicTitleDifficulty">
+            <p class="libraryTopicTitle"><%= topic.name %></p>
+            <p class="libraryTopicDifficulty"><%= topic.difficulty %></p>
+          </div>
+          <p class="libraryTopicDescription"><%= topic.description %></p>
+          <p class="libraryTopicCreator">Created by <%= topic.username %></p>
+        </div>
+      </div>
+    </a>
+    <% } %>
+  </div>
+  <% } else { %>
+  <h2 class="noTopics">No Topics</h2>
+  <% } %>
+</div>
