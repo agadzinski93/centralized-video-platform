@@ -1,9 +1,15 @@
 const express = require("express");
+const multer = require('multer');
+const {storage} = require('../utilities/cloudinary');
+const filter = require("../utilities/validators/fileValidator");
+const parser = multer({storage, fileFilter:filter, limits:{fileSize:1024000}});
+
 const router = express.Router({ caseSensitive: false, strict: false });
 const {
   createTopic,
   editTopic,
   deleteTopic,
+  deleteSelectedTopics,
 } = require("../controllers/topicsCont");
 const {
   topicValidation,
@@ -14,6 +20,7 @@ router.post(
   "/:username/create",
   isLoggedIn,
   isAuthor,
+  parser.single('topic[file]'),
   topicValidation,
   createTopic
 );
@@ -26,5 +33,7 @@ router.post(
   editTopic
 );
 router.post("/:username/delete/:topic", isLoggedIn, isAuthor, deleteTopic);
+
+router.delete("/:username/deleteSelected", isLoggedIn, isAuthor, deleteSelectedTopics);
 
 module.exports = router;

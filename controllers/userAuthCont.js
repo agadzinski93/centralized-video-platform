@@ -48,7 +48,7 @@ module.exports = {
    * @param {*} res
    */
   logoutUser: (req, res, next) => {
-    req.logout();
+    req.logout((err) => {if (err) next(err)});
     res.redirect("/");
   },
   /**
