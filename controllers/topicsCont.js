@@ -5,6 +5,7 @@ const {
   insertTopic,
   updateTopic,
   removeTopic,
+  removeSelectedTopics,
 } = require("../utilities/helpers/topicHelpers");
 
 module.exports = {
@@ -12,6 +13,15 @@ module.exports = {
     const topicName = escapeHTML(req.body.topic.name);
     const topicDifficulty = req.body.topic.difficulty;
     const topicDescription = escapeHTML(req.body.topic.description);
+    let topicImage;
+    if (req.file != undefined) {
+      topicImage = req.file.path;
+      filename = req.file.filename;
+    }
+    else {
+      topicImage = null;
+      filename = null;
+    }
 
     const exists = await topicExists(topicName);
     if (exists instanceof AppError) return next(exists);
@@ -23,7 +33,9 @@ module.exports = {
         topicName,
         topicDifficulty,
         topicDescription,
-        req.user.username
+        req.user.username,
+        topicImage,
+        filename,
       );
       if (error instanceof AppError) return next(error);
       req.flash("success", "Topic Created");
@@ -56,5 +68,11 @@ module.exports = {
       req.flash("success", "Topic Deleted");
       res.redirect(`/user/${req.user.username}/dashboard`);
     }
+  },
+  deleteSelectedTopics: async (req,res,next) => {
+    let {topics} = req.body;
+    const result = await removeSelectedTopics(topics);
+    if (result instanceof AppError) return next(result);
+    res.json(5);
   },
 };

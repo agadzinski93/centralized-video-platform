@@ -1,7 +1,7 @@
 <div class="navbar">
     <ul>
         <li><a href="/">Home</a></li>
-        <% if (user === undefined) { %>
+        <% if (user === undefined || user === null) { %>
             <li><a href="/login">Login</a></li>
             <li><a href="/register">Register</a></li>
         <% } else { %>

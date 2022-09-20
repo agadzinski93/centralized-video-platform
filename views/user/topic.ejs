@@ -1,42 +1,402 @@
-<div class="dashboardTopicVideoPageContainer">
+<div class="dashboardTopicPageContainer">
+  <div class="backdrop"></div>
   <%- include("../partials/navbar.ejs") %>
-  <h1 class="dashboardTopicVideoHeader">Videos</h1>
-  <%- include("../partials/flashError.ejs") %> <%-
-  include("../partials/flashSuccess.ejs") %> <% if (videos.length > 0) { %>
-  <div class="dashboardTopicVideosList">
-    <% for (video of videos) { %>
-    <div class="dashboardTopicVideoContainer">
-      <div class="dashboardTopicVideoContainerFirstRow">
-        <p class="dashboardVideoTitle"><%= video.title %></p>
-        <form
-          action="/video/<%= user.username %>/<%= title %>/<%= video.id %>/delete"
-          method="POST"
-        >
-          <button class="btnVideoDelete">
-            <img class="icon" src="/assets/svg/trash.svg" alt="delete" />
-            <span>Delete Video</span>
-          </button>
-        </form>
-      </div>
-      <p class="dashboardVideoDescription"><%= video.description %></p>
-      <div class="dashboardVideoViewsLikes">
-        <p class="dashboardVideoViews">Views: <%= video.views %></p>
-        <p class="dashboardVideoLikes">Likes: <%= video.likes %></p>
-      </div>
+  <div class="dashboardOptionsContainer">
+    <div class="createTopicContainer">
+      <button id="btnCreateTopicForm" class="icon iconLarge"></button>
+    <span>Add Video(s)</span>
     </div>
-    <% } %> <% } %>
+    <div class="selectAllTopicsContainer">
+      <button id="btnSelectAllTopics" class="icon iconLarge"></button>
+    <span>Select All</span>
+    </div>
+    <div class="deleteAllTopicsContainer">
+      <button id="btnDeleteSelected" class="icon iconLarge"></button>
+    <span>Delete Selected</span>
+    </div>
   </div>
-
-  <h2>Add Video</h2>
-  <form action="/video/<%= user.username %>/<%= title %>/create" method="POST">
-    <label for="ytUrl">youtube.com/watch?v=</label>
-    <input
-      type="text"
-      name="ytUrl"
-      id="ytUrl"
-      placeholder="Enter Video ID Here"
-      required
-    />
-    <button>Add Video</button>
-  </form>
+  <div class="newTopicFormContainer">
+    <h2 class="createTopicHeader">Add Video<button class="btnCancelNewTopic">X</button></h2>
+    <form action="/video/<%= user.username %>/<%= topicName %>/create" method="POST">
+      <label for="ytUrl">Enter Video or Playlist URL</label>
+      <input
+        type="text"
+        name="ytUrl"
+        class="ytUrl"
+        id="ytUrl"
+        placeholder="youtube.com/watch?v=id"
+        required
+      />
+      <div class="newTopicAddBtn">
+        <button>Add Video(s)</button>
+      </div>
+    </form>
+  </div>
+  <div class="itemsSelectedContainer" id="itemsSelected"></div>
+  <%- include("../partials/flashError.ejs") %> <%-
+  include("../partials/flashSuccess.ejs") %> 
+  <div class="dashboardVideosContainer">
+    <div class="dashboardTopicLeft">
+      <p><a href="/user/<%=user.username%>/dashboard/">&larr;</a> <%=topic.name%></p>
+      <div><img src="<%=topic.image%>" alt=""></div>
+      <p><%=topic.description%></p>
+    </div>
+    <% if (videos.length > 0) { %>
+      <div class="dashboardTopicVideosList">
+        <% for (video of videos) { %>
+        <div class="dashboardTopicVideoContainer" id="<%=video.id%>Container">
+          <div class="videoOptionsPanel">
+            <p><button class="moveUp" id="moveUp<%=video.id%>">&#x25B2;</button></p>
+            <p><button id="<%=video.id%>" class="btnSelectVideo"></button></p>
+            <p><button class="moveDown" id="moveDown<%=video.id%>">&#x25BC;</button></p>
+          </div>
+          <div class="videoThumbnailContainer" id="thumbnail<%=video.id%>" style="background-image:url('<%=video.thumbnail%>')">
+          </div>
+          <div class="editVideoForm displayNone" id="editVideoForm<%=video.id%>">
+            <form action="/video/<%=user.username%>/<%=video.topic%>/<%=video.id%>/edit" method="POST">
+              <div class="firstRow">
+                <input id="editTitle<%=video.id%>" type="text" name="title" placeholder="<%=video.title%>">
+                <section class="editVideoButtons">
+                <button class="btnSaveEdit icon" id="btnSaveEdit<%=video.id%>"></button>
+                
+                <button class="btnCancelEdit icon" id="btnCancelEdit<%=video.id%>"></button>
+                
+                </section>
+              </div>
+              <textarea name="description" id="editDescription<%=video.id%>"><%=video.description%></textarea>
+            </form>
+          </div>
+          <div class="displayVideoInfo displayFlex" id="displayVideoInfo<%=video.id%>">
+            <div class="videoContentContainer">
+              <div class="dashboardTopicVideoContainerFirstRow">
+                <p class="dashboardVideoTitle" id="vidTitle<%=video.id%>"><%= video.title %></p>
+                <button class="btnVideoEdit" id="btnVideoEdit<%=video.id%>">
+                  <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                  <span>Edit Video</span>
+                </button>
+                <form
+                  action="/video/<%= user.username %>/<%=topicName%>/<%=video.id%>/delete"
+                  method="POST"
+                >
+                  <button class="btnVideoDelete">
+                    <img class="icon" src="/assets/svg/trashBlack.svg" alt="delete" />
+                  </button>
+                </form>
+              </div>
+              <p id="vidDescription<%=video.id%>"><%=video.description.substring(0, 100)%>...</p>
+            </div>
+          </div>
+        </div>
+        <% }%> 
+        <%} else {%>
+          <h2>No Videos in Topic</h2>
+      <% } %>
+      </div>
+  </div>
+  
 </div>
+<script>
+  let topics;
+  const toggleNewTopicForm = () => {
+    document.querySelector('.backdrop').classList.toggle('displayNone');
+    document.querySelector('.newTopicFormContainer').classList.toggle('displayNone');
+  };
+
+  const addEditEvent = (btn, btnCancelEdit) => {
+    const vidId = btn.getAttribute('id').substring(12);
+    
+    btn.addEventListener('click', () => {
+      document.getElementById(`editVideoForm${vidId}`).classList.toggle('displayFlex');
+      document.getElementById(`editVideoForm${vidId}`).classList.toggle('displayNone');
+      document.getElementById(`displayVideoInfo${vidId}`).classList.toggle('displayNone');
+      document.getElementById(`displayVideoInfo${vidId}`).classList.toggle('displayFlex');
+    });
+    btnCancelEdit.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById(`editVideoForm${vidId}`).classList.toggle('displayFlex');
+      document.getElementById(`editVideoForm${vidId}`).classList.toggle('displayNone');
+      document.getElementById(`displayVideoInfo${vidId}`).classList.toggle('displayNone');
+      document.getElementById(`displayVideoInfo${vidId}`).classList.toggle('displayFlex');
+    });
+  };
+
+  const swapVideoInfo = (current, swap) => {
+      //Swap Thumbnails
+      const currentThumbnail = document.getElementById(`thumbnail${current}`).style.backgroundImage;
+      document.getElementById(`thumbnail${current}`).style.backgroundImage = document.getElementById(`thumbnail${swap}`).style.backgroundImage;
+      document.getElementById(`thumbnail${swap}`).style.backgroundImage = currentThumbnail;
+      //Swap Edit Forms
+      const currentEditTitle = document.getElementById(`editTitle${current}`).getAttribute('placeholder');
+      document.getElementById(`editTitle${current}`).setAttribute('placeholder', document.getElementById(`editTitle${swap}`).getAttribute('placeholder'));
+      document.getElementById(`editTitle${swap}`).setAttribute('placeholder', currentEditTitle);
+
+      const currentEditDescription = document.getElementById(`editDescription${current}`).textContent;
+      document.getElementById(`editDescription${current}`).textContent = document.getElementById(`editDescription${swap}`).textContent;
+      document.getElementById(`editDescription${swap}`).textContent = currentEditDescription;
+      //Swap Main Text
+      const currentTitle = document.getElementById(`vidTitle${current}`).textContent;
+      document.getElementById(`vidTitle${current}`).textContent = document.getElementById(`vidTitle${swap}`).textContent;
+      document.getElementById(`vidTitle${swap}`).textContent = currentTitle;
+
+      const currentVidDescription = document.getElementById(`vidDescription${current}`).textContent;
+      document.getElementById(`vidDescription${current}`).textContent = document.getElementById(`vidDescription${swap}`).textContent;
+      document.getElementById(`vidDescription${swap}`).textContent = currentVidDescription;
+  };
+
+  const addSwapVideoEvents = async (upButtons, downButtons) => {
+    if (upButtons.length > 1) {
+      for (let i = 0; i < upButtons.length; i++) {
+        if (i === 0) {
+          downButtons[i].addEventListener('click', async (e) => {
+            try {
+              const currentVidId = downButtons[i].getAttribute('id').substring(8);
+              const swapVidId = upButtons[i+1].getAttribute('id').substring(6);
+
+              const result = await fetch('/video/<%=user.username%>/swapVideos', {
+                method:'POST',
+                headers: {
+                  'Content-Type':'application/json'
+                },
+                body: JSON.stringify({
+                  currentVidId,
+                  swapVidId,
+                })
+              });
+              const data = await result.json();
+              if (data == null) {
+                swapVideoInfo(currentVidId, swapVidId);
+              }
+            }
+            catch (err) {
+              alert(err);
+            }
+          });
+        }
+        else if (i === upButtons.length - 1) {
+          upButtons[i].addEventListener('click', async (e) => {
+            try {
+              const currentVidId = upButtons[i].getAttribute('id').substring(6);
+              const swapVidId = downButtons[i-1].getAttribute('id').substring(8);
+
+              const result = await fetch('/video/<%=user.username%>/swapVideos', {
+                method:'POST',
+                headers: {
+                  'Content-Type':'application/json'
+                },
+                body: JSON.stringify({
+                    currentVidId,
+                    swapVidId,
+                })
+                
+              });
+              const data = await result.json();
+              if (data == null) {
+                swapVideoInfo(currentVidId, swapVidId);
+              }
+            } catch(err) {
+              alert(err);
+            }
+          });
+        }
+        else {
+          upButtons[i].addEventListener('click', async (e) => {
+            try {
+              const currentVidId = upButtons[i].getAttribute('id').substring(6);
+              const swapVidId = downButtons[i-1].getAttribute('id').substring(8);
+
+              const result = await fetch('/video/<%=user.username%>/swapVideos', {
+                method:'POST',
+                headers: {
+                  'Content-Type':'application/json'
+                },
+                body: JSON.stringify({
+                  currentVidId,
+                  swapVidId,
+                })
+              });
+              const data = await result.json();
+              if (data == null) {
+                swapVideoInfo(currentVidId, swapVidId);
+              }
+            } catch(err) {
+              alert(err);
+            }
+          });
+          downButtons[i].addEventListener('click', async (e) => {
+            try {
+              const currentVidId = downButtons[i].getAttribute('id').substring(8);
+              const swapVidId = upButtons[i+1].getAttribute('id').substring(6);
+
+              const result = await fetch('/video/<%=user.username%>/swapVideos', {
+                method:'POST',
+                headers: {
+                  'Content-Type':'application/json'
+                },
+                body: JSON.stringify({
+                  currentVidId,
+                  swapVidId,
+                })
+              });
+              const data = await result.json();
+              if (data == null) {
+                swapVideoInfo(currentVidId, swapVidId);
+              }
+            } catch(err) {
+              alert(err);
+            }
+          });
+        }
+      }
+    }
+  };
+
+  const addSelectVideoEvents = (selectedVideos) => {
+    const panels = document.getElementsByClassName('videoOptionsPanel');
+    for (let i = 0; i < selectedVideos.length; i++) {
+      selectedVideos[i].addEventListener('click', (e) => {
+        if (e.shiftKey) {
+          let done = false;
+          let j = i;
+
+          if (!e.target.classList.contains('btnSelectVideoSelected')) {
+            do {
+              if (!selectedVideos[j].classList.contains('btnSelectVideoSelected')) {
+                selectedVideos[j].classList.add('btnSelectVideoSelected');
+                panels[j].classList.add('videoOptionsPanelSelected');
+                j--;
+              }
+              else {
+                done = true;
+              }
+            } while(!done && j >= 0);
+          }
+          else {
+            do {
+              if (selectedVideos[j].classList.contains('btnSelectVideoSelected')) {
+                selectedVideos[j].classList.remove('btnSelectVideoSelected');
+                panels[j].classList.remove('videoOptionsPanelSelected');
+                j--;
+              }
+              else {
+                done = true;
+              }
+            } while(!done && j >= 0);
+          }
+        }
+        else {
+          e.target.classList.toggle('btnSelectVideoSelected');
+          panels[i].classList.toggle('videoOptionsPanelSelected');
+        }
+        const numSelected = document.querySelectorAll('.btnSelectVideoSelected').length;
+
+        //Highlight 'Delete Selected' button?
+        if (numSelected >= 1) {
+          document.getElementById('btnDeleteSelected').classList.add('deleteSelected');
+        }
+        else {
+          document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
+        }
+        //Highlight 'Select All' button?
+        if (numSelected === panels.length) {
+          document.getElementById('btnSelectAllTopics').classList.add('selectedAll');
+        }
+        else {
+          document.getElementById('btnSelectAllTopics').classList.remove('selectedAll');
+        }
+      });
+    }
+  };
+
+  const addSelectAllEvent = () => {
+    document.getElementById('btnSelectAllTopics').addEventListener('click', (e) => {
+      const selectVideoButtons = document.getElementsByClassName('btnSelectVideo');
+      const panels = document.getElementsByClassName('videoOptionsPanel');
+
+      const currentlySelected = e.target.classList.contains('selectedAll');
+      
+      if (!currentlySelected) {
+        e.target.classList.add('selectedAll');
+        document.getElementById('btnDeleteSelected').classList.add('deleteSelected');
+        for (let i = 0; i < selectVideoButtons.length; i++) {
+          selectVideoButtons[i].classList.add('btnSelectVideoSelected');
+          panels[i].classList.add('videoOptionsPanelSelected');
+        }
+      }
+      else {
+        e.target.classList.remove('selectedAll');
+        document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
+        for (let i = 0; i < selectVideoButtons.length; i++) {
+          selectVideoButtons[i].classList.remove('btnSelectVideoSelected');
+          panels[i].classList.remove('videoOptionsPanelSelected');
+        }
+      }
+    });
+  };
+
+  const addRemoveSelectedVideos = () => {
+    document.getElementById('btnDeleteSelected').addEventListener('click', async (e) => {
+      const selectedVideos = document.getElementsByClassName('btnSelectVideoSelected');
+      if (selectedVideos.length > 0) {
+        let videoList = new Array();
+        for (let i = 0; i < selectedVideos.length; i++) {
+          videoList.push(selectedVideos[i].getAttribute('id'));
+        }
+        try {
+          const result = await fetch('/video/<%=user.username%>/deleteSelected', {
+            method:'DELETE',
+            headers: {
+              'Content-Type':'application/json',
+            },
+            body: JSON.stringify({
+              videos:videoList,
+            })
+          });
+          
+          const data = await result.json();
+          if (data === null) {
+            for (let i = 0; i < videoList.length; i++) {
+              document.getElementById(`${videoList[i]}` + `Container`).remove();
+            }
+            document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
+          }
+        } catch(err) {
+
+        }
+      }
+    });
+  };
+  
+  const init = () => {
+    document.querySelector('.backdrop').classList.toggle('displayNone');
+    document.querySelector('.newTopicFormContainer').classList.add('displayNone');
+
+    document.getElementById("btnCreateTopicForm").addEventListener("click", toggleNewTopicForm);
+    document.querySelector('.btnCancelNewTopic').addEventListener("click", toggleNewTopicForm);
+
+    const editVideoButtons = document.getElementsByClassName('btnVideoEdit');
+    const cancelEditVideoButtons = document.getElementsByClassName('btnCancelEdit');
+    
+    for (let i = 0; i < editVideoButtons.length; i++) {
+      addEditEvent(editVideoButtons[i], cancelEditVideoButtons[i]);
+    }
+
+    const moveUpButtons = document.getElementsByClassName('moveUp');
+    const moveDownButtons = document.getElementsByClassName('moveDown');
+    addSwapVideoEvents(moveUpButtons, moveDownButtons);
+
+    const selectVideoButtons = document.getElementsByClassName('btnSelectVideo');
+    addSelectVideoEvents(selectVideoButtons);
+    addSelectAllEvent();
+
+    addRemoveSelectedVideos();
+    
+    //document.getElementById('btnSelectAllTopics').addEventListener('click', toggleSelectAllTopics);
+
+    //document.getElementById('btnDeleteSelected').addEventListener('click', deleteSelectedTopics);
+
+    //addTopicSelectEvents();
+    //topicImageEvent();
+  };
+
+  init();
+</script>
