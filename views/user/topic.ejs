@@ -250,6 +250,22 @@
     }
   };
 
+  const toggleItemsSelected = (enabled = false, numOfItems = 0) => {
+    const itemsSelectedContainer = document.getElementById('itemsSelected');
+    if (enabled) {
+      itemsSelectedContainer.classList.add('itemsSelected');
+      if (numOfItems === 1) {
+        itemsSelectedContainer.textContent = `${numOfItems} video selected`;
+      } else {
+        itemsSelectedContainer.textContent = `${numOfItems} videos selected`;
+      }
+    }
+    else {
+      itemsSelectedContainer.classList.remove('itemsSelected');
+      itemsSelectedContainer.textContent = ``;
+    }
+  }
+
   const addSelectVideoEvents = (selectedVideos) => {
     const panels = document.getElementsByClassName('videoOptionsPanel');
     for (let i = 0; i < selectedVideos.length; i++) {
@@ -289,12 +305,14 @@
         }
         const numSelected = document.querySelectorAll('.btnSelectVideoSelected').length;
 
-        //Highlight 'Delete Selected' button?
+        //Highlight 'Delete Selected' button and show/hide 'items selected' panel
         if (numSelected >= 1) {
           document.getElementById('btnDeleteSelected').classList.add('deleteSelected');
+          toggleItemsSelected(true, numSelected);
         }
         else {
           document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
+          toggleItemsSelected(false, numSelected);
         }
         //Highlight 'Select All' button?
         if (numSelected === panels.length) {
@@ -321,6 +339,7 @@
           selectVideoButtons[i].classList.add('btnSelectVideoSelected');
           panels[i].classList.add('videoOptionsPanelSelected');
         }
+        toggleItemsSelected(true, selectVideoButtons.length);
       }
       else {
         e.target.classList.remove('selectedAll');
@@ -329,6 +348,7 @@
           selectVideoButtons[i].classList.remove('btnSelectVideoSelected');
           panels[i].classList.remove('videoOptionsPanelSelected');
         }
+        toggleItemsSelected(false, selectVideoButtons.length);
       }
     });
   };
@@ -358,6 +378,7 @@
               document.getElementById(`${videoList[i]}` + `Container`).remove();
             }
             document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
+            toggleItemsSelected();
           }
         } catch(err) {
 

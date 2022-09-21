@@ -15,4 +15,12 @@ module.exports = {
   containsHTML: (input) => {
     return input.match(new RegExp("<.+?>", "g"));
   },
+  /**
+   * Escapes special characters in strings before use in SQL statements
+   * @param {string} input String input from the client
+   * @returns {string} String with special characters escaped
+   */
+  escapeSQL: (input) => {
+    return input.replaceAll("'", "\\'");
+  },
 };

@@ -1,7 +1,8 @@
 const AppError = require("../utilities/AppError");
 const { escapeHTML } = require("../utilities/helpers/sanitizers");
 const {topicExists} = require("../utilities/helpers/topicHelpers");
-const {getVideoInfo, insertVideo, videoExists, videoExistsInTopic, 
+const {getVideoInfo, getPlaylistInfo, getPlaylistVideos, insertVideo, insertManyVideos,
+    videoExists, videoExistsInTopic, 
     modifyVideo, swapVideoRecords, 
     removeVideo, removeSelectedVideos} = require("../utilities/helpers/videoHelpers");
 
@@ -9,40 +10,62 @@ module.exports = {
     createVideo: async (req, res, next) => {
         const videoUrl = escapeHTML(req.body.ytUrl);
         const topicName = escapeHTML(req.params.topic);
+        let isPlaylist = false;
 
         const ytUrlTemplate = 'watch?v=';
+        const ytPlaylistTemplate = 'playlist?list=';
         if (videoUrl.includes(ytUrlTemplate)) {
-        vidId = videoUrl.substring(videoUrl.indexOf(ytUrlTemplate) + ytUrlTemplate.length);
+            vidId = videoUrl.substring(videoUrl.indexOf(ytUrlTemplate) + ytUrlTemplate.length);
+        }
+        else if (videoUrl.includes(ytPlaylistTemplate)) {
+            vidId = videoUrl.substring(videoUrl.indexOf(ytPlaylistTemplate) + ytPlaylistTemplate.length);
+            isPlaylist = true;
         }
         else {
-        vidId = videoUrl;
+            vidId = videoUrl;
         }
-
-        let wait = await videoExistsInTopic(vidId, topicName);
-
-        if (wait) {
-            req.flash("error", "Video Already Exists in Topic");
-            res.redirect(`/user/${req.user.username}/dashboard/${topicName}`);
+        
+        if (!isPlaylist) {
+            let wait = await videoExistsInTopic(vidId, topicName);
+            if (wait) {
+                req.flash("error", "Video Already Exists in Topic");
+                res.redirect(`/user/${req.user.username}/dashboard/${topicName}`);
+            }
         }
-        else {
-            let exists = await topicExists(topicName);
+    
+        let exists = await topicExists(topicName);
 
-            if (exists instanceof AppError) return next(exists);
-            else if (exists === 0) {
-                req.flash("error", "Topic Doesn't Exists");
-                res.redirect(`/user/${req.user.username}/dashboard`);
-            } else {
-                
+        if (exists instanceof AppError) return next(exists);
+        else if (exists === 0) {
+            req.flash("error", "Topic Doesn't Exists");
+            res.redirect(`/user/${req.user.username}/dashboard`);
+        } else {
+            if (!isPlaylist) {
                 let video = await getVideoInfo(vidId);
                 if (video instanceof AppError) return next(video);
                 
-                const error = await insertVideo(video, topicName, req.user.username);
+                let error = await insertVideo(video, topicName, req.user.username);
                 if (error instanceof AppError) return next(error);
                 
                 req.flash('success', "Video Added");
                 res.redirect(`/user/${req.params.username}/dashboard/${topicName}`);
             }
+            else {
+                let playlistInfo = await getPlaylistInfo(vidId);
+                if (playlistInfo instanceof AppError) return next(playlistInfo);
+
+                let result = await getPlaylistVideos(playlistInfo);
+                if (result instanceof AppError) return next(result);
+                
+                let error = await insertManyVideos(result, topicName, req.user.username);
+                if (error instanceof AppError) return next(error);
+                
+                req.flash('success', "Video Added");
+                res.redirect(`/user/${req.params.username}/dashboard/${topicName}`);
+            }
+            
         }
+        
     },
     editVideo: async (req,res,next) => {
         const title = escapeHTML(req.body.title);
