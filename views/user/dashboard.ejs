@@ -49,7 +49,7 @@
       <div class="newTopicFileContainer">
         <label for="btnFileUpload" class="file-upload" id="lblFileUpload">
           <div>Click or Drag Image to Upload</div>
-          <img class="displayNone" src="https://image.tmdb.org/t/p/original/f14a75WxUcKBu7nPBQjyJufIFuC.jpg" alt="">
+          <img class="displayNone" src="" alt="">
         </label>
         <input type="file" id="btnFileUpload" name="topic[file]" hidden>
       </div>
@@ -131,12 +131,14 @@
           id="topicName"
           placeholder="<%= topic.name %>"
         />
-        <label for="difficulty" class="lblTopicDifficulty">Difficulty</label>
-        <select name="topic[difficulty]" id="difficulty">
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Advanced">Advanced</option>
-        </select>
+        <div class="editDifficultyContainer">
+          <label for="difficulty" class="lblTopicDifficulty">Difficulty</label>
+          <select name="topic[difficulty]" id="difficulty">
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+        </div>
         <label for="topicDescription" class="lblTopicDescription"
           >Description</label
         >

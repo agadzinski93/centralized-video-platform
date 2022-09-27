@@ -1,6 +1,7 @@
 const { getDatabase } = require("../mysql-connect");
 const {escapeSQL} = require("./sanitizers");
 const AppError = require("../AppError");
+const e = require("connect-flash");
 const axios = require("axios").default;
 
 module.exports = {
@@ -9,11 +10,44 @@ module.exports = {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
       const videos = await db.execute(
-        `SELECT * FROM videos WHERE topic = '${topic}'`
+        `SELECT * FROM videos WHERE topic = '${topic}' ORDER BY id`
       );
       
       return videos[0].map((v) => Object.assign({}, v));
     } catch (err) {
+      return new AppError(500, "Error Retrieving Videos");
+    }
+  },
+  getVideo: async (vidId, topicName) => {
+    let video;
+    try {
+      const db = await getDatabase();
+      if (db instanceof AppError) return db;
+
+      const vidUrl = 'youtube.com/watch?v=' + vidId;
+
+      let video = await db.execute(`SELECT * FROM videos WHERE url = '${vidUrl}' AND topic = '${topicName}' LIMIT 1`);
+
+      let videoInfo = video[0].map((v) => Object.assign({}, v));
+      if (videoInfo.length < 1) {
+        return new AppError(400, "Video Doesn't Exist In This Topic");
+      }
+      else {
+        return video[0].map((v) => Object.assign({}, v));
+      }
+    } catch(err) {
+      return new AppError(500, "Error Retrieving Video");
+    }
+  },
+  getRecentVideos: async () => {
+    try {
+      const db = await getDatabase();
+      if (db instanceof AppError) return db;
+
+      let videos = await db.execute(`SELECT * FROM videos ORDER BY id DESC LIMIT 14`);
+
+      return videos[0].map((v) => Object.assign({}, v));
+    } catch(err) {
       return new AppError(500, "Error Retrieving Videos");
     }
   },
@@ -44,7 +78,7 @@ module.exports = {
   },
   getPlaylistInfo: async (playlistId) => {
     let result;
-    const resultsPerPage = 3; //Max allowed by YouTube API
+    const resultsPerPage = 50; //Max allowed by YouTube API
     
     await axios
       .get(
@@ -62,7 +96,7 @@ module.exports = {
         }
       })
       .catch((err) => {
-        result = new AppError(500, "Invalid YT Video");
+        result = new AppError(500, "Invalid Playlist");
       });
     return result;
   },
@@ -71,6 +105,7 @@ module.exports = {
     let nextPageToken;
     const {playlistId, numOfVideos, resultsPerPage} = playlist;
     const numOfPages = Math.ceil(numOfVideos / resultsPerPage);
+    const numOfVideosOnLastPage = numOfVideos % resultsPerPage;
 
     for (let i = 0;i < numOfPages;i++) {
       if (i === 0) {
@@ -81,12 +116,19 @@ module.exports = {
         )
         .then((yt) => {
           nextPageToken = yt.data.nextPageToken;
-          for (let j = 0; j < resultsPerPage; j++) {
-            result.push(yt.data.items[j].snippet);
+          if (i === numOfPages - 1) {
+            for (let j = 0; j < numOfVideosOnLastPage; j++) {
+              result.push(yt.data.items[j].snippet);
+            }
+          }
+          else {
+            for (let j = 0; j < resultsPerPage; j++) {
+              result.push(yt.data.items[j].snippet);
+            }
           }
         })
         .catch((err) => {
-          result = new AppError(500, "Invalid YT Video");
+          result = new AppError(500, "Error adding first set of videos from playlist");
         });
       } else {
         await axios
@@ -96,12 +138,19 @@ module.exports = {
         )
         .then((yt) => {
           nextPageToken = yt.data.nextPageToken;
-          for (let j = 0; j < resultsPerPage; j++) {
-            result.push(yt.data.items[j].snippet);
+          if (i === numOfPages - 1) {
+            for (let j = 0; j < numOfVideosOnLastPage; j++) {
+              result.push(yt.data.items[j].snippet);
+            }
+          }
+          else {
+            for (let j = 0; j < resultsPerPage; j++) {
+              result.push(yt.data.items[j].snippet);
+            }
           }
         })
         .catch((err) => {
-          result = new AppError(500, "Invalid YT Video");
+          result = new AppError(500, `Error adding videos on page ${i+1}`);
         });
       }
     }
@@ -178,7 +227,7 @@ module.exports = {
         }
       }
     
-      await db.execute(`INSERT INTO videos (title, url, description, views, thumbnail, topic, username) 
+      await db.execute(`INSERT IGNORE INTO videos (title, url, description, views, thumbnail, topic, username) 
             VALUES ${values}`);
 
       return null;
@@ -190,6 +239,9 @@ module.exports = {
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
+
+      title = escapeSQL(title);
+      description = escapeSQL(description);
 
       await db.execute(`UPDATE videos SET title = '${title}', description = '${description}' WHERE id = ${id}`);
 
@@ -203,8 +255,8 @@ module.exports = {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      await db.execute(`CALL swap_video_rows(${currentVidId},${swapVideoId})`);
-
+      const result = await db.execute(`CALL swap_video_rows(${currentVidId},${swapVideoId})`);
+      
       return null;
     } catch(err) {
       return new AppError(500, "Error Swapping Videos");

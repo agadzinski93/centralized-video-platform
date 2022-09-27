@@ -23,4 +23,19 @@ module.exports = {
   escapeSQL: (input) => {
     return input.replaceAll("'", "\\'");
   },
+  /**
+   * Removes parameters from GET string
+   * @param {string} input String input from the client
+   * @returns {string} String after removing paramters
+   */
+  removeParams: (input) => {
+    let output;
+    if (input.includes('&')) {
+      output = input.substring(0,input.indexOf('&'));
+    }
+    else {
+      output = input;
+    }
+    return output;
+  }
 };

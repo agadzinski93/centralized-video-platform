@@ -7,6 +7,9 @@
     <title><%= title %></title>
     <link rel="stylesheet" href="/css/reset.css">
     <link rel="stylesheet" href="/css/app.css">
+    <% if (pageStyles !== null) {%>
+      <link rel="stylesheet" href="/css/<%=pageStyles%>">
+    <%}%>
   </head>
   <body>
     <%- body %>

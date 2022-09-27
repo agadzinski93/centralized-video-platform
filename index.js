@@ -51,14 +51,8 @@ app.use(pp.session());
 app.use(require("./utilities/flash")); //Flash messages
 
 //Routes
-app.get("/", async (req, res, next) => {
-  try {
-    res.render("index", { title: "Home Page", user: req.user });
-  } catch (err) {
-    next(new AppError(500, err.message));
-  }
-});
-app.use("/", require("./routes/userAuthRoutes"));
+app.use("/", require("./routes/homeRoutes"));
+app.use("/auth", require("./routes/userAuthRoutes"));
 app.use("/lib", require("./routes/libraryRoutes"));
 app.use("/user", require("./routes/userRoutes"));
 app.use("/topics", require("./routes/topicsRoutes"));
@@ -72,7 +66,8 @@ app.all("*", (req, res, next) => {
 app.use((err, req, res, next) => {
   res.locals.message = err.message;
   const status = err.status || 500;
-  res.status(status).render("error", { title: `${status} Error`, user: req.user });
+  const pageStyles = null;
+  res.status(status).render("error", { title: `${status} Error`, pageStyles, user: req.user });
 });
 
 //Port

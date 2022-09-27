@@ -3,7 +3,7 @@
   <div class="loggingFormContainer">
     <h1 class="loggingHeader">Account Login</h1>
     <%- include("./partials/flashError.ejs") %>
-    <form action="/login" method="POST">
+    <form action="/auth/login" method="POST">
       <label class="loggingLabel" for="username">Username</label>
       <input
         name="reg[username]"
@@ -26,6 +26,6 @@
     </form>
   </div>
   <div class="signUpContainer">
-    <a href="/register">Need an account? Sign up</a>
+    <a href="/auth/register">Need an account? Sign up</a>
   </div>
 </div>
