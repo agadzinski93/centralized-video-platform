@@ -14,6 +14,26 @@
 .displayFlex {
   display:flex;
 }
+.modal {
+  position:absolute;
+  width:100%;
+  min-height:10rem;
+  height:20vh;
+  margin:40vh auto;
+}
+.modal > .spinner {
+  background-image:url('../assets/svg/spinner.gif');
+  background-repeat:none;
+  background-size: cover;
+  height:4rem;
+  width:4rem;
+  margin:0 auto;
+}
+.modal > p.modelText {
+  text-align:center;
+  width:100%;
+  color:#000;
+}
 .icon + span {
   display: none;
   position: absolute;
@@ -82,541 +102,75 @@
 }
 .navbar {
   background-color:#1E1E1E;
+  display:flex;
+  width:100%;
+  height:50px;
 }
-.navbar ul {
-  display: flex;
-  justify-content: flex-start;
-  list-style-type: none;
-}
-.navbar > ul > li {
-  width: 8rem;
-  text-align: center;
-}
-.navbar > ul > li a {
-  display: block;
-  width: 100%;
-  color: #fff;
-  text-decoration: none;
+.navbar > .homeButton,
+.loginRegisterContainer > div,
+.userDropDownLinks {
+  min-width:8rem;
+  max-width:8rem;
+  text-align:center;
   text-transform: uppercase;
+  color:#FFF;
 }
-.navbar > ul > li a {
-  padding: 1rem 0;
+.homeButton > a,
+.loginRegisterContainer > div > a,
+.userDropDownLinks > a {
+  display:block;
+  padding:0.875rem 0;
+  text-decoration:none;
 }
-.navbar li:first-child {
-  margin-right: auto;
+.searchContainer {
+  width:100%;
 }
-.navbar > ul > li:hover .userSubmenu {
-  display: flex;
+.searchContainer > .searchContainerForm {
+  text-align:center;
 }
-.navbar .userSubmenu {
-  display: none;
+.searchContainer > .searchContainerForm > input {
+  width:50%;
+  border:none;
+  padding:0.25rem;
+  margin-top:0.75rem;
+  background-color:#333;
+  color:#FFF;
+  font-size:1rem;
+}
+.loginRegisterContainer {
+  display:flex;
+  width:16rem;
+}
+.userDropDownLinks .userSubmenu {
   position: absolute;
-  flex-direction: column;
+  display: none;
   width: 8rem;
   background-color: #1E1E1E;
 }
-.userSubmenu li {
-  margin: 0 auto;
-  position: relative;
+.userDropDownLinks:hover .userSubmenu {
+  display: flex;
+  flex-direction: column;
+}
+.userDropDownLinks .userSubmenu li {
+  height:50px;
+}
+.userDropDownLinks .userSubmenu li a {
+  display:block;
+  padding:1rem 0;
+  text-decoration:none;
+}
+.navbar ul {
+  list-style-type: none;
 }
 .userSubmenu a:hover {
-  background-color: #333;
-}
-.homeContainer {
-  background-color: #333;
-}
-.homeTopSection {
-  background-color: rgba(6, 111, 255, 1);
-  height: 40rem;
-}
-.loggingContainer {
-  background: rgb(37, 194, 194);
-  background: linear-gradient(
-    22deg,
-    rgba(37, 194, 194, 1) 33%,
-    rgba(13, 156, 223, 1) 100%
-  );
-  height: 100vh;
-}
-.loggingFormContainer {
-  background-color: rgba(255, 255, 255, 1);
-  width: 40rem;
-  margin: 5rem auto 0;
-  padding: 2rem 2rem;
-  box-shadow: #333;
-}
-.loggingHeader {
-  color: #3284e7;
-  font-size: 1.5rem;
-  text-transform: uppercase;
-  text-align: center;
-  font-weight: bold;
-}
-.loggingLabel {
-  display: block;
-  padding: 1rem 0 0.5rem 0;
-  text-transform: uppercase;
-  color: #777;
-  font-weight: bold;
-}
-.loggingText {
-  width: 98%;
-  height: 2rem;
-  background-color: #eee;
-  border: solid 1px #d8d8d9;
-  padding-left: 1%;
-}
-.loggingTextError {
-  border: solid 2px red;
-}
-.loggingTextErrorMessage {
-  display: none;
-  margin-top: 0.5rem;
-  color: red;
-}
-.loggingTextErrorMessageShow {
-  display: block;
-}
-.btnLogin {
-  width: 100%;
-  margin: 2rem 0 0.5rem 0;
-  padding: 0.5rem 0;
-  border: none;
-  background-color: #3284e7;
-  color: #fff;
-  text-transform: uppercase;
-}
-.btnLoginError {
-  background-color: #4f94aa;
-  pointer-events: none;
-}
-.signUpContainer {
-  width: 42rem;
-  margin: 0.5rem auto 0;
-  color: #fff;
-  text-align: right;
-}
-.signUpContainer a {
-  color: #fff;
-  text-decoration: none;
-}
-.libraryContainer {
-  background-color:#242424;
-  height: 100vh;
-}
-.libraryHeader {
-  text-align: center;
-}
-.librarySearchContainer {
-  text-align: center;
-  margin: 1rem 0;
-}
-.libraryTopicsList {
-  width: 80%;
-  margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-.libraryTopicsList > a {
-  flex-basis: 45%;
-  text-decoration: none;
-}
-.libraryTopic {
-  background-color: #333;
-  color:#FFF;
-  display: flex;
-  flex-wrap: wrap;
-}
-.topicImage {
-  flex-basis: 20%;
-}
-.topicInfo {
-  flex-basis: 80%;
-}
-.topicTitleDifficulty {
-  display: flex;
-  margin-top: 1rem;
-}
-.libraryTopicTitle {
-  margin-left: 1rem;
-  margin-right: auto;
-  font-size: 2rem;
-}
-.libraryTopicDifficulty {
-  margin-top: 0.5rem;
-  margin-right: 2%;
-}
-.libraryTopicDescription {
-  margin-left: 1rem;
-  margin-right: 1rem;
-}
-.libraryTopicCreator {
-  margin-top: 1rem;
-  margin-right: 2%;
-  padding-bottom: 1rem;
-  text-align: right;
+  background-color: #444;
 }
 .topicContainer {
   background-color:#242424;
   height: 100vh;
 }
-.topicVideoContainer {
-  margin: 3rem auto 0 auto;
-  width: 80%;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-.topicHeader {
-  flex-basis: 45%;
-  background-color: #333;
-  color:#FFF;
-  padding-bottom: 1rem;
-}
-.topicVideoList {
-  flex-basis: 45%;
-  display: flex;
-  flex-flow: column;
-}
 .topicVideo {
   background-color: #fff;
-}
-.topicVideoTitle {
-  margin-top: 1rem;
-  margin-left: 1rem;
-  font-weight: bold;
-}
-.topicVideoDescription {
-  margin-top: 1rem;
-  margin-left: 1rem;
-}
-.topicVideoViewsLikes {
-  display: flex;
-  padding-bottom: 1rem;
-}
-.topicVideoViews {
-  margin: 1rem auto 0 1rem;
-}
-.topicVideoLikes {
-  margin-top: 1rem;
-  margin-right: 1rem;
-}
-.dashboardOptionsContainer {
-  height:32px;
-  text-align:center;
-}
-.dashboardOptionsContainer > div {
-  display:inline;
-}
-.dashboardOptionsContainer button {
-  border:none;
-  width:32px;
-  height:32px;
-  color:#FFF;
-  background-color:initial;
-}
-.dashboardOptionsContainer > div:first-child button {
-  background-image: url('../assets/svg/topicIcons.png');
-  background-position:0px 0px;
-  background-repeat:no-repeat;
-  background-size: cover;
-}
-.dashboardOptionsContainer > div:first-child button:hover {
-  background-image: url('../assets/svg/topicIcons.png');
-  background-position:-32px 0px;
-  background-repeat:no-repeat;
-  background-size: cover;
-}
-.dashboardOptionsContainer > .selectAllTopicsContainer button {
-  background-image: url('../assets/svg/topicIcons.png');
-  background-position:-192px 0px;
-  background-repeat:no-repeat;
-  background-size: cover;
-}
-.dashboardOptionsContainer > .selectAllTopicsContainer > .selectedAll {
-  background-image: url('../assets/svg/topicIcons.png');
-  background-position:-224px 0px;
-  background-repeat:no-repeat;
-  background-size: cover;
-}
-.dashboardOptionsContainer > .deleteAllTopicsContainer button {
-  background-image: url('../assets/svg/topicIcons.png');
-  background-position:-128px 0px;
-  background-repeat:no-repeat;
-  background-size: cover;
-}
-.dashboardOptionsContainer > .deleteAllTopicsContainer > .deleteSelected {
-  background-image: url('../assets/svg/topicIcons.png');
-  background-position:-160px 0px;
-  background-repeat:no-repeat;
-  background-size: cover;
-}
-.dashboardTopicPageContainer {
-  background-color:#242424;
-  height: 100vh;
-}
-.newTopicFormContainer {
-  position:absolute;
-  left:0;
-  right:0;
-  width:36%;
-  padding:0 2%;
-  margin:3rem auto 0 auto;
-  background-color:#333;
-  color:#FFF;
-  z-index:1;
-}
-.createTopicHeader {
-  font-size:1.25rem;
-  text-align: center;
-}
-.btnCancelNewTopic {
-  padding:0.5rem 0.75rem;
-  float:right;
-  color:#FFF;
-  background-color:#242424;
-  border:none;
-}
-.btnCancelNewTopic:hover {
-  background-color:#444;
-}
-.newTopicFormContainer > h2 {
-  padding:1rem 0;
-}
-.newTopicNameContainer > input {
-  padding-left:1%;
-  margin-left:1%;
-  width:65%;
-  height:1.5rem;
-  color:#FFF;
-  background-color:#242424;
-  border:none;
-}
-.newTopicDifficultyContainer {
-  margin-top:1rem;
-}
-.newTopicDifficultyContainer > select {
-  margin-left:1%;
-  width:40%;
-  height:1.75rem;
-  color:#FFF;
-  background-color:#242424;
-  border:none;
-}
-.newTopicDescriptionContainer {
-  margin-top:1rem;
-}
-.newTopicDescriptionContainer > label {
-  display:block;
-}
-.newTopicDescriptionContainer > textarea {
-  margin-top:0.5rem;
-  width:99%;
-  height:8rem;
-  color:#FFF;
-  background-color:#242424;
-  border:none;
-}
-.newTopicDescriptionContainer > textarea:focus {
-  background-color:#242424;
-}
-.newTopicFileContainer {
-  margin:1rem 0;
-  width:100%;
-}
-.file-upload {
-  height:9rem;
-  background-color: #242424;
-  display:block;
-  text-align: center;
-}
-.file-upload > div {
-  padding-top:3.75rem;
-}
-.file-upload img {
-  max-height:7rem;
-  max-width:90%;
-  padding:1rem 0;
-}
-.file-upload:hover {
-  background-color:#444;
-}
-.fileSizeLimit {
-  float:right;
-}
-.newTopicAddBtn {
-  text-align:center;
-}
-.newTopicAddBtn > button {
-  padding:0.5rem 0.75rem;
-  margin:1rem 0;
-  border:none;
-  color:#FFF;
-  background-color:#242424;
-  text-transform: capitalize;
-}
-.newTopicAddBtn > button:hover {
-  background-color: #444;
-}
-.dashboardTopicHeader {
-  font-size: 2rem;
-  text-align: center;
-  color:#FFF;
-}
-.itemsSelectedContainer {
-  margin:1rem auto;
-  padding:0.5rem 1rem;
-  width:78%;
-  height:1.25rem;
-  background-color:#242424;
-  color:#FFF;
-}
-.itemsSelected {
-  background-color:rgba(0,170,253,0.5);
-}
-.dashboardTopicList {
-  width: 80%;
-  margin: 1rem auto 0 auto;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-.dashboardTopicList > .dashboardTopicWrapper,
-.dashboardTopicList > .dashboardTopicWrapperEdit{
-  background-color: #333333;
-  color:#FFF;
-  flex-basis: 45%;
-  margin-top:2rem;
-  border:2px solid #242424;
-}
-.dashboardTopicList > .dashboardTopicWrapper:not(.topicButtonsContainer):hover {
-  background-color: #444;
-}
-.dashboardTopicList > .dashboardTopicWrapperSelected {
-  border:2px solid rgb(242,220,83);
-}
-.topicButtonsContainer {
-  width:100%;
-  height:32px;
-  background-color:#222;
-}
-.btnSelectTopic {
-  width:32px;
-  height:32px;
-  border:none;
-  background-image:url('../assets/svg/topicIcons.png');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position:-64px 0px;
-  background-color:initial;
-}
-.btnSelectTopicSelected {
-  background-position:-96px 0px;
-}
-.dashboardTopicList > .dashboardTopicWrapper a,
-.dashboardTopicList > .dashboardTopicWrapperEdit a {
-  text-decoration: none;
-}
-.dashboardTopicWrapper:hover .btnTopicEdit,
-.dashboardTopicWrapperEdit:hover .btnTopicEdit {
-  display: inline;
-}
-.dashboardTopicWrapper:hover .btnTopicDelete,
-.dashboardTopicWrapperEdit:hover .btnTopicDelete {
-  display: inline;
-}
-.dashboardTopicContainer {
-  display:flex;
-  height:10rem;
-}
-.topicImageContainer {
-  flex:1;
-  text-align: center;
-}
-.topicImageContainer img {
-  max-height:10rem;
-  max-width:100%;
-}
-.topicInfo {
-  flex:3;
-}
-.dashboardTopicFirstRow {
-  display: flex;
-}
-.topicName {
-  margin-left: 1rem;
-  margin-right: auto;
-  font-size: 2rem;
-}
-.topicDifficulty {
-  margin-top: 0.5rem;
-  margin-left: 1rem;
-}
-.topicButtons {
-  display: flex;
-  float:right;
-}
-.btnTopicEdit {
-  border: none;
-  margin-left: auto;
-  display: none;
-  width:32px;
-  height:32px;
-  background-color:#222;
-}
-.btnTopicEdit img {
-  width: 1rem;
-}
-.btnTopicDelete {
-  border: none;
-  width:32px;
-  height:32px;
-  display: none;
-  background-color:#222;
-}
-.btnTopicDelete img {
-  width: 1rem;
-}
-.topicDescription {
-  margin-top: 1rem;
-  margin-left: 1rem;
-  padding-bottom: 1rem;
-}
-.lblTopicName,
-.lblTopicName + input {
-  margin-top: 1.5rem;
-  margin-left: 1rem;
-}
-.lblTopicName + input {
-  background-color:#242424;
-  color:#FFF;
-  border:none;
-  padding:0.25rem;
-}
-.lblTopicDifficulty,
-.lblTopicDescription + select {
-  margin-top: 1.5rem;
-  margin-left: 1rem;
-}
-.lblTopicDifficulty + select {
-  background-color:#242424;
-  color:#FFF;
-  margin-left:1rem;
-  padding:0.25rem;
-  border:none;
-}
-.lblTopicDescription {
-  display: block;
-  margin-top: 1rem;
-  margin-left: 1rem;
-}
-.lblTopicDescription + textarea {
-  margin:1rem 0 1rem 1rem;
-  background-color:#242424;
-  color:#FFF;
-  border:none;
-  width:75%;
 }
 .dashboardTopicVideoPageContainer {
   background: rgb(37, 194, 194);
@@ -626,191 +180,4 @@
     rgba(13, 156, 223, 1) 100%
   );
   height: 100vh;
-}
-.dashboardTopicVideoHeader {
-  margin-top: 3rem;
-  font-size: 2rem;
-  text-align: center;
-}
-.dashboardVideosContainer {
-  display:flex;
-  margin-top:1rem;
-}
-.dashboardTopicLeft {
-  flex:1;
-  color:#FFF;
-}
-.dashboardTopicLeft > p:first-child {
-  text-align:center;
-  font-size:2rem;
-}
-.dashboardTopicLeft > p:first-child > a {
-  text-decoration:none;
-  font-size:2rem;
-  float:left;
-  margin-left:1rem;
-}
-.dashboardTopicLeft > p:last-child {
-  margin:0 1rem;
-}
-.dashboardTopicVideosList {
-  flex:1;
-  display: flex;
-  flex-wrap:wrap;
-  width: 80%;
-}
-.dashboardTopicVideoContainer {
-  display:flex;
-  background-color: #333;
-  color:#FFF;
-  min-height:100px;
-  height:fit-content;
-  width:100%;
-  flex-grow:100%;
-}
-.videoOptionsPanel {
-  display:flex;
-  flex-direction: column;
-  justify-content:space-evenly;
-  width:32px;
-  background-color:#111;
-  border-left:solid 2px #242424;
-  text-align:center;
-}
-.videoOptionsPanelSelected {
-  border-color:rgb(242,220,83);
-}
-.btnSelectVideo {
-  width:32px;
-  height:32px;
-  border:none;
-  background-image:url('../assets/svg/topicIcons.png');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position:-64px 0px;
-  background-color:initial;
-}
-.btnSelectVideoSelected {
-  background-position:-96px 0px;
-}
-.videoOptionsPanel button {
-  color:#fff;
-  background-color:initial;
-  border:none;
-}
-.videoOptionsPanel button:hover {
-  color:rgb(242,220,83);
-}
-.dashboardTopicVideosList > .dashboardTopicVideoContainer:first-child .videoOptionsPanel > p:first-child {
-  visibility: hidden;
-}
-.dashboardTopicVideosList > .dashboardTopicVideoContainer:last-child .videoOptionsPanel > p:last-child {
-  visibility: hidden;
-}
-.editVideoForm {
-  width:100%;
-}
-.editVideoForm > form {
-  flex:2;
-  margin:0.5rem 1rem;
-}
-.editVideoForm > form input {
-  color:#FFF;
-  background-color:#242424;
-  border:none;
-  padding:0.125rem 0.5rem;
-  width:20rem;
-}
-.editVideoForm > form textarea {
-  color:#FFF;
-  background-color:#242424;
-  border:none;
-  padding:0.25rem 0.5rem;
-  width:30rem;
-  height:2.5rem;
-  margin-top:0.5rem;
-}
-.editVideoButtons {
-  display:inline;
-  float:right;
-}
-.btnSaveEdit {
-  border:none;
-  background-color:#333;
-  background-image:url('/assets/svg/accept.png');
-  background-size: contain;
-  height:1rem;
-  width:1rem;
-  margin-right:0.5rem;
-}
-.btnCancelEdit {
-  border:none;
-  background-color:#333;
-  background-image:url('/assets/svg/cancel.png');
-  background-size: contain;
-  height:1rem;
-  width:1rem;
-}
-.videoThumbnailContainer {
-  min-width:180px;
-  background-size: contain;
-  background-repeat:no-repeat;
-}
-.displayVideoInfo {
-  width:100%;
-}
-.videoContentContainer {
-  width:100%;
-}
-.dashboardTopicVideoContainerFirstRow {
-  display: flex;
-  width:100%;
-}
-input.ytUrl {
-  width:50%;
-  padding:0.25rem;
-  color:#FFF;
-  background-color:#242424;
-  border:none;
-}
-.dashboardVideoTitle {
-  margin: 0.5rem auto 0 1rem;
-  font-weight: bold;
-}
-.btnVideoEdit {
-  padding:0.5rem;
-  border:none;
-  background-color: #333;
-  align-self:flex-end;
-}
-.btnVideoEdit img {
-  width:1rem;
-}
-.btnVideoDelete {
-  padding: 0.5rem;
-  border: none;
-  margin-right: 1rem;
-  background-color: #333;
-  align-self:flex-end;
-}
-.btnVideoDelete img {
-  width: 1rem;
-}
-.videoContentContainer > p:last-child {
-  margin:0 1rem;
-}
-.dashboardVideoDescription {
-  margin-top: 1rem;
-  margin-left: 1rem;
-}
-.dashboardVideoViewsLikes {
-  display: flex;
-  padding-bottom: 1rem;
-  margin-top: 1rem;
-}
-.dashboardVideoViews {
-  margin: 0 auto 0 1rem;
-}
-.dashboardVideoLikes {
-  margin-right: 1rem;
 }

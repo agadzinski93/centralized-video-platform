@@ -1,0 +1,66 @@
+.loggingContainer {
+    background-color:#242424;
+    height: 100vh;
+  }
+  .loggingFormContainer {
+    background-color:#333;
+    width: 40rem;
+    margin: 5rem auto 0;
+    padding: 2rem 2rem;
+    box-shadow: #333;
+  }
+  .loggingHeader {
+    color: #999;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: bold;
+  }
+  .loggingLabel {
+    display: block;
+    padding: 1rem 0 0.5rem 0;
+    text-transform: uppercase;
+    color: #999;
+    font-weight: bold;
+  }
+  .loggingText {
+    width: 98%;
+    height: 2rem;
+    background-color: #eee;
+    border: solid 1px #d8d8d9;
+    padding-left: 1%;
+  }
+  .loggingTextError {
+    border: solid 2px red;
+  }
+  .loggingTextErrorMessage {
+    display: none;
+    margin-top: 0.5rem;
+    color: red;
+  }
+  .loggingTextErrorMessageShow {
+    display: block;
+  }
+  .btnLogin {
+    width: 100%;
+    margin: 2rem 0 0.5rem 0;
+    padding: 0.5rem 0;
+    border: none;
+    background-color: #242424;
+    color: #fff;
+    text-transform: uppercase;
+  }
+  .btnLoginError {
+    background-color: #4f94aa;
+    pointer-events: none;
+  }
+  .signUpContainer {
+    width: 42rem;
+    margin: 0.5rem auto 0;
+    color: #fff;
+    text-align: right;
+  }
+  .signUpContainer a {
+    color: #fff;
+    text-decoration: none;
+  }

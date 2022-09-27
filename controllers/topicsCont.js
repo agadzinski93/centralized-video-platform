@@ -47,13 +47,14 @@ module.exports = {
     const topicName = escapeHTML(req.body.topic.name);
     const topicDifficulty = req.body.topic.difficulty;
     const topicDescription = escapeHTML(req.body.topic.description);
-
+    
     const result = await updateTopic(
       topicName,
       topicDifficulty,
       topicDescription,
       originalTopicName
     );
+    
     if (result instanceof AppError) return next(result);
     else {
       req.flash("success", "Topic Updated");

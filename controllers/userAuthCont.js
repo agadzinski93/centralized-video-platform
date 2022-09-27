@@ -23,7 +23,8 @@ module.exports = {
    * @param {*} res
    */
   renderLogin: (req, res) => {
-    res.render("login", { title: "Login", user: req.user });
+    const pageStyles = 'user/loginRegister.css';
+    res.render("login", { title: "Login", pageStyles, user: req.user });
   },
   /**
    * Logs in the user using Passport. If successful, redirect to originally requested URL
@@ -52,12 +53,13 @@ module.exports = {
     res.redirect("/");
   },
   /**
-   * Renders the Login Page
+   * Renders the Registration Page
    * @param {*} req
    * @param {*} res
    */
   renderRegistration: (req, res) => {
-    res.render("register", { title: "Register", user: req.user });
+    const pageStyles = 'user/loginRegister.css';
+    res.render("register", { title: "Register", pageStyles, user: req.user });
   },
   registerUser: async (req, res, next) => {
     if (containsHTML(req.body.reg.username))
@@ -152,7 +154,7 @@ module.exports = {
 
     pp.authenticate("local", {
       successRedirect: "/",
-      failureRedirect: "/register",
+      failureRedirect: "/auth/register",
       failureFlash: true,
     })(req, res, next);
   },

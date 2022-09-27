@@ -1,5 +1,9 @@
 <div class="dashboardTopicPageContainer">
   <div class="backdrop"></div>
+  <div class="modal displayNone">
+    <div class="spinner"></div>
+    <p class="modelText" id="modalText"></p>
+  </div>
   <%- include("../partials/navbar.ejs") %>
   <div class="dashboardOptionsContainer">
     <div class="createTopicContainer">
@@ -17,7 +21,7 @@
   </div>
   <div class="newTopicFormContainer">
     <h2 class="createTopicHeader">Add Video<button class="btnCancelNewTopic">X</button></h2>
-    <form action="/video/<%= user.username %>/<%= topicName %>/create" method="POST">
+    <form id="newVideoForm" action="/video/<%= user.username %>/<%= topicName %>/create" method="POST">
       <label for="ytUrl">Enter Video or Playlist URL</label>
       <input
         type="text"
@@ -38,7 +42,8 @@
   <div class="dashboardVideosContainer">
     <div class="dashboardTopicLeft">
       <p><a href="/user/<%=user.username%>/dashboard/">&larr;</a> <%=topic.name%></p>
-      <div><img src="<%=topic.image%>" alt=""></div>
+      <p><%=topic.difficulty%></p>
+      <div class="topicPageImageContainer" style="background-image: url('<%=topic.imageUrl%>');"></div>
       <p><%=topic.description%></p>
     </div>
     <% if (videos.length > 0) { %>
@@ -53,14 +58,12 @@
           <div class="videoThumbnailContainer" id="thumbnail<%=video.id%>" style="background-image:url('<%=video.thumbnail%>')">
           </div>
           <div class="editVideoForm displayNone" id="editVideoForm<%=video.id%>">
-            <form action="/video/<%=user.username%>/<%=video.topic%>/<%=video.id%>/edit" method="POST">
+            <form class="editForm" action="/video/<%=user.username%>/<%=video.topic%>/<%=video.id%>/edit" method="POST">
               <div class="firstRow">
                 <input id="editTitle<%=video.id%>" type="text" name="title" placeholder="<%=video.title%>">
                 <section class="editVideoButtons">
-                <button class="btnSaveEdit icon" id="btnSaveEdit<%=video.id%>"></button>
-                
-                <button class="btnCancelEdit icon" id="btnCancelEdit<%=video.id%>"></button>
-                
+                  <button class="btnSaveEdit icon" id="btnSaveEdit<%=video.id%>"></button>
+                  <button class="btnCancelEdit icon" id="btnCancelEdit<%=video.id%>"></button>
                 </section>
               </div>
               <textarea name="description" id="editDescription<%=video.id%>"><%=video.description%></textarea>
@@ -69,27 +72,36 @@
           <div class="displayVideoInfo displayFlex" id="displayVideoInfo<%=video.id%>">
             <div class="videoContentContainer">
               <div class="dashboardTopicVideoContainerFirstRow">
-                <p class="dashboardVideoTitle" id="vidTitle<%=video.id%>"><%= video.title %></p>
-                <button class="btnVideoEdit" id="btnVideoEdit<%=video.id%>">
-                  <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
-                  <span>Edit Video</span>
-                </button>
-                <form
-                  action="/video/<%= user.username %>/<%=topicName%>/<%=video.id%>/delete"
-                  method="POST"
-                >
-                  <button class="btnVideoDelete">
-                    <img class="icon" src="/assets/svg/trashBlack.svg" alt="delete" />
+                <p class="dashboardVideoTitle full" id="vidTitle<%=video.id%>"><a href="/lib/<%=video.topic%>/<%=video.url.substring(20)%>"><%= video.title %></a></p>
+                <p class="dashboardVideoTitle short"><a href="/lib/<%=video.topic%>/<%=video.url.substring(20)%>"><%= video.title %>...</a></p>
+                <div class="btnEditDelete">
+                  <button class="btnVideoEdit" id="btnVideoEdit<%=video.id%>">
+                    <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                    <span>Edit Video</span>
                   </button>
-                </form>
+                  <form
+                    class="deleteVideoForm"
+                    action="/video/<%= user.username %>/<%=topicName%>/<%=video.id%>/delete"
+                    method="POST"
+                  >
+                    <button class="btnVideoDelete">
+                      <img class="icon" src="/assets/svg/trashBlack.svg" alt="delete" />
+                    </button>
+                  </form>
+                </div>
               </div>
-              <p id="vidDescription<%=video.id%>"><%=video.description.substring(0, 100)%>...</p>
+              <div class="vidDescriptionContainer">
+                <p id="vidDescription<%=video.id%>" class="full"><%=video.description.substring(0, 100)%>...</p>
+                <p class="short"><%=video.description.substring(0, 50)%>...</p>
+              </div>
             </div>
           </div>
         </div>
         <% }%> 
         <%} else {%>
-          <h2>No Videos in Topic</h2>
+          <div class="dashboardTopicVideosList">
+            <h2>No Videos in Topic</h2>
+          </div>
       <% } %>
       </div>
   </div>
@@ -97,10 +109,53 @@
 </div>
 <script>
   let topics;
+  const toggleBackdrop = (enable = false, bgColor = "#000", opacity = '50%') => {
+    let backdrop = document.querySelector('.backdrop');
+    if (enable) {
+      backdrop.classList.remove('displayNone');
+    }
+    else {
+      backdrop.classList.add('displayNone');
+    }
+    backdrop.style.backgroundColor = bgColor;
+    backdrop.opacity = opacity;
+  };
+  const setModalText = (text = '') => {
+    document.getElementById('modalText').textContent = text;
+  };
+  const toggleModal = (enable = false, text = '') => {
+    let modal = document.querySelector('.modal');
+    if (enable) {
+      modal.classList.remove('displayNone');
+      setModalText(text);
+    }
+    else {
+      modal.classList.add('displayNone');
+      setModalText();
+    }
+  }
+
   const toggleNewTopicForm = () => {
     document.querySelector('.backdrop').classList.toggle('displayNone');
     document.querySelector('.newTopicFormContainer').classList.toggle('displayNone');
   };
+
+  const addNewVideoSubmitEvent = () => {
+    document.getElementById('newVideoForm').addEventListener('submit', (e) => {
+      document.querySelector('.newTopicFormContainer').classList.add('displayNone');
+      toggleBackdrop(true, '#fff', '10%');
+      toggleModal(true, 'Adding video(s). Please be patient.');
+    });
+  }
+  const addDeleteVideoSubmitEvents = () => {
+    let deleteVideoButtons = document.getElementsByClassName('deleteVideoForm');
+    for (let i = 0; i < deleteVideoButtons.length; i++) {
+      deleteVideoButtons[i].addEventListener('submit', () => {
+        toggleBackdrop(true, '#fff', '10%');
+        toggleModal(true, 'Deleting video. Please be patient.');
+      });
+    }
+  }
 
   const addEditEvent = (btn, btnCancelEdit) => {
     const vidId = btn.getAttribute('id').substring(12);
@@ -118,6 +173,15 @@
       document.getElementById(`displayVideoInfo${vidId}`).classList.toggle('displayNone');
       document.getElementById(`displayVideoInfo${vidId}`).classList.toggle('displayFlex');
     });
+
+    //Add backdrop and modal message when submitting an edit
+    let editForms = document.getElementsByClassName('editForm');
+    for (let i = 0; i < editForms.length; i++) {
+      editForms[i].addEventListener('submit', () => {
+        toggleBackdrop(true, '#FFF', '90%');
+        toggleModal(true, 'Editing video...');
+      });
+    }
   };
 
   const swapVideoInfo = (current, swap) => {
@@ -148,6 +212,8 @@
       for (let i = 0; i < upButtons.length; i++) {
         if (i === 0) {
           downButtons[i].addEventListener('click', async (e) => {
+            toggleBackdrop(true, '#FFF', '10%');
+            toggleModal(true, 'Swapping videos...');
             try {
               const currentVidId = downButtons[i].getAttribute('id').substring(8);
               const swapVidId = upButtons[i+1].getAttribute('id').substring(6);
@@ -168,12 +234,15 @@
               }
             }
             catch (err) {
-              alert(err);
             }
+            toggleBackdrop(false);
+            toggleModal(false);
           });
         }
         else if (i === upButtons.length - 1) {
           upButtons[i].addEventListener('click', async (e) => {
+            toggleBackdrop(true, '#FFF', '10%');
+            toggleModal(true, 'Swapping videos...');
             try {
               const currentVidId = upButtons[i].getAttribute('id').substring(6);
               const swapVidId = downButtons[i-1].getAttribute('id').substring(8);
@@ -194,12 +263,15 @@
                 swapVideoInfo(currentVidId, swapVidId);
               }
             } catch(err) {
-              alert(err);
             }
+            toggleBackdrop(false);
+            toggleModal(false);
           });
         }
         else {
           upButtons[i].addEventListener('click', async (e) => {
+            toggleBackdrop(true, '#FFF', '10%');
+            toggleModal(true, 'Swapping videos...');
             try {
               const currentVidId = upButtons[i].getAttribute('id').substring(6);
               const swapVidId = downButtons[i-1].getAttribute('id').substring(8);
@@ -219,10 +291,13 @@
                 swapVideoInfo(currentVidId, swapVidId);
               }
             } catch(err) {
-              alert(err);
             }
+            toggleBackdrop(false);
+            toggleModal(false);
           });
           downButtons[i].addEventListener('click', async (e) => {
+            toggleBackdrop(true, '#FFF', '10%');
+            toggleModal(true, 'Swapping videos...');
             try {
               const currentVidId = downButtons[i].getAttribute('id').substring(8);
               const swapVidId = upButtons[i+1].getAttribute('id').substring(6);
@@ -242,8 +317,9 @@
                 swapVideoInfo(currentVidId, swapVidId);
               }
             } catch(err) {
-              alert(err);
             }
+            toggleBackdrop(false);
+            toggleModal(false);
           });
         }
       }
@@ -330,26 +406,28 @@
       const selectVideoButtons = document.getElementsByClassName('btnSelectVideo');
       const panels = document.getElementsByClassName('videoOptionsPanel');
 
-      const currentlySelected = e.target.classList.contains('selectedAll');
+      if (selectVideoButtons.length >= 1) {
+        const currentlySelected = e.target.classList.contains('selectedAll');
       
-      if (!currentlySelected) {
-        e.target.classList.add('selectedAll');
-        document.getElementById('btnDeleteSelected').classList.add('deleteSelected');
-        for (let i = 0; i < selectVideoButtons.length; i++) {
-          selectVideoButtons[i].classList.add('btnSelectVideoSelected');
-          panels[i].classList.add('videoOptionsPanelSelected');
+        if (!currentlySelected) {
+          e.target.classList.add('selectedAll');
+          document.getElementById('btnDeleteSelected').classList.add('deleteSelected');
+          for (let i = 0; i < selectVideoButtons.length; i++) {
+            selectVideoButtons[i].classList.add('btnSelectVideoSelected');
+            panels[i].classList.add('videoOptionsPanelSelected');
+          }
+          toggleItemsSelected(true, selectVideoButtons.length);
         }
-        toggleItemsSelected(true, selectVideoButtons.length);
-      }
-      else {
-        e.target.classList.remove('selectedAll');
-        document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
-        for (let i = 0; i < selectVideoButtons.length; i++) {
-          selectVideoButtons[i].classList.remove('btnSelectVideoSelected');
-          panels[i].classList.remove('videoOptionsPanelSelected');
+        else {
+          e.target.classList.remove('selectedAll');
+          document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
+          for (let i = 0; i < selectVideoButtons.length; i++) {
+            selectVideoButtons[i].classList.remove('btnSelectVideoSelected');
+            panels[i].classList.remove('videoOptionsPanelSelected');
+          }
+          toggleItemsSelected(false, selectVideoButtons.length);
         }
-        toggleItemsSelected(false, selectVideoButtons.length);
-      }
+      }   
     });
   };
 
@@ -357,6 +435,8 @@
     document.getElementById('btnDeleteSelected').addEventListener('click', async (e) => {
       const selectedVideos = document.getElementsByClassName('btnSelectVideoSelected');
       if (selectedVideos.length > 0) {
+        toggleBackdrop(true, '#fff', '10%');
+        toggleModal(true, 'Deleting videos. Please be patient.');
         let videoList = new Array();
         for (let i = 0; i < selectedVideos.length; i++) {
           videoList.push(selectedVideos[i].getAttribute('id'));
@@ -383,6 +463,8 @@
         } catch(err) {
 
         }
+        toggleBackdrop(false);
+        toggleModal(false);
       }
     });
   };
@@ -393,6 +475,8 @@
 
     document.getElementById("btnCreateTopicForm").addEventListener("click", toggleNewTopicForm);
     document.querySelector('.btnCancelNewTopic').addEventListener("click", toggleNewTopicForm);
+
+    addNewVideoSubmitEvent();
 
     const editVideoButtons = document.getElementsByClassName('btnVideoEdit');
     const cancelEditVideoButtons = document.getElementsByClassName('btnCancelEdit');
@@ -409,6 +493,7 @@
     addSelectVideoEvents(selectVideoButtons);
     addSelectAllEvent();
 
+    addDeleteVideoSubmitEvents();
     addRemoveSelectedVideos();
     
     //document.getElementById('btnSelectAllTopics').addEventListener('click', toggleSelectAllTopics);

@@ -1,8 +1,44 @@
 
 <div class="homeContainer">
   <%- include("./partials/navbar.ejs") %>
-  <div class="homeTopSection">
-    <h1>Home Page</h1>
-    <a href="/lib">Browse</a>
+  <div class="homeRecentVideos">
+    <p class="recentVideosHeader">Recent Videos</p>
+    <div class="recentVideosContainer">
+      <%if (videos.length >= 1) {%>
+        <%for (let i = 0; i < videos.length; i++) {%>
+          <a class="recentVideoLink" href="/lib/<%=videos[i].topic%>/<%=videos[i].url.substring(20)%>">
+            <div class="recentVideo">
+              <div class="recentVideoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>
+              <%if (videos[i].title.length > 50) {%>
+                <p><%=videos[i].title.substring(0,50)%>...</p>
+              <%}else{%>
+                <p><%=videos[i].title%></p>
+              <%}%>
+              <p><%=videos[i].username%></p>
+            </div>
+          </a>
+        <%}%>
+      <%}%>
+    </div>
+  </div>
+  <div class="homeRecentTopics">
+    <p class="recentTopicsHeader">Recent Topics</p>
+    <div class="recentTopicsContainer">
+      <%if (topics.length > 1) {%>
+        <%for (let i = 0; i < topics.length; i++) {%>
+          <a class="recentTopicLink" href="/lib/<%=topics[i].name%>">
+            <div class="recentTopic">
+              <div class="recentTopicImage"></div>
+              <%if (topics[i].name.length > 50) {%>
+                <p><%=topics[i].name.substring(0,50)%>...</p>
+              <%}else{%>
+                <p><%=topics[i].name%></p>
+              <%}%>
+              <p><%=topics[i].username%></p>
+            </div>
+          </a>
+        <%}%>
+      <%}%>
+    </div>
   </div>
 </div>

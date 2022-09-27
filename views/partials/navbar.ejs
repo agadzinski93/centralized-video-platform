@@ -1,17 +1,23 @@
 <div class="navbar">
-    <ul>
-        <li><a href="/">Home</a></li>
-        <% if (user === undefined || user === null) { %>
-            <li><a href="/login">Login</a></li>
-            <li><a href="/register">Register</a></li>
-        <% } else { %>
-            <li><a href="/user/<%= user.username %>"><%= user.username %></a>
-                <ul class="userSubmenu">
-                    <a href="/user/<%= user.username %>/dashboard"><li>Dashboard</li></a>
-                    <a href="/user/<%= user.username %>/settings"><li>Settings</li></a>
-                    <a href="/logout"><li>Logout</li></a>
-                </ul>
-            </li>
-        <% } %>
-    </ul>
+    <div class="homeButton"><a href="/">Home</a></div>
+    <div class="searchContainer">
+        <form class="searchContainerForm" action="">
+            <input name="inputSearch" id="inputSearch" type="text" placeholder="Search Topics and Videos">
+        </form>
+    </div>
+    <%if (user === undefined || user === null) {%>
+        <div class="loginRegisterContainer">
+            <div class="loginButton"><a href="/auth/login">Login</a></div>
+            <div class="registerButton"><a href="/auth/register">Register</a></div>
+        </div>
+    <%}else{%>
+        <div class="userDropDownLinks">
+            <a href="/user/<%= user.username %>"><%= user.username %></a>
+            <ul class="userSubmenu">
+                <li><a href="/user/<%= user.username %>/dashboard">Dashboard</a></li>
+                <li><a href="/user/<%= user.username %>/settings">Settings</a></li>
+                <li><a href="/auth/logout">Logout</a></li>
+            </ul>
+        </div>
+    <%}%>
 </div>

@@ -1,0 +1,605 @@
+.dashboardTopicPageContainer {
+    background-color:#242424;
+    height: 100vh;
+  }
+  .dashboardOptionsContainer {
+    height:32px;
+    text-align:center;
+  }
+  .dashboardOptionsContainer > div {
+    display:inline;
+  }
+  .dashboardOptionsContainer button {
+    border:none;
+    width:32px;
+    height:32px;
+    color:#FFF;
+    background-color:initial;
+  }
+  .dashboardOptionsContainer > div:first-child button {
+    background-image: url('../../assets/svg/topicIcons.png');
+    background-position:0px 0px;
+    background-repeat:no-repeat;
+    background-size: cover;
+  }
+  .dashboardOptionsContainer > div:first-child button:hover {
+    background-image: url('../../assets/svg/topicIcons.png');
+    background-position:-32px 0px;
+    background-repeat:no-repeat;
+    background-size: cover;
+  }
+  .dashboardOptionsContainer > .selectAllTopicsContainer button {
+    background-image: url('../../assets/svg/topicIcons.png');
+    background-position:-192px 0px;
+    background-repeat:no-repeat;
+    background-size: cover;
+  }
+  .dashboardOptionsContainer > .selectAllTopicsContainer > .selectedAll {
+    background-image: url('../../assets/svg/topicIcons.png');
+    background-position:-224px 0px;
+    background-repeat:no-repeat;
+    background-size: cover;
+  }
+  .dashboardOptionsContainer > .deleteAllTopicsContainer button {
+    background-image: url('../../assets/svg/topicIcons.png');
+    background-position:-128px 0px;
+    background-repeat:no-repeat;
+    background-size: cover;
+  }
+  .dashboardOptionsContainer > .deleteAllTopicsContainer > .deleteSelected {
+    background-image: url('../../assets/svg/topicIcons.png');
+    background-position:-160px 0px;
+    background-repeat:no-repeat;
+    background-size: cover;
+  }
+  .newTopicFormContainer {
+    position:absolute;
+    left:0;
+    right:0;
+    width:36%;
+    padding:0 2%;
+    margin:3rem auto 0 auto;
+    background-color:#333;
+    color:#FFF;
+    z-index:1;
+  }
+  .createTopicHeader {
+    font-size:1.25rem;
+    text-align: center;
+  }
+  .btnCancelNewTopic {
+    padding:0.5rem 0.75rem;
+    float:right;
+    color:#FFF;
+    background-color:#242424;
+    border:none;
+  }
+  .btnCancelNewTopic:hover {
+    background-color:#444;
+  }
+  .newTopicFormContainer > h2 {
+    padding:1rem 0;
+  }
+  .newTopicNameContainer > input {
+    padding-left:1%;
+    margin-left:1%;
+    width:65%;
+    height:1.5rem;
+    color:#FFF;
+    background-color:#242424;
+    border:none;
+  }
+  .newTopicDifficultyContainer {
+    margin-top:1rem;
+  }
+  .newTopicDifficultyContainer > select {
+    margin-left:1%;
+    width:40%;
+    height:1.75rem;
+    color:#FFF;
+    background-color:#242424;
+    border:none;
+  }
+  .newTopicDescriptionContainer {
+    margin-top:1rem;
+  }
+  .newTopicDescriptionContainer > label {
+    display:block;
+  }
+  .newTopicDescriptionContainer > textarea {
+    margin-top:0.5rem;
+    width:99%;
+    height:8rem;
+    color:#FFF;
+    background-color:#242424;
+    border:none;
+  }
+  .newTopicDescriptionContainer > textarea:focus {
+    background-color:#242424;
+  }
+  .newTopicFileContainer {
+    margin:1rem 0;
+    width:100%;
+  }
+  .file-upload {
+    height:9rem;
+    background-color: #242424;
+    display:block;
+    text-align: center;
+  }
+  .file-upload > div {
+    padding-top:3.75rem;
+  }
+  .file-upload img {
+    max-height:7rem;
+    max-width:90%;
+    padding:1rem 0;
+  }
+  .file-upload:hover {
+    background-color:#444;
+  }
+  .fileSizeLimit {
+    float:right;
+  }
+  .newTopicAddBtn {
+    text-align:center;
+  }
+  .newTopicAddBtn > button {
+    padding:0.5rem 0.75rem;
+    margin:1rem 0;
+    border:none;
+    color:#FFF;
+    background-color:#242424;
+    text-transform: capitalize;
+  }
+  .newTopicAddBtn > button:hover {
+    background-color: #444;
+  }
+  .itemsSelectedContainer {
+    margin:1rem auto;
+    padding:0.5rem 1rem;
+    width:80%;
+    height:1.25rem;
+    background-color:#242424;
+    color:#FFF;
+  }
+  .itemsSelected {
+    background-color:rgba(0,170,253,0.5);
+  }
+  .dashboardTopicHeader {
+    font-size: 2rem;
+    text-align: center;
+    color:#FFF;
+  }
+  .dashboardTopicList {
+    width: 90%;
+    margin: 1rem auto 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .dashboardTopicList > .dashboardTopicWrapper,
+  .dashboardTopicList > .dashboardTopicWrapperEdit{
+    background-color: #333333;
+    color:#FFF;
+    flex-basis: 45%;
+    margin-top:2rem;
+    border:2px solid #242424;
+  }
+  .dashboardTopicList > .dashboardTopicWrapper:not(.topicButtonsContainer):hover {
+    background-color: #444;
+  }
+  .dashboardTopicList > .dashboardTopicWrapperSelected {
+    border:2px solid rgb(242,220,83);
+  }
+  .topicButtonsContainer {
+    width:100%;
+    height:32px;
+    background-color:#222;
+  }
+  .btnSelectTopic {
+    width:32px;
+    height:32px;
+    border:none;
+    background-image:url('../../assets/svg/topicIcons.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position:-64px 0px;
+    background-color:initial;
+  }
+  .btnSelectTopicSelected {
+    background-position:-96px 0px;
+  }
+  .dashboardTopicList > .dashboardTopicWrapper a,
+  .dashboardTopicList > .dashboardTopicWrapperEdit a {
+    text-decoration: none;
+  }
+  .dashboardTopicWrapper:hover .btnTopicEdit,
+  .dashboardTopicWrapperEdit:hover .btnTopicEdit {
+    display: inline;
+  }
+  .dashboardTopicWrapper:hover .btnTopicDelete,
+  .dashboardTopicWrapperEdit:hover .btnTopicDelete {
+    display: inline;
+  }
+  .dashboardTopicContainer {
+    display:flex;
+    height:10rem;
+  }
+  .topicImageContainer {
+    flex:1;
+    text-align: center;
+  }
+  .topicImageContainer img {
+    max-height:10rem;
+    max-width:100%;
+  }
+  .topicInfo {
+    flex:3;
+  }
+  .dashboardTopicFirstRow {
+    display: flex;
+  }
+  .topicName {
+    margin-left: 1rem;
+    margin-right: auto;
+    font-size: 2rem;
+  }
+  .topicDifficulty {
+    margin-top: 0.5rem;
+    margin-left: 1rem;
+  }
+  .topicButtons {
+    display: flex;
+    float:right;
+  }
+  .btnTopicEdit {
+    border: none;
+    margin-left: auto;
+    display: none;
+    width:32px;
+    height:32px;
+    background-color:#222;
+  }
+  .btnTopicEdit img {
+    width: 1rem;
+  }
+  .btnTopicDelete {
+    border: none;
+    width:32px;
+    height:32px;
+    display: none;
+    background-color:#222;
+  }
+  .btnTopicDelete img {
+    width: 1rem;
+  }
+  .topicDescription {
+    margin-top: 1rem;
+    margin-left: 1rem;
+    padding-bottom: 1rem;
+  }
+  .lblTopicName,
+  .lblTopicName + input {
+    margin-top: 1.5rem;
+    margin-left: 1rem;
+  }
+  .lblTopicName + input {
+    background-color:#242424;
+    color:#FFF;
+    border:none;
+    padding:0.25rem;
+  }
+  .editDifficultyContainer {
+    margin-top:1rem;
+  }
+  .lblTopicDifficulty,
+  .lblTopicDescription + select {
+    margin-top: 1.5rem;
+    margin-left: 1rem;
+  }
+  .lblTopicDifficulty + select {
+    background-color:#242424;
+    color:#FFF;
+    margin-left:1rem;
+    padding:0.25rem;
+    border:none;
+  }
+  .lblTopicDescription {
+    display: block;
+    margin-top: 1rem;
+    margin-left: 1rem;
+  }
+  .lblTopicDescription + textarea {
+    margin:1rem 0 1rem 1rem;
+    background-color:#242424;
+    color:#FFF;
+    border:none;
+    width:90%;
+  }
+  .dashboardTopicVideoHeader {
+    margin-top: 3rem;
+    font-size: 2rem;
+    text-align: center;
+  }
+  .dashboardVideosContainer {
+    display:flex;
+    margin-top:1rem;
+    height:calc(100vh - 12.75rem);
+    min-height:40rem;
+    background-color:inherit;
+  }
+  .dashboardTopicLeft {
+    flex:1;
+    color:#FFF;
+  }
+  .dashboardTopicLeft > p:first-child {
+    text-align:center;
+    font-size:2rem;
+  }
+  .dashboardTopicLeft > p:first-child > a {
+    text-decoration:none;
+    font-size:2rem;
+    float:left;
+    margin-left:1rem;
+  }
+  .dashboardTopicLeft > p:nth-child(2),
+  .dashboardTopicLeft > p:last-child {
+    margin:0 1rem;
+  }
+  .topicPageImageContainer {
+    height:150px;
+    width:400px;
+    margin:1rem auto;
+    background-repeat:no-repeat;
+    background-size: contain;
+    background-position: center;
+  }
+  .dashboardTopicVideosList {
+    flex:1;
+    display: flex;
+    flex-direction: column;
+    flex-wrap:nowrap;
+    width:80%;
+    overflow:auto;
+    height:100%;
+  }
+  .dashboardTopicVideosList > h2 {
+    text-align:center;
+    color:#FFF;
+  }
+  .dashboardTopicVideoContainer {
+    display:flex;
+    background-color: #333;
+    color:#FFF;
+    height:100px;
+    min-height:100px;
+    width:100%;
+    
+  }
+  .videoOptionsPanel {
+    display:flex;
+    flex-direction: column;
+    justify-content:space-evenly;
+    width:32px;
+    background-color:#111;
+    border-left:solid 2px #242424;
+    text-align:center;
+  }
+  .videoOptionsPanelSelected {
+    border-color:rgb(242,220,83);
+  }
+  .btnSelectVideo {
+    width:32px;
+    height:32px;
+    border:none;
+    background-image:url('../../assets/svg/topicIcons.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position:-64px 0px;
+    background-color:initial;
+  }
+  .btnSelectVideoSelected {
+    background-position:-96px 0px;
+  }
+  .videoOptionsPanel button {
+    color:#fff;
+    background-color:initial;
+    border:none;
+  }
+  .videoOptionsPanel button:hover {
+    color:rgb(242,220,83);
+  }
+  .dashboardTopicVideosList > .dashboardTopicVideoContainer:first-child .videoOptionsPanel > p:first-child {
+    visibility: hidden;
+  }
+  .dashboardTopicVideosList > .dashboardTopicVideoContainer:last-child .videoOptionsPanel > p:last-child {
+    visibility: hidden;
+  }
+  .editVideoForm {
+    width:100%;
+  }
+  .editVideoForm > form {
+    flex:2;
+    margin:0.5rem 1rem;
+  }
+  .editVideoForm > form input {
+    color:#FFF;
+    background-color:#242424;
+    border:none;
+    padding:0.125rem 0.5rem;
+    width:70%;
+    max-width:40rem;
+  }
+  .editVideoForm > form textarea {
+    color:#FFF;
+    background-color:#242424;
+    border:none;
+    padding:0.25rem 0.5rem;
+    width:95%;
+    max-width:40rem;
+    height:2.5rem;
+    margin-top:0.5rem;
+  }
+  .editVideoButtons {
+    display:inline;
+    float:right;
+  }
+  .btnSaveEdit {
+    border:none;
+    background-color:#333;
+    background-image:url('/assets/svg/accept.png');
+    background-size: contain;
+    height:1rem;
+    width:1rem;
+    margin-right:0.5rem;
+  }
+  .btnCancelEdit {
+    border:none;
+    background-color:#333;
+    background-image:url('/assets/svg/cancel.png');
+    background-size: contain;
+    height:1rem;
+    width:1rem;
+    margin-right:0.5rem;
+  }
+  .videoThumbnailContainer {
+    min-width:180px;
+    background-size:contain;
+    background-repeat:no-repeat;
+    background-position:left;
+  }
+  .displayVideoInfo {
+    width:100%;
+  }
+  .videoContentContainer {
+    width:100%;
+  }
+  .dashboardTopicVideoContainerFirstRow {
+    display: flex;
+    width:100%;
+  }
+  input.ytUrl {
+    width:50%;
+    padding:0.25rem;
+    color:#FFF;
+    background-color:#242424;
+    border:none;
+  }
+  .dashboardVideoTitle {
+    margin: 0.5rem auto 0 1rem;
+    font-weight: bold;
+  }
+  .dashboardVideoTitle > a {
+    text-decoration: none;
+  }
+  .btnEditDelete {
+    display:flex;
+    align-items:flex-start;
+    margin:0.5rem 0;
+  }
+  .btnVideoEdit {
+    border:none;
+    background-color: #333;
+  }
+  .btnVideoEdit img {
+    width:1rem;
+  }
+  .btnVideoDelete {
+    padding:1px 0.5rem 0 0.5rem;
+    border: none;
+    margin-right: 1rem;
+    background-color: #333;
+  }
+  .btnVideoDelete img {
+    width: 1rem;
+  }
+  .full {
+    margin-left:1rem;
+    display:block;
+  }
+  .short {
+    margin-left:1rem;
+    display:none;
+  }
+  .videoContentContainer > p:last-child {
+    margin:0 1rem;
+  }
+  .dashboardVideoDescription {
+    margin-top: 1rem;
+    margin-left: 1rem;
+  }
+  .dashboardVideoViewsLikes {
+    display: flex;
+    padding-bottom: 1rem;
+    margin-top: 1rem;
+  }
+  .dashboardVideoViews {
+    margin: 0 auto 0 1rem;
+  }
+  .dashboardVideoLikes {
+    margin-right: 1rem;
+  }
+  @media (min-width:1300px) {
+    .dashboardTopicList {
+      width: 90%;
+    }
+    .dashboardTopicList > .dashboardTopicWrapper,
+    .dashboardTopicList > .dashboardTopicWrapperEdit{
+      flex-basis: 30%;
+    }
+  }
+  @media (max-width:1100px) {
+    .newTopicFormContainer {
+      width:80%;
+    }
+    .dashboardTopicList {
+      width: 90%;
+    }
+    .dashboardTopicList > .dashboardTopicWrapper,
+    .dashboardTopicList > .dashboardTopicWrapperEdit{
+      flex-basis: 45%;
+    }
+    .dashboardVideosContainer {
+      flex-direction: column;
+    }
+    .dashboardTopicVideosList {
+      width:100%;
+      margin-top:1rem;
+    }
+    .dashboardTopicVideosList > h2 {
+      margin-top:3rem;
+    }
+  }
+  @media (max-width:800px) {
+    .searchContainer > .searchContainerForm > input {
+      width:90%;
+    }
+    .dashboardTopicList {
+      width: 90%;
+    }
+    .dashboardTopicList > .dashboardTopicWrapper,
+    .dashboardTopicList > .dashboardTopicWrapperEdit{
+      flex-basis: 100%;
+    }
+    input.ytUrl {
+      display:block;
+      width:95%;
+    }
+    .full {
+      display:none;
+    }
+    .short {
+      display:block;
+    }
+    .dashboardTopicVideoContainer {
+      height:80px;
+      min-height:80px;
+    }
+    .videoThumbnailContainer {
+      min-width:144px;
+    }
+    .editVideoForm > form textarea {
+      height:2rem;
+    }
+  }

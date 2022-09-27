@@ -1,0 +1,48 @@
+.homeContainer {
+    width:100%;
+    min-height:100vh;
+    background-color:#242424;
+    color:#FFF;
+}
+.recentVideosHeader,
+.recentTopicsHeader {
+    width:95%;
+    margin:1rem auto 0 auto;
+    font-size:1.25rem;
+    font-weight:bold;
+}
+.recentVideosContainer,
+.recentTopicsContainer {
+    display:flex;
+    flex-wrap: wrap;
+    width:95%;
+    margin:0 auto;
+}
+a.recentVideoLink,
+a.recentTopicLink {
+    display:block;
+    text-decoration:none;
+    margin-top:1rem;
+    width:16rem;
+    height:12rem;
+}
+a.recentVideoLink:not(:last-child),
+a.recentTopicLink:not(:last-child) {
+    margin-right:2rem;
+}
+.recentVideo > p:nth-child(2),
+.recentTopic > p:nth-child(2) {
+    margin:0.25rem 0;
+    font-weight:bold;
+}
+.recentVideoThumbnail {
+    width:100%;
+    height:8rem;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+.recentVideo > p:last-child,
+.recentTopic > p:last-child {
+    text-align:right;
+}

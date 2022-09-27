@@ -1,0 +1,36 @@
+<div class="topicContainer">
+  <%- include("../partials/navbar.ejs") %>
+  <div class="topicVideoContainer">
+    <div class="topicHeader">
+      <div class="topicTitleDifficulty">
+        <p class="libraryTopicTitle"><%= topic.name %></p>
+        <p class="libraryTopicDifficulty"><%= topic.difficulty %></p>
+      </div>
+      <div class="libraryTopicImage" >
+        <img src="<%=topic.imageUrl%>" alt="">
+      </div>
+      <p class="libraryTopicDescription"><%= topic.description %></p>
+    </div>
+    <div class="topicVideoList">
+      <% if (videos.length > 0) { %> 
+        <% for (video of videos) { %>
+          <a href="/lib/<%=topic.name%>/<%=video.url.substring(20)%>">
+            <div class="topicVideo">
+              <div class="topicVideoThumbnail" style="background-image:url('<%=video.thumbnail%>')"></div>
+              <div class="topicVideoInfoContainer">
+                <p class="topicVideoTitle"><%= video.title %></p>
+                <%if (video.description.length > 65) {%>
+                  <p class="topicVideoDescription"><%= video.description.substring(0,65) %>...</p>
+                <%}else{%>
+                  <p class="topicVideoDescription"><%= video.description %></p>
+                <%}%>
+              </div>
+            </div>
+        </a>
+        <%}%>
+      <% } else { %>
+        <h2>No Videos in this Playlist</h2>
+      <% } %>
+    </div>
+  </div>
+</div>

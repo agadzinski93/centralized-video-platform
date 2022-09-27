@@ -8,23 +8,29 @@ module.exports = {
     const user = await getUser(username);
     if (user instanceof AppError) return next(user);
 
+    let pageStyles = null;
+
     res.render("user/userPage", {
       title: `${user.username}'s Page`,
+      pageStyles,
       user: req.user,
     });
   },
   renderUserSettings: async (req, res) => {
     const username = escapeHTML(req.params.username);
     const user = await getUser(username);
+    let pageStyles = 'user/settings.css';
     if (user instanceof AppError) return next(user);
 
     res.render("user/settings", {
       title: `${user.username}'s Settings`,
+      pageStyles,
       user: req.user,
     });
   },
   renderUserDashboard: async (req, res, next) => {
     const { getUserTopics, getAllTopics, getTopic } = require("../utilities/helpers/topicHelpers");
+    const pageStyles = 'user/dashboard.css';
     const username = escapeHTML(req.params.username);
     const user = await getUser(username);
     if (user instanceof AppError) return next(user);
@@ -34,6 +40,7 @@ module.exports = {
 
     res.render("user/dashboard", {
       title: `${user.username}'s Dashboard`,
+      pageStyles,
       user,
       topics,
     });
@@ -41,6 +48,7 @@ module.exports = {
   renderUserTopic: async (req, res, next) => {
     const {getTopicVideos} = require("../utilities/helpers/videoHelpers");
     const {getTopic} = require("../utilities/helpers/topicHelpers");
+    const pageStyles = 'user/dashboard.css';
     const username = escapeHTML(req.params.username);
     const user = await getUser(username);
     if (user instanceof AppError) return next(user);
@@ -54,6 +62,7 @@ module.exports = {
 
     res.render('user/topic', {
       title: topicTitle, 
+      pageStyles,
       topicName, 
       topic:topic[0],
       user: req.user, 

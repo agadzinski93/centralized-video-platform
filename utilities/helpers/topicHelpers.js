@@ -28,8 +28,8 @@ module.exports = {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
       await db.execute(
-        `INSERT INTO topics (name, description, difficulty, username, imageUrl, filename) 
-        VALUES('${topicName}', '${topicDescription}', '${topicDifficulty}', '${username}', '${topicImage}', '${filename}')`
+        `INSERT INTO topics (name, description, difficulty, username, imageUrl, filename, dateCreated) 
+        VALUES('${topicName}', '${topicDescription}', '${topicDifficulty}', '${username}', '${topicImage}', '${filename}', NOW())`
       );
     } catch (err) {
       return new AppError(500, `Error creating topic: ${err.message}`);
@@ -62,11 +62,22 @@ module.exports = {
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
-      let topics = await db.execute(`SELECT name, description, difficulty 
+      let topics = await db.execute(`SELECT name, description, difficulty, imageUrl 
       FROM topics WHERE name = '${topic}' LIMIT 1`);
       return topics[0].map((o) => Object.assign({}, o));
     } catch (err) {
       return new AppError(500, `Error Retrieving Topic`);
+    }
+  },
+  getRecentTopic: async () => {
+    try {
+      const db = await getDatabase();
+      if (db instanceof AppError) return db;
+
+      let topics = await db.execute('SELECT * FROM topics ORDER BY dateCreated DESC LIMIT 14');
+      return topics[0].map(o => Object.assign({}, o));
+    } catch(err) {
+      return new AppError(500, 'Error Retrieving Recent Videos');
     }
   },
   updateTopic: async (
@@ -75,16 +86,16 @@ module.exports = {
     topicDescription,
     originalTopicName
   ) => {
-    const db = await getDatabase();
-    if (db instanceof AppError) return db;
-    await db.execute(
-      `UPDATE topics 
-      SET name = '${topicName}', difficulty = '${topicDifficulty}', description = '${topicDescription}'
-      WHERE name = '${originalTopicName}'`
-    );
     try {
+      const db = await getDatabase();
+      if (db instanceof AppError) return db;
+      await db.execute(
+        `UPDATE topics 
+        SET name = '${topicName}', difficulty = '${topicDifficulty}', description = '${topicDescription}'
+        WHERE name = '${originalTopicName}'`
+    );
     } catch (err) {
-      return new AppError(500, `Error Updating Topic`);
+      return new AppError(500, `Error Updating Topic: ${err.message}`);
     }
   },
   removeTopic: async (topic) => {

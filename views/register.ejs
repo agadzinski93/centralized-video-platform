@@ -1,39 +1,9 @@
-<!-- <%- include("./partials/navbar.ejs") %>
-<h1>Register</h1>
-<%- include("./partials/flashError.ejs") %>
-<form action="/register" method="POST">
-  <label for="username">Username: </label>
-  <input
-    name="reg[username]"
-    type="text"
-    placeholder="Enter username"
-    required
-  />
-  <label for="email">Email: </label>
-  <input name="reg[email]" type="email" placeholder="email" required />
-  <label for="password">Password: </label>
-  <input
-    name="reg[password]"
-    type="password"
-    placeholder="Enter password"
-    required
-  />
-  <label for="repeat_password">Password: </label>
-  <input
-    name="reg[repeat_password]"
-    type="password"
-    placeholder="Enter password"
-    required
-  />
-  <button>Register</button>
-</form> -->
-
 <div class="loggingContainer">
   <%- include("./partials/navbar.ejs") %>
   <div class="loggingFormContainer">
     <h1 class="loggingHeader">Sign Up</h1>
     <%- include("./partials/flashError.ejs") %>
-    <form action="/register" method="POST">
+    <form action="/auth/register" method="POST">
       <label class="loggingLabel" for="username">Username</label>
       <input
         name="reg[username]"
@@ -84,7 +54,7 @@
     </form>
   </div>
   <div class="signUpContainer">
-    <a href="/login">Already registered? Log In</a>
+    <a href="/auth/login">Already registered? Log In</a>
   </div>
 </div>
 
