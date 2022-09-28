@@ -67,7 +67,7 @@ app.use((err, req, res, next) => {
   res.locals.message = err.message;
   const status = err.status || 500;
   const pageStyles = null;
-  res.status(status).render("error", { title: `${status} Error`, pageStyles, user: req.user });
+  res.status(status).render("error", { title: `${status} Error`, status, pageStyles, user: req.user });
 });
 
 //Port
