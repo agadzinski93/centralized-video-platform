@@ -1,3 +1,162 @@
+<div class="backdrop displayNone"></div>
+<div class="modalDeleteAccount displayNone">
+    <h2>Are You Sure?<button id="btnCancelDeleteAcct" class="btnCancelDeleteAccount">X</button></h2>
+    <p>This action is unreversable and will:</p>
+    <ul>
+        <li>Delete your account</li>
+        <li>Delete all your topics</li>
+        <li>Delete all your videos</li>
+    </ul>
+    <div class="deleteAccountConfirm">
+        <form action="/user/<%=user.username%>/deleteAccount" method="POST"><button>Confirm Delete Account</button></form>
+    </div>
+</div>
 <%- include("../partials/navbar.ejs") %>
-<p><%= user.username %>'s Settings Page</p>
-<a href="/user/<%= user.username %>">Go Back</a>
+<div class="settingsPageContainer">
+    <h1><a href="/user/<%= user.username %>">&larr;</a> Settings</h1>
+    <div class="settingsContainer">
+        <h2>Refresh Metadata</h2>
+        <div class="settingContainer">Title</div>
+        <div class="settingButtonContainer">
+            <%if (user.settingRefreshTitle === 1) {%>
+                <button id="btnRefreshTitle" class="btnSetting btnSettingSelected"></button>
+            <%}else {%>
+                <button id="btnRefreshTitle" class="btnSetting"></button>
+            <%}%>
+        </div>
+        <div class="settingContainer">Description</div>
+        <div class="settingButtonContainer">
+            <%if (user.settingRefreshDescription === 1) {%>
+                <button id="btnRefreshDescription" class="btnSetting btnSettingSelected"></button>
+            <%}else {%>
+                <button id="btnRefreshDescription" class="btnSetting"></button>
+            <%}%>
+        </div>
+        <div class="settingContainer">Thumbnail</div>
+        <div class="settingButtonContainer">
+            <%if (user.settingRefreshThumbnail === 1) {%>
+                <button id="btnRefreshThumbnail" class="btnSetting btnSettingSelected"></button>
+            <%}else {%>
+                <button id="btnRefreshThumbnail" class="btnSetting"></button>
+            <%}%>
+        </div>
+    </div>
+    <div class="settingsContainer">
+        <div class="deleteAccountButtonContainer">
+            <button id="deleteAccountButton" class="deleteAccountButton">Delete Account</button>
+        </div>
+    </div>
+</div>
+<script>
+    const toggleBackdrop = (enable = false, bgColor = "#000", opacity = '50%') => {
+        let backdrop = document.querySelector('.backdrop');
+        if (enable) {
+            backdrop.classList.remove('displayNone');
+            document.querySelector('body').classList.add('overflowHidden');
+        }
+        else {
+            backdrop.classList.add('displayNone');
+            document.querySelector('body').classList.remove('overflowHidden');
+        }
+        backdrop.style.backgroundColor = bgColor;
+        backdrop.opacity = opacity;
+    };
+    const toggleDisplayDeleteModal = (enable = false) => {
+        let modalDeleteAccount = document.querySelector('.modalDeleteAccount');
+        if (enable) {
+            modalDeleteAccount.classList.remove('displayNone');
+        }
+        else {
+            modalDeleteAccount.classList.add('displayNone');
+        }
+    }
+    const toggleSettingSelected = (btn) => {
+        btn.classList.toggle('btnSettingSelected');
+    };
+    const setSettingsButtonEvents = () => {
+        document.getElementById('btnRefreshTitle').addEventListener('click', async (e) => {
+            let result;
+            let currentlyChecked = (e.target.classList.contains('btnSettingSelected')) ? '0' : '1';
+            try {
+                result = await fetch('/user/<%=user.username%>/settings/updateRefreshMetadata',{
+                    method:'PATCH',
+                    headers: {
+                        'Content-Type':'application/json',
+                    },
+                    body: JSON.stringify(
+                        {
+                            setting: 'Title',
+                            value:currentlyChecked,
+                        }
+                    )
+                });
+                toggleSettingSelected(e.target);
+            } catch(err) {
+                result = err;
+            }
+            const data = await result.json();
+        });
+        document.getElementById('btnRefreshDescription').addEventListener('click', async (e) => {
+            let result;
+            let currentlyChecked = (e.target.classList.contains('btnSettingSelected')) ? '0' : '1';
+            try {
+                result = await fetch('/user/<%=user.username%>/settings/updateRefreshMetadata',{
+                    method:'PATCH',
+                    headers: {
+                        'Content-Type':'application/json',
+                    },
+                    body: JSON.stringify(
+                        {
+                            setting: 'Description',
+                            value:currentlyChecked,
+                        }
+                    )
+                });
+                toggleSettingSelected(e.target);
+            } catch(err) {
+                result = err;
+            }
+            const data = await result.json();
+        });
+        document.getElementById('btnRefreshThumbnail').addEventListener('click', async (e) => {
+            let result;
+            let currentlyChecked = (e.target.classList.contains('btnSettingSelected')) ? '0' : '1';
+            try {
+                result = await fetch('/user/<%=user.username%>/settings/updateRefreshMetadata',{
+                    method:'PATCH',
+                    headers: {
+                        'Content-Type':'application/json',
+                    },
+                    body: JSON.stringify(
+                        {
+                            setting: 'Thumbnail',
+                            value:currentlyChecked,
+                        }
+                    )
+                });
+                toggleSettingSelected(e.target);
+            } catch(err) {
+                result = err;
+            }
+            const data = await result.json();
+        });
+    };
+    const addDeleteAccountEvent = () => {
+        let btnDeleteAcct = document.getElementById('deleteAccountButton');
+        btnDeleteAcct.addEventListener('click', (e) => {
+            toggleBackdrop(true, '#000', '50%');
+            toggleDisplayDeleteModal(true);
+        });
+
+        let btnCancelDeleteAcct = document.getElementById('btnCancelDeleteAcct');
+        btnCancelDeleteAcct.addEventListener('click', (e) => {
+            toggleBackdrop(false);
+            toggleDisplayDeleteModal(false);
+        });
+    }
+    const init = () => {
+        setSettingsButtonEvents();
+        addDeleteAccountEvent();
+    };
+    init();
+</script>

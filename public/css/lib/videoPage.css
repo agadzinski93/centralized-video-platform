@@ -4,7 +4,7 @@ body {
 .videoPageContainer {
     display:flex;
     width:100%;
-    height:calc(100vh - 3.25rem);
+    height:calc(100vh - 3.125rem);
     background-color:#242424;
 }
 .mainVideoContainer {
@@ -32,6 +32,7 @@ body {
     display:flex;
     flex-direction:column;
     margin-top:1rem;
+    min-height:41.5rem;
     width:75rem;
     overflow:auto;
 }

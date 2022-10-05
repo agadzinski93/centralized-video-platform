@@ -10,7 +10,7 @@
     box-shadow: #333;
   }
   .loggingHeader {
-    color: #999;
+    color: #DDD;
     font-size: 1.5rem;
     text-transform: uppercase;
     text-align: center;
@@ -20,7 +20,7 @@
     display: block;
     padding: 1rem 0 0.5rem 0;
     text-transform: uppercase;
-    color: #999;
+    color: #DDD;
     font-weight: bold;
   }
   .loggingText {
@@ -63,4 +63,15 @@
   .signUpContainer a {
     color: #fff;
     text-decoration: none;
+  }
+  @media (max-width:1200px) {
+    .loggingFormContainer {
+      width: 90%;
+      padding: 2rem 2%;
+    }
+    .signUpContainer {
+      width: 93%;
+      color: #fff;
+      text-align: right;
+    }
   }

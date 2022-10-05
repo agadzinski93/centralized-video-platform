@@ -44,7 +44,7 @@ module.exports = {
     })(req, res, next);
   },
   /**
-   * Renders the Login Page
+   * Logs the user out
    * @param {*} req
    * @param {*} res
    */

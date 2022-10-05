@@ -120,7 +120,7 @@ a.recentTopicLink {
         margin-right:1vw;
     }
 }
-@media (max-width:780px) {
+@media (min-width: 400px) and (max-width:780px) {
     .homeRecentVideos > p:first-child,
     .homeRecentTopics > p:first-child {
         text-align:center;
@@ -145,5 +145,32 @@ a.recentTopicLink {
     .recentVideoThumbnail,
     .recentTopicImage {
         height:14rem;
+    }
+}
+@media (max-width:400px) {
+    .homeRecentVideos > p:first-child,
+    .homeRecentTopics > p:first-child {
+        text-align:center;
+    }
+    a.long1,
+    a.long2,
+    a.long8
+    a.long9 {
+        display:none;
+    }
+    .recentVideosContainer,
+    .recentTopicsContainer {
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    a.recentVideoLink,
+    a.recentTopicLink {
+        margin-right:0 !important;
+        width:90vw;
+    }
+    .recentVideoThumbnail,
+    .recentTopicImage {
+        height:calc(90vw / 1.78);
     }
 }

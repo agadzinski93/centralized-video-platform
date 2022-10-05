@@ -1,6 +1,8 @@
 const AppError = require("../utilities/AppError");
 const { escapeHTML } = require("../utilities/helpers/sanitizers");
 const { getUser } = require("../utilities/helpers/authHelpers");
+const {updateRefreshSettings, deleteUser} = require("../utilities/helpers/userHelpers");
+const {logoutUser} = require("./userAuthCont");
 
 module.exports = {
   renderUserPage: async (req, res, next) => {
@@ -13,7 +15,7 @@ module.exports = {
     res.render("user/userPage", {
       title: `${user.username}'s Page`,
       pageStyles,
-      user: req.user,
+      user,
     });
   },
   renderUserSettings: async (req, res) => {
@@ -25,8 +27,27 @@ module.exports = {
     res.render("user/settings", {
       title: `${user.username}'s Settings`,
       pageStyles,
-      user: req.user,
+      user,
     });
+  },
+  updateRefreshMetadata: async (req,res) => {
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username);
+
+    let {setting} = req.body;
+    let {value} = req.body;
+
+    setting = escapeHTML(setting);
+    value = escapeHTML(value);
+    
+    let result = await updateRefreshSettings(user.user_id,setting, value);
+    
+    if (result instanceof AppError) {
+      res.json({test: 'error'});
+    }
+    else {
+      res.json({test: 'success'});
+    }
   },
   renderUserDashboard: async (req, res, next) => {
     const { getUserTopics, getAllTopics, getTopic } = require("../utilities/helpers/topicHelpers");
@@ -65,8 +86,18 @@ module.exports = {
       pageStyles,
       topicName, 
       topic:topic[0],
-      user: req.user, 
+      user, 
       videos
     });
-  }
+  },
+  deleteAccount: async (req,res,next) => {
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username);
+    if (user instanceof AppError) return next(user);
+
+    const result = await deleteUser(user.user_id);
+    if (result instanceof AppError) return next(result);
+
+    return next();
+  },
 };
