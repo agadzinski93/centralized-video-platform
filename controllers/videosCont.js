@@ -1,7 +1,7 @@
 const AppError = require("../utilities/AppError");
 const { escapeHTML } = require("../utilities/helpers/sanitizers");
 const {topicExists} = require("../utilities/helpers/topicHelpers");
-const {getVideoInfo, getPlaylistInfo, getPlaylistVideos, insertVideo, insertManyVideos,
+const {getVideos, getVideoInfo, getPlaylistInfo, getPlaylistVideos, insertVideo, insertManyVideos,
     videoExists, videoExistsInTopic, 
     modifyVideo, swapVideoRecords, 
     removeVideo, removeSelectedVideos} = require("../utilities/helpers/videoHelpers");
@@ -98,6 +98,27 @@ module.exports = {
         }
         else {
             res.json({body:'Video Doesn\'t Exist'});
+        }
+    },
+    refreshMetadata: async (req,res,next) => {
+        const {videos} = req.body;
+        let vidInfo,
+            vidInfos,
+            result,
+            finalResult = new Array();
+
+        vidInfos = await getVideos(videos);
+        for (let i = 0; i < vidInfos.length; i++) {
+            vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
+            result = await modifyVideo(videos[i], vidInfo.title, vidInfo.description, vidInfo.thumbnail);
+            if (result instanceof AppError) break;
+            finalResult.push(result);
+        }
+        if (result instanceof AppError) {
+            res.json({response: 'error'});
+        }
+        else {
+            res.json({finalResult});
         }
     },
     deleteVideo: async (req, res, next) => {

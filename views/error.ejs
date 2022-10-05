@@ -1,2 +1,4 @@
 <%- include("./partials/navbar.ejs") %>
-<p><%= message %></p>
+<div class="errorPageContainer">
+    <p class="errorMessage"><%=status%>: <%= message %></p>
+</div>

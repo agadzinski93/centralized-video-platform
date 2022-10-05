@@ -1,6 +1,6 @@
 .dashboardTopicPageContainer {
     background-color:#242424;
-    height: 100vh;
+    min-height:100vh;
   }
   .dashboardOptionsContainer {
     height:32px;
@@ -17,51 +17,53 @@
     background-color:initial;
   }
   .dashboardOptionsContainer > div:first-child button {
-    background-image: url('../../assets/svg/topicIcons.png');
+    background-image: url('../../assets/svg/topicIcons2.png');
     background-position:0px 0px;
     background-repeat:no-repeat;
-    background-size: cover;
+    
   }
   .dashboardOptionsContainer > div:first-child button:hover {
-    background-image: url('../../assets/svg/topicIcons.png');
+    background-image: url('../../assets/svg/topicIcons2.png');
     background-position:-32px 0px;
     background-repeat:no-repeat;
-    background-size: cover;
   }
   .dashboardOptionsContainer > .selectAllTopicsContainer button {
-    background-image: url('../../assets/svg/topicIcons.png');
+    background-image: url('../../assets/svg/topicIcons2.png');
     background-position:-192px 0px;
     background-repeat:no-repeat;
-    background-size: cover;
   }
   .dashboardOptionsContainer > .selectAllTopicsContainer > .selectedAll {
-    background-image: url('../../assets/svg/topicIcons.png');
+    background-image: url('../../assets/svg/topicIcons2.png');
     background-position:-224px 0px;
     background-repeat:no-repeat;
-    background-size: cover;
   }
   .dashboardOptionsContainer > .deleteAllTopicsContainer button {
-    background-image: url('../../assets/svg/topicIcons.png');
+    background-image: url('../../assets/svg/topicIcons2.png');
     background-position:-128px 0px;
     background-repeat:no-repeat;
-    background-size: cover;
   }
   .dashboardOptionsContainer > .deleteAllTopicsContainer > .deleteSelected {
-    background-image: url('../../assets/svg/topicIcons.png');
+    background-image: url('../../assets/svg/topicIcons2.png');
     background-position:-160px 0px;
     background-repeat:no-repeat;
-    background-size: cover;
   }
-  .newTopicFormContainer {
+  .newTopicFormContainer,
+  .newVideoFormContainer {
     position:absolute;
     left:0;
     right:0;
     width:36%;
     padding:0 2%;
-    margin:3rem auto 0 auto;
     background-color:#333;
     color:#FFF;
     z-index:1;
+    overflow:auto;
+  }
+  .newTopicFormContainer {
+    margin:calc(50vh - 18rem - 4.75rem) auto 0 auto;
+  }
+  .newVideoFormContainer {
+    margin:calc(50vh - 9rem - 0.5rem) auto 0 auto;
   }
   .createTopicHeader {
     font-size:1.25rem;
@@ -77,10 +79,12 @@
   .btnCancelNewTopic:hover {
     background-color:#444;
   }
-  .newTopicFormContainer > h2 {
+  .newTopicFormContainer > h2,
+  .newVideoFormContainer > h2 {
     padding:1rem 0;
   }
-  .newTopicNameContainer > input {
+  .newTopicNameContainer > input,
+  .newVideoFormContainer > input {
     padding-left:1%;
     margin-left:1%;
     width:65%;
@@ -201,9 +205,8 @@
     width:32px;
     height:32px;
     border:none;
-    background-image:url('../../assets/svg/topicIcons.png');
+    background-image:url('../../assets/svg/topicIcons2.png');
     background-repeat: no-repeat;
-    background-size: cover;
     background-position:-64px 0px;
     background-color:initial;
   }
@@ -393,9 +396,8 @@
     width:32px;
     height:32px;
     border:none;
-    background-image:url('../../assets/svg/topicIcons.png');
+    background-image:url('../../assets/svg/topicIcons2.png');
     background-repeat: no-repeat;
-    background-size: cover;
     background-position:-64px 0px;
     background-color:initial;
   }
@@ -550,8 +552,17 @@
     }
   }
   @media (max-width:1100px) {
-    .newTopicFormContainer {
+    .newTopicFormContainer,
+    .newVideoFormContainer {
       width:80%;
+    }
+    .newVideoFormContainer label {
+      display:block;
+      text-align:center;
+    }
+    .newVideoFormContainer input[type=text] {
+      margin-top:0.5rem;
+      width:100%;
     }
     .dashboardTopicList {
       width: 90%;
@@ -572,6 +583,16 @@
     }
   }
   @media (max-width:800px) {
+    .newTopicFormContainer {
+      width:95%;
+    }
+    .newVideoFormContainer {
+      width:95%;
+    }
+    .newVideoFormContainer label {
+      display:block;
+      text-align:center;
+    }
     .searchContainer > .searchContainerForm > input {
       width:90%;
     }
@@ -601,5 +622,17 @@
     }
     .editVideoForm > form textarea {
       height:2rem;
+    }
+  }
+  @media (max-height:35.25rem) {
+    .newTopicFormContainer {
+      margin:-5.125rem auto 0 auto;
+      height:100vh;
+    }
+  }
+  @media (max-height:9.25rem) {
+    .newVideoFormContainer {
+      margin:-5.125rem auto 0 auto;
+      height:100vh;
     }
   }

@@ -14,7 +14,6 @@ async function getConnection() {
   try {
     if (typeof db === 'undefined') {
       db = await mysql.createConnection({
-        //host: "rssd9243.webaccountserver.com",
         host: "localhost",
         port: 3306,
         database: "programminghelporg",

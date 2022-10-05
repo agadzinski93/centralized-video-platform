@@ -1,6 +1,6 @@
 .topicVideoContainer {
     display:flex;
-    height:calc(100vh - 3.25rem);
+    height:calc(100vh - 3.125rem);
     min-height:40rem;
     background-color:#242424;
 }

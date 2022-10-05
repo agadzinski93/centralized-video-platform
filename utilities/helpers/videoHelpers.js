@@ -39,6 +39,35 @@ module.exports = {
       return new AppError(500, "Error Retrieving Video");
     }
   },
+  getVideos: async (vidIds) => {
+    let video;
+    let input = ``;
+    try {
+      const db = await getDatabase();
+      if (db instanceof AppError) return db;
+
+      for (let i = 0; i < vidIds.length; i++) {
+        if (i === 0) {
+          input += `${vidIds[i]}`;
+        }
+        else {
+          input += `,${vidIds[i]}`;
+        }
+      }
+      
+      let videos = await db.execute(`SELECT url FROM videos WHERE id IN (${input})`);
+
+      let videoInfo = videos[0].map((v) => Object.assign({}, v));
+      if (videoInfo.length < 1) {
+        return new AppError(400, "Video Doesn't Exist");
+      }
+      else {
+        return videos[0].map((v) => Object.assign({}, v));
+      }
+    } catch(err) {
+      return new AppError(500, "Error Retrieving Video");
+    }
+  },
   getRecentVideos: async () => {
     try {
       const db = await getDatabase();
@@ -235,7 +264,7 @@ module.exports = {
       return new AppError(500, `Error Adding Videos: ${err.message}`);
     }
   },
-  modifyVideo: async (id, title, description) => {
+  modifyVideo: async (id, title, description, thumbnail = null) => {
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
@@ -243,9 +272,14 @@ module.exports = {
       title = escapeSQL(title);
       description = escapeSQL(description);
 
-      await db.execute(`UPDATE videos SET title = '${title}', description = '${description}' WHERE id = ${id}`);
+      if (thumbnail === null) {
+        await db.execute(`UPDATE videos SET title = '${title}', description = '${description}' WHERE id = ${id}`);
+      }
+      else {
+        await db.execute(`UPDATE videos SET title = '${title}', description = '${description}', thumbnail = '${thumbnail}' WHERE id = ${id}`);
+      }
 
-      return null;
+      return {title, description, thumbnail};
     } catch(err) {
       return new AppError(500, `Error Updating Video: ${err.message}`);
     }

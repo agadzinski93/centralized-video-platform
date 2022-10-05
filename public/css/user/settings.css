@@ -1,0 +1,118 @@
+.settingsPageContainer {
+    width:100%;
+    height:calc(100vh - 3.125rem);
+    background-color:#242424;
+    color:#FFF;
+}
+.settingsPageContainer > h1 {
+    padding-top:1rem;
+    text-align:center;
+    font-size:2rem;
+}
+.settingsPageContainer a {
+    text-decoration:none;
+    font-size:2rem;
+}
+.settingsContainer {
+    display:flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width:90%;
+    margin:0 auto;
+    padding:1rem 0;
+    background-color:#1E1E1E;
+}
+.settingsContainer:not(:first-child) {
+    margin-top:1rem;
+}
+.settingsContainer > h2 {
+    width:100%;
+    padding-bottom:1rem;
+    text-align:center;
+}
+.settingContainer {
+    width:calc(50% - 1rem);
+    padding-right:1rem;
+    text-align:right;
+}
+.settingButtonContainer {
+    width:calc(50% - 1rem);
+    padding-left:1rem;
+}
+.btnSetting {
+    height:32px;
+    width:64px;
+    border:none;
+    background-image:url('../../assets/svg/topicIcons2.png');
+    background-repeat:no-repeat;
+    background-position:0px -32px;
+    background-color:initial;
+}
+.btnSetting.btnSettingSelected {
+    background-position:-64px -32px;
+}
+.deleteAccountButtonContainer {
+    width:100%;
+    text-align:center;
+}
+.deleteAccountButton,
+.deleteAccountConfirm button {
+    padding:0.25rem 0.5rem;
+    background-color:red;
+    color:#FFF;
+    border:none;
+    text-transform: uppercase;
+    font-weight:bold;
+}
+.modalDeleteAccount {
+    position:absolute;
+    left:0;
+    right:0;
+    width:50%;
+    margin:calc(50vh - 6.875rem) auto;
+    background-color:#333;
+    color:#FFF;
+    overflow:auto;
+}
+.modalDeleteAccount > h2 > .btnCancelDeleteAccount {
+    padding:0.5rem 0.75rem;
+    margin-right:1rem;
+    float:right;
+    color:#FFF;
+    background-color:#242424;
+    border:none;
+}
+.modalDeleteAccount > h2 > .btnCancelDeleteAccount:hover {
+    background-color:#444;
+}
+.modalDeleteAccount > h2 {
+    padding:1rem 0;
+    margin-left:3rem;
+    text-align:center;
+    font-size:1.5rem;
+}
+.modalDeleteAccount > p {
+    text-align:center;
+}
+.modalDeleteAccount > ul {
+    text-align:center;
+    margin:0.5rem 0;
+}
+.modalDeleteAccount li {
+    margin:0.5rem 0;
+}
+.deleteAccountConfirm {
+    margin:1rem auto;
+    text-align:center;
+}
+@media (max-width: 1100px) {
+    .modalDeleteAccount {
+        width:90%;
+    }
+}
+@media (max-height:14rem) {
+    .modalDeleteAccount {
+        margin:0 auto;
+        height:100vh;
+    }
+}

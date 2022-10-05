@@ -18,8 +18,12 @@
       <button id="btnDeleteSelected" class="icon iconLarge"></button>
     <span>Delete Selected</span>
     </div>
+    <div class="refreshMetadataContainer">
+      <button id="btnRefreshMetadata" class="icon iconLarge">R</button>
+    <span>Refresh Metadata</span>
+    </div>
   </div>
-  <div class="newTopicFormContainer">
+  <div class="newVideoFormContainer">
     <h2 class="createTopicHeader">Add Video<button class="btnCancelNewTopic">X</button></h2>
     <form id="newVideoForm" action="/video/<%= user.username %>/<%= topicName %>/create" method="POST">
       <label for="ytUrl">Enter Video or Playlist URL</label>
@@ -92,7 +96,7 @@
               </div>
               <div class="vidDescriptionContainer">
                 <p id="vidDescription<%=video.id%>" class="full"><%=video.description.substring(0, 100)%>...</p>
-                <p class="short"><%=video.description.substring(0, 50)%>...</p>
+                <p id="vidDescription<%=video.id%>Short" class="short"><%=video.description.substring(0, 50)%>...</p>
               </div>
             </div>
           </div>
@@ -109,6 +113,34 @@
 </div>
 <script>
   let topics;
+  const flashBanner = (type = 'success', text = '') => {
+    let flash;
+    let newFlash;
+    let referenceNode = document.querySelector('.itemsSelectedContainer');
+    switch(type) {
+      case 'success':
+        flash = document.querySelector('.flashSuccess');
+        if (flash !== null) {
+          flash.remove();
+        }
+        newFlash = document.createElement('div');
+        newFlash.textContent = text;
+        newFlash.classList.add('flashSuccess');
+        referenceNode.parentNode.insertBefore(newFlash, referenceNode);
+        break;
+      case 'error':
+        flash = document.querySelector('.flashError');
+        if (flash !== null) {
+          flash.remove();
+        }
+        newFlash = document.createElement('div');
+        newFlash.textContent = text;
+        newFlash.classList.add('flashError');
+        referenceNode.parentNode.insertBefore(newFlash, referenceNode);
+        break;
+      default:
+    }
+  };
   const toggleBackdrop = (enable = false, bgColor = "#000", opacity = '50%') => {
     let backdrop = document.querySelector('.backdrop');
     if (enable) {
@@ -137,12 +169,13 @@
 
   const toggleNewTopicForm = () => {
     document.querySelector('.backdrop').classList.toggle('displayNone');
-    document.querySelector('.newTopicFormContainer').classList.toggle('displayNone');
+    document.querySelector('.newVideoFormContainer').classList.toggle('displayNone');
+    document.querySelector('body').classList.toggle('overflowHidden');
   };
 
   const addNewVideoSubmitEvent = () => {
     document.getElementById('newVideoForm').addEventListener('submit', (e) => {
-      document.querySelector('.newTopicFormContainer').classList.add('displayNone');
+      document.querySelector('.newVideoFormContainer').classList.add('displayNone');
       toggleBackdrop(true, '#fff', '10%');
       toggleModal(true, 'Adding video(s). Please be patient.');
     });
@@ -232,6 +265,7 @@
               if (data == null) {
                 swapVideoInfo(currentVidId, swapVidId);
               }
+              //flashBanner('success', 'Successfully swapped videos');
             }
             catch (err) {
             }
@@ -266,6 +300,7 @@
             }
             toggleBackdrop(false);
             toggleModal(false);
+            //flashBanner('success', 'Successfully swapped videos');
           });
         }
         else {
@@ -294,6 +329,7 @@
             }
             toggleBackdrop(false);
             toggleModal(false);
+            //flashBanner('success', 'Successfully swapped videos');
           });
           downButtons[i].addEventListener('click', async (e) => {
             toggleBackdrop(true, '#FFF', '10%');
@@ -320,6 +356,7 @@
             }
             toggleBackdrop(false);
             toggleModal(false);
+            //flashBanner('success', 'Successfully swapped videos');
           });
         }
       }
@@ -459,6 +496,51 @@
             }
             document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
             toggleItemsSelected();
+            flashBanner('success', `Sucessfully deleted ${videoList.length} videos`);
+          }
+        } catch(err) {
+
+        }
+        toggleBackdrop(false);
+        toggleModal(false);
+      }
+    });
+  };
+  const addRefreshMetadataEvent = () => {
+    let btnRefresh = document.getElementById('btnRefreshMetadata');
+    btnRefresh.addEventListener('click', async () => {
+      let selectedVideos = document.getElementsByClassName('btnSelectVideoSelected');
+      if (selectedVideos.length > 0) {
+        toggleBackdrop(true, '#fff', '10%');
+        toggleModal(true, 'Refreshing metadata. Hold on a moment.');
+        let videoList = new Array();
+        for (let i = 0; i < selectedVideos.length; i++) {
+          videoList.push(selectedVideos[i].getAttribute('id'));
+        }
+        try {
+          const result = await fetch('/video/<%=user.username%>/refreshMetadata', {
+            method:'PUT',
+            headers: {
+              'Content-Type':'application/json',
+            },
+            body: JSON.stringify({
+              videos:videoList,
+            })
+          });
+          
+          const data = await result.json();
+          
+          if (data.status !== 'error') {
+            let currentElement;
+            for (let i = 0; i < videoList.length; i++) {
+              document.getElementById(`vidTitle${videoList[i]}`).textContent = data.finalResult[i].title;
+              document.getElementById(`vidDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,100);
+              document.getElementById(`vidDescription${videoList[i]}Short`).textContent = data.finalResult[i].description.substring(0,50);
+              document.getElementById(`thumbnail${videoList[i]}`).style.backgroundImage = `url('${data.finalResult[i].thumbnail}')`;
+              document.getElementById(`editTitle${videoList[i]}`).setAttribute('placeholder', data.finalResult[i].title);
+              document.getElementById(`editDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,1023);
+            }
+            flashBanner('success', `Sucessfully refreshed ${videoList.length} videos`);
           }
         } catch(err) {
 
@@ -471,7 +553,7 @@
   
   const init = () => {
     document.querySelector('.backdrop').classList.toggle('displayNone');
-    document.querySelector('.newTopicFormContainer').classList.add('displayNone');
+    document.querySelector('.newVideoFormContainer').classList.add('displayNone');
 
     document.getElementById("btnCreateTopicForm").addEventListener("click", toggleNewTopicForm);
     document.querySelector('.btnCancelNewTopic').addEventListener("click", toggleNewTopicForm);
@@ -495,13 +577,7 @@
 
     addDeleteVideoSubmitEvents();
     addRemoveSelectedVideos();
-    
-    //document.getElementById('btnSelectAllTopics').addEventListener('click', toggleSelectAllTopics);
-
-    //document.getElementById('btnDeleteSelected').addEventListener('click', deleteSelectedTopics);
-
-    //addTopicSelectEvents();
-    //topicImageEvent();
+    addRefreshMetadataEvent();
   };
 
   init();
