@@ -70,7 +70,7 @@
                   <button class="btnCancelEdit icon" id="btnCancelEdit<%=video.id%>"></button>
                 </section>
               </div>
-              <textarea name="description" id="editDescription<%=video.id%>"><%=video.description%></textarea>
+              <textarea name="description" id="editDescription<%=video.id%>" maxlength="1024"><%=video.description%></textarea>
             </form>
           </div>
           <div class="displayVideoInfo displayFlex" id="displayVideoInfo<%=video.id%>">
@@ -265,7 +265,6 @@
               if (data == null) {
                 swapVideoInfo(currentVidId, swapVidId);
               }
-              //flashBanner('success', 'Successfully swapped videos');
             }
             catch (err) {
             }
@@ -533,12 +532,18 @@
           if (data.status !== 'error') {
             let currentElement;
             for (let i = 0; i < videoList.length; i++) {
-              document.getElementById(`vidTitle${videoList[i]}`).textContent = data.finalResult[i].title;
-              document.getElementById(`vidDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,100);
-              document.getElementById(`vidDescription${videoList[i]}Short`).textContent = data.finalResult[i].description.substring(0,50);
-              document.getElementById(`thumbnail${videoList[i]}`).style.backgroundImage = `url('${data.finalResult[i].thumbnail}')`;
-              document.getElementById(`editTitle${videoList[i]}`).setAttribute('placeholder', data.finalResult[i].title);
-              document.getElementById(`editDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,1023);
+              if (data.finalResult[i].title !== null) {
+                document.getElementById(`vidTitle${videoList[i]}`).textContent = data.finalResult[i].title;
+                document.getElementById(`editTitle${videoList[i]}`).setAttribute('placeholder', data.finalResult[i].title);
+              }
+              if (data.finalResult[i].description !== null) {
+                document.getElementById(`vidDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,100);
+                document.getElementById(`vidDescription${videoList[i]}Short`).textContent = data.finalResult[i].description.substring(0,50);
+                document.getElementById(`editDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,1023);
+              }
+              if (data.finalResult[i].thumbnail !== null) {
+                document.getElementById(`thumbnail${videoList[i]}`).style.backgroundImage = `url('${data.finalResult[i].thumbnail}')`;
+              }
             }
             flashBanner('success', `Sucessfully refreshed ${videoList.length} videos`);
           }

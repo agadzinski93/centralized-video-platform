@@ -256,7 +256,7 @@ module.exports = {
         }
       }
     
-      await db.execute(`INSERT IGNORE INTO videos (title, url, description, views, thumbnail, topic, username) 
+      let result = await db.execute(`INSERT IGNORE INTO videos (title, url, description, views, thumbnail, topic, username) 
             VALUES ${values}`);
 
       return null;
@@ -264,19 +264,52 @@ module.exports = {
       return new AppError(500, `Error Adding Videos: ${err.message}`);
     }
   },
+  /**
+   * 
+   * @param {int} id - id of video
+   * @param {string} title - title of video
+   * @param {string} description - description of video
+   * @param {string} thumbnail - url of thumbnail
+   * @returns 
+   */
   modifyVideo: async (id, title, description, thumbnail = null) => {
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      title = escapeSQL(title);
-      description = escapeSQL(description);
-
-      if (thumbnail === null) {
-        await db.execute(`UPDATE videos SET title = '${title}', description = '${description}' WHERE id = ${id}`);
+      if (title !== null) {
+        title = escapeSQL(title);
+        if (description !== null) {
+          description = escapeSQL(description);
+        }
       }
-      else {
-        await db.execute(`UPDATE videos SET title = '${title}', description = '${description}', thumbnail = '${thumbnail}' WHERE id = ${id}`);
+
+      if (title !== null) {
+        if (description !== null) {
+          if (thumbnail !== null) {
+            await db.execute(`UPDATE videos SET title = '${title}', description = '${description}', thumbnail = '${thumbnail}' WHERE id = ${id}`);
+          }
+          else {
+            await db.execute(`UPDATE videos SET title = '${title}', description = '${description}' WHERE id = ${id}`);
+          }
+        }
+        else if (thumbnail !== null) {
+          await db.execute(`UPDATE videos SET title = '${title}', thumbnail = '${thumbnail}' WHERE id = ${id}`);
+        }
+        else {
+          await db.execute(`UPDATE videos SET title = '${title}' WHERE id = ${id}`);
+        }
+      }
+      else if (description !== null) {
+        if (thumbnail !== null) {
+          await db.execute(`UPDATE videos SET description = '${description}', thumbnail = '${thumbnail}' WHERE id = ${id}`);
+        }
+        else {
+          await db.execute(`UPDATE videos SET description = '${description}' WHERE id = ${id}`);
+        }
+      }
+      else if (thumbnail !== null) {
+        await db.execute(`UPDATE videos SET thumbnail = '${thumbnail}' WHERE id = ${id}`);
       }
 
       return {title, description, thumbnail};
