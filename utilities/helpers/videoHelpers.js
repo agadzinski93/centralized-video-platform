@@ -80,6 +80,32 @@ module.exports = {
       return new AppError(500, "Error Retrieving Videos");
     }
   },
+  searchVideos: async (q) => {
+    try {
+      const db = await getDatabase();
+      if (db instanceof AppError) return db;
+
+      let videos = await db.execute(`SELECT * FROM videos WHERE title LIKE '%${q}%' LIMIT 20`);
+
+      return videos[0].map((v) => Object.assign({}, v));
+    } catch(err) {
+      return new AppError(500, "Error Retrieving Videos");
+    }
+  },
+  getMoreVideos: async (q,pageNumber) => {
+    try {
+      const db = await getDatabase();
+      if (db instanceof AppError) return db;
+
+      const skip = pageNumber * 20;
+
+      let videos = await db.execute(`SELECT * FROM videos WHERE title LIKE '%${q}%' LIMIT 20 OFFSET ${skip}`);
+
+      return videos[0].map((v) => Object.assign({}, v));
+    } catch(err) {
+      return new AppError(500, "Error Retrieving Videos");
+    }
+  },
   getVideoInfo: async (vidId) => {
     let result;
 
@@ -256,7 +282,7 @@ module.exports = {
         }
       }
     
-      await db.execute(`INSERT IGNORE INTO videos (title, url, description, views, thumbnail, topic, username) 
+      let result = await db.execute(`INSERT IGNORE INTO videos (title, url, description, views, thumbnail, topic, username) 
             VALUES ${values}`);
 
       return null;
@@ -264,19 +290,52 @@ module.exports = {
       return new AppError(500, `Error Adding Videos: ${err.message}`);
     }
   },
+  /**
+   * 
+   * @param {int} id - id of video
+   * @param {string} title - title of video
+   * @param {string} description - description of video
+   * @param {string} thumbnail - url of thumbnail
+   * @returns 
+   */
   modifyVideo: async (id, title, description, thumbnail = null) => {
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      title = escapeSQL(title);
-      description = escapeSQL(description);
-
-      if (thumbnail === null) {
-        await db.execute(`UPDATE videos SET title = '${title}', description = '${description}' WHERE id = ${id}`);
+      if (title !== null) {
+        title = escapeSQL(title);
+        if (description !== null) {
+          description = escapeSQL(description);
+        }
       }
-      else {
-        await db.execute(`UPDATE videos SET title = '${title}', description = '${description}', thumbnail = '${thumbnail}' WHERE id = ${id}`);
+
+      if (title !== null) {
+        if (description !== null) {
+          if (thumbnail !== null) {
+            await db.execute(`UPDATE videos SET title = '${title}', description = '${description}', thumbnail = '${thumbnail}' WHERE id = ${id}`);
+          }
+          else {
+            await db.execute(`UPDATE videos SET title = '${title}', description = '${description}' WHERE id = ${id}`);
+          }
+        }
+        else if (thumbnail !== null) {
+          await db.execute(`UPDATE videos SET title = '${title}', thumbnail = '${thumbnail}' WHERE id = ${id}`);
+        }
+        else {
+          await db.execute(`UPDATE videos SET title = '${title}' WHERE id = ${id}`);
+        }
+      }
+      else if (description !== null) {
+        if (thumbnail !== null) {
+          await db.execute(`UPDATE videos SET description = '${description}', thumbnail = '${thumbnail}' WHERE id = ${id}`);
+        }
+        else {
+          await db.execute(`UPDATE videos SET description = '${description}' WHERE id = ${id}`);
+        }
+      }
+      else if (thumbnail !== null) {
+        await db.execute(`UPDATE videos SET thumbnail = '${thumbnail}' WHERE id = ${id}`);
       }
 
       return {title, description, thumbnail};

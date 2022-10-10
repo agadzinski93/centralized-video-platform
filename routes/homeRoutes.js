@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router({caseSensitive:false, strict:false});
-const {renderHome, renderSearch} = require('../controllers/homeCont');
+const {renderHome, renderSearch, getMoreResults} = require('../controllers/homeCont');
 
 router.get('/', renderHome);
 
-router.get('/search', renderSearch);
+router.route('/search')
+    .get(renderSearch)
+    .post(getMoreResults);
 
 module.exports = router;

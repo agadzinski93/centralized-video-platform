@@ -18,7 +18,7 @@
           <%for (let i = 0;i < videos.length; i++) {%>
             <a href="/lib/<%=videos[i].topic%>/<%=videos[i].url.substring(20)%>">
               <% if (video.id === videos[i].id) {%>
-                <div class="playlistVideoContainer playlistVideoContainerSelected">
+                <div class="playlistVideoContainer playlistVideoContainerSelected" id="selectedVideo">
                   <div class="playlistVideoImageContainer" style="background-image: url('<%=videos[i].thumbnail%>');">
                   </div>
                   <div class="playlistVideoInfoContainer">
@@ -58,4 +58,9 @@
       </div>
     </div>
 </div>
-  
+  <script>
+    const init = () => {
+      document.getElementById('selectedVideo').scrollIntoView(true);
+    }
+    init();
+  </script>

@@ -23,6 +23,9 @@ module.exports = {
   escapeSQL: (input) => {
     return input.replaceAll("'", "\\'");
   },
+  unescapeSQL: (input) => {
+    return input.replaceAll("\\'", "'");
+  },
   /**
    * Removes parameters from GET string
    * @param {string} input String input from the client

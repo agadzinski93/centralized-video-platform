@@ -1,0 +1,50 @@
+.searchPageContainer {
+    min-height:100vh;
+    background-color:#242424;
+    color:#FFF;
+}
+.searchPageContainer > p {
+    padding:1rem 0;
+    text-align:center;
+}
+.searchListContainer {
+    display:flex;
+    flex-direction: column;
+    width:60rem;
+    height:calc(100vh - 51px - 3.125rem);
+    margin:0 auto;
+    overflow:auto;
+}
+.searchListContainer > a {
+    display:block;
+    text-decoration: none;;
+}
+.searchResultVideo {
+    display:flex;
+    margin:0.25rem 0;
+    width:100%;
+    height:calc(16rem / 1.78);
+}
+.videoThumbnail {
+    width:16rem;
+    height:calc(16rem / 1.78);
+    background-repeat:no-repeat;
+    background-size:cover;
+    background-position: center;
+}
+.videoInfo {
+    width:calc(100% - 17rem);
+    padding-left:1rem;
+}
+.videoInfo > p:first-child {
+    font-weight:bold;
+    font-size:1.125rem;
+}
+.videoInfo > P:nth-child(2) {
+    padding-top:0.25rem;
+}
+.videoInfo > p:nth-child(3) {
+    padding-top:0.5rem;
+    font-size:0.875rem;
+    color:#AAA;
+}

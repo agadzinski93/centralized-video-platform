@@ -42,9 +42,17 @@
     background-position:-128px 0px;
     background-repeat:no-repeat;
   }
-  .dashboardOptionsContainer > .deleteAllTopicsContainer > .deleteSelected {
-    background-image: url('../../assets/svg/topicIcons2.png');
+  .dashboardOptionsContainer > .deleteAllTopicsContainer button.deleteSelected {
     background-position:-160px 0px;
+  }
+  .dashboardOptionsContainer > .refreshMetadataContainer > button {
+    background-image: url('../../assets/svg/btnRefresh.png');
+    background-position:0px 0px;
+    background-repeat:no-repeat;
+  }
+  .dashboardOptionsContainer > .refreshMetadataContainer > button.itemsSelected {
+    background-image: url('../../assets/svg/btnRefresh.png');
+    background-position:-32px 0px;
     background-repeat:no-repeat;
   }
   .newTopicFormContainer,
