@@ -80,6 +80,32 @@ module.exports = {
       return new AppError(500, "Error Retrieving Videos");
     }
   },
+  searchVideos: async (q) => {
+    try {
+      const db = await getDatabase();
+      if (db instanceof AppError) return db;
+
+      let videos = await db.execute(`SELECT * FROM videos WHERE title LIKE '%${q}%' LIMIT 20`);
+
+      return videos[0].map((v) => Object.assign({}, v));
+    } catch(err) {
+      return new AppError(500, "Error Retrieving Videos");
+    }
+  },
+  getMoreVideos: async (q,pageNumber) => {
+    try {
+      const db = await getDatabase();
+      if (db instanceof AppError) return db;
+
+      const skip = pageNumber * 20;
+
+      let videos = await db.execute(`SELECT * FROM videos WHERE title LIKE '%${q}%' LIMIT 20 OFFSET ${skip}`);
+
+      return videos[0].map((v) => Object.assign({}, v));
+    } catch(err) {
+      return new AppError(500, "Error Retrieving Videos");
+    }
+  },
   getVideoInfo: async (vidId) => {
     let result;
 

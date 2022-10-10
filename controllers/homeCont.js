@@ -1,6 +1,6 @@
 const AppError = require('../utilities/AppError');
-const { escapeHTML, removeParams } = require("../utilities/helpers/sanitizers");
-const {getRecentVideos} = require('../utilities/helpers/videoHelpers');
+const { escapeHTML, escapeSQL } = require("../utilities/helpers/sanitizers");
+const {getRecentVideos, searchVideos, getMoreVideos} = require('../utilities/helpers/videoHelpers');
 const {getRecentTopic} = require('../utilities/helpers/topicHelpers');
 
 module.exports = {
@@ -16,6 +16,32 @@ module.exports = {
           }
     },
     renderSearch: async (req,res,next) => {
-
+      const pageStyles = 'search.css';
+      let searchQuery = null,
+          topics = null,
+          videos = null;
+      try {
+        if (Object.keys(req.query).length === 1) {
+          if (req.query.q !== '') {
+            searchQuery = escapeSQL(escapeHTML(req.query.q));
+            videos = await searchVideos(searchQuery);
+          }
+        } 
+        
+        res.render("search", { title: "Search Page", pageStyles, user: req.user, searchQuery, videos, topics});
+      } catch (err) {
+        next(new AppError(500, err.message));
+      }
+    },
+    getMoreResults: async (req,res,next) => {
+      let searchQuery = escapeSQL(escapeHTML(req.body.searchQuery));
+      let pageNumber = req.body.pageNumber;
+      let videos;
+      try {
+        videos = await getMoreVideos(searchQuery, pageNumber);
+      } catch(err) {
+        videos = new AppError(500, "Trouble getting more videos");
+      }
+      res.json(videos);
     }
 };

@@ -19,7 +19,7 @@
     <span>Delete Selected</span>
     </div>
     <div class="refreshMetadataContainer">
-      <button id="btnRefreshMetadata" class="icon iconLarge">R</button>
+      <button id="btnRefreshMetadata" class="icon iconLarge"></button>
     <span>Refresh Metadata</span>
     </div>
   </div>
@@ -418,13 +418,16 @@
         const numSelected = document.querySelectorAll('.btnSelectVideoSelected').length;
 
         //Highlight 'Delete Selected' button and show/hide 'items selected' panel
+        //Highlight 'Refresh Metadata' button
         if (numSelected >= 1) {
           document.getElementById('btnDeleteSelected').classList.add('deleteSelected');
           toggleItemsSelected(true, numSelected);
+          document.getElementById('btnRefreshMetadata').classList.add('itemsSelected');
         }
         else {
           document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
           toggleItemsSelected(false, numSelected);
+          document.getElementById('btnRefreshMetadata').classList.remove('itemsSelected');
         }
         //Highlight 'Select All' button?
         if (numSelected === panels.length) {
@@ -448,6 +451,7 @@
         if (!currentlySelected) {
           e.target.classList.add('selectedAll');
           document.getElementById('btnDeleteSelected').classList.add('deleteSelected');
+          document.getElementById('btnRefreshMetadata').classList.add('itemsSelected');
           for (let i = 0; i < selectVideoButtons.length; i++) {
             selectVideoButtons[i].classList.add('btnSelectVideoSelected');
             panels[i].classList.add('videoOptionsPanelSelected');
@@ -457,6 +461,7 @@
         else {
           e.target.classList.remove('selectedAll');
           document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
+          document.getElementById('btnRefreshMetadata').classList.remove('itemsSelected');
           for (let i = 0; i < selectVideoButtons.length; i++) {
             selectVideoButtons[i].classList.remove('btnSelectVideoSelected');
             panels[i].classList.remove('videoOptionsPanelSelected');

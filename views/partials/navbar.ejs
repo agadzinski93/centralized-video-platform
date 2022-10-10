@@ -1,8 +1,8 @@
 <div class="navbar">
     <div class="homeButton"><a href="/">Home</a></div>
     <div class="searchContainer">
-        <form class="searchContainerForm" action="">
-            <input name="inputSearch" id="inputSearch" type="text" placeholder="Search Topics and Videos (e.g. &quot;Javascript&quot;, &quot;Variables&quot;)">
+        <form class="searchContainerForm" action="/search">
+            <input name="q" id="inputSearch" type="text" placeholder="Search Topics and Videos (e.g. &quot;Javascript&quot;, &quot;Variables&quot;)">
         </form>
     </div>
     <%if (user === undefined || user === null) {%>
