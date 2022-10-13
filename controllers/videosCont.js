@@ -60,8 +60,16 @@ module.exports = {
                 
                 let error = await insertManyVideos(result, topicName, req.user.username);
                 if (error instanceof AppError) return next(error);
-                
-                req.flash('success', "Video Added");
+
+                let numOfVidsRequested = error.info.substring(error.info.indexOf('Records:') + 9, error.info.indexOf('Duplicates') - 2);
+                let numOfVidsAdded = error.affectedRows;
+                let numOfDuplicates = parseInt(numOfVidsRequested) - numOfVidsAdded;
+                if (numOfVidsAdded === 1) {
+                    req.flash('success', `${numOfVidsAdded} video added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`);
+                }
+                else {
+                    req.flash('success', `${numOfVidsAdded} videos added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`);
+                }
                 res.redirect(`/user/${req.params.username}/dashboard/${topicName}`);
             }
             

@@ -98,6 +98,21 @@ module.exports = {
       return new AppError(500, `Error Updating Topic: ${err.message}`);
     }
   },
+  modifyTopicImage: async (topicName, topicImage, filename) => {
+    try {
+      const db = await getDatabase();
+      if (db instanceof AppError) return db;
+
+      //Get topic filename
+      let result = await db.execute(`UPDATE topics SET imageUrl = '${topicImage}', filename = '${filename}' WHERE name = '${topicName}'`);
+      result = await db.execute(`SELECT imageUrl FROM topics WHERE name = '${topicName}'`);
+      let topic = result[0].map(o => Object.assign({},o));
+      
+      return topic[0].imageUrl;
+    } catch(err) {
+      return new AppError(500, "Error Updating Topic Image");
+    }
+  },
   removeTopic: async (topic) => {
     try {
       const db = await getDatabase();
@@ -109,6 +124,24 @@ module.exports = {
       return null;
     } catch (err) {
       return new AppError(500, "Error Deleting Topic");
+    }
+  },
+  deleteTopicImage: async (topicName) => {
+    try {
+      const db = await getDatabase();
+      if (db instanceof AppError) return db;
+
+      //Get topic filename
+      let result = await db.execute(`SELECT filename FROM topics WHERE name = '${topicName}'`);
+      let topic = result[0].map(o => Object.assign({}, o));
+      let filename = topic[0].filename;
+      if (filename !== 'null') {
+        await cloudinary.uploader.destroy(filename);
+      }
+      
+      return null;
+    } catch(err) {
+      return new AppError(500, "Error Updating Topic Image");
     }
   },
   removeSelectedTopics: async (topics) => {

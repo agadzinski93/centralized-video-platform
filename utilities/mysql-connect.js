@@ -5,6 +5,26 @@ const MySQLStore = require("express-mysql-session")(session);
 const AppError = require("./AppError");
 
 let db;
+let host,
+    port,
+    user,
+    password,
+    database;
+
+if (process.env.NODE_ENV == 'production') {
+  host = process.env.PHP_MY_ADMIN_HOST;
+  port = process.env.PHP_MY_ADMIN_POST;
+  user = process.env.PHP_MY_ADMIN_USER;
+  password = process.env.PHP_MY_ADMIN_PASS;
+  database = process.env.PHP_MY_ADMIN_DATABASE;
+}
+else {
+  host = process.env.MYSQL_HOST;
+  port = process.env.MYSQL_PORT;
+  user = process.env.MYSQL_USER;
+  password = process.env.MYSQL_PASS;
+  database = process.env.MYSQL_DATABASE;
+}
 
 /**
  * Establishes the connection to a MySQL database
@@ -13,14 +33,16 @@ let db;
 async function getConnection() {
   try {
     if (typeof db === 'undefined') {
-      db = await mysql.createConnection({
-        host: "localhost",
-        port: 3306,
-        database: "programminghelporg",
-        user: "root",
-        password: process.env.MYSQL_PASS,
-        Promise: bluebird,
+      db = mysql.createPool({
+        host,
+        port,
+        database,
+        user,
+        password,
+        waitForConnections:true,
         connectionLimit:10,
+        queueLimit:0,
+        Promise: bluebird,
       });
   }
     return db;
@@ -42,10 +64,10 @@ module.exports = {
     }
   },
   sessionStore: new MySQLStore({
-    host: "localhost",
-    port: 3306,
-    database: "programminghelporg",
-    user: "root",
-    password: process.env.MYSQL_PASS,
+    host,
+    port,
+    database,
+    user,
+    password,
   }),
 };

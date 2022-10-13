@@ -12,49 +12,51 @@
         <p class="mainVideoTitle"><%=video.title%></p>
         <p class="mainVideoDescription"><%=video.description%></p>
       </div>
-      <div class="videoPlaylistContainer">
+      <div class="videoPlaylistLeft">
         <div class="topicTitleContainer"><a href="/lib/<%=video.topic%>">&larr; <%=video.topic%></a></div>
-        <%if (videos.length > 0) {%>
-          <%for (let i = 0;i < videos.length; i++) {%>
-            <a href="/lib/<%=videos[i].topic%>/<%=videos[i].url.substring(20)%>">
-              <% if (video.id === videos[i].id) {%>
-                <div class="playlistVideoContainer playlistVideoContainerSelected" id="selectedVideo">
-                  <div class="playlistVideoImageContainer" style="background-image: url('<%=videos[i].thumbnail%>');">
+        <div class="videoPlaylistContainer">
+          <%if (videos.length > 0) {%>
+            <%for (let i = 0;i < videos.length; i++) {%>
+              <a href="/lib/<%=videos[i].topic%>/<%=videos[i].url.substring(20)%>">
+                <% if (video.id === videos[i].id) {%>
+                  <div class="playlistVideoContainer playlistVideoContainerSelected" id="selectedVideo">
+                    <div class="playlistVideoImageContainer" style="background-image: url('<%=videos[i].thumbnail%>');">
+                    </div>
+                    <div class="playlistVideoInfoContainer">
+                      <% if (videos[i].title.length > 65) {%>
+                        <p><%=videos[i].title.substring(0,65)%>...</p>
+                      <% } else { %>
+                        <p><%=videos[i].title%></p>
+                      <%}%>
+                      <% if (videos[i].description.length > 50) {%>
+                        <p><%=videos[i].description.substring(0,50)%>...</p>
+                      <% } else { %>
+                        <p><%=videos[i].description%></p>
+                      <%}%>
+                    </div>
                   </div>
-                  <div class="playlistVideoInfoContainer">
-                    <% if (videos[i].title.length > 65) {%>
-                      <p><%=videos[i].title.substring(0,65)%>...</p>
-                    <% } else { %>
-                      <p><%=videos[i].title%></p>
-                    <%}%>
-                    <% if (videos[i].description.length > 50) {%>
-                      <p><%=videos[i].description.substring(0,50)%>...</p>
-                    <% } else { %>
-                      <p><%=videos[i].description%></p>
-                    <%}%>
+                <%} else {%>
+                  <div class="playlistVideoContainer">
+                    <div class="playlistVideoImageContainer" style="background-image: url('<%=videos[i].thumbnail%>');">
+                    </div>
+                    <div class="playlistVideoInfoContainer">
+                      <% if (videos[i].title.length > 65) {%>
+                        <p><%=videos[i].title.substring(0,65)%>...</p>
+                      <% } else { %>
+                        <p><%=videos[i].title%></p>
+                      <%}%>
+                      <% if (videos[i].description.length > 50) {%>
+                        <p><%=videos[i].description.substring(0,50)%>...</p>
+                      <% } else { %>
+                        <p><%=videos[i].description%></p>
+                      <%}%>
+                    </div>
                   </div>
-                </div>
-              <%} else {%>
-                <div class="playlistVideoContainer">
-                  <div class="playlistVideoImageContainer" style="background-image: url('<%=videos[i].thumbnail%>');">
-                  </div>
-                  <div class="playlistVideoInfoContainer">
-                    <% if (videos[i].title.length > 65) {%>
-                      <p><%=videos[i].title.substring(0,65)%>...</p>
-                    <% } else { %>
-                      <p><%=videos[i].title%></p>
-                    <%}%>
-                    <% if (videos[i].description.length > 50) {%>
-                      <p><%=videos[i].description.substring(0,50)%>...</p>
-                    <% } else { %>
-                      <p><%=videos[i].description%></p>
-                    <%}%>
-                  </div>
-                </div>
-              <%}%>
-            </a>
+                <%}%>
+              </a>
+            <%}%>
           <%}%>
-        <%}%>
+        </div>
       </div>
     </div>
 </div>

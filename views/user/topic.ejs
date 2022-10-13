@@ -40,6 +40,30 @@
       </div>
     </form>
   </div>
+  <div class="editImageFormContainer">
+    <h2>Edit Image<button class="btnCancelNewTopic" id="cancelEditTopicImage">X</button></h2>
+    <%if (topic.imageUrl !== 'null') {%>
+      <div class="editTopicImageImageContainer" style="background-image: url('<%=topic.imageUrl%>');"></div>
+    <%} else {%>
+      <div class="editTopicImageImageContainer"><p>No Image</p></div>
+    <%}%>
+    <div class="newTopicFileContainer">
+      <form id="editTopicImgForm" enctype="multipart/form-data">
+        <label for="btnFileUpload" class="file-upload" id="lblFileUpload">
+          <div>Click or Drag Image to Upload</div>
+          <img class="streamedTopicImg displayNone" src="" alt="">
+        </label>
+        <input type="file" id="btnFileUpload" name="topic[file]" hidden>
+      </form>
+    </div>
+    <div class="fileSelectedAndSizeLimitContainer">
+      <span class="fileSelected" id="fileSelected">No file selected.</span>
+      <span class="fileSizeLimit">Max File Size: 1MB</span>
+    </div>
+    <div class="newTopicAddBtn">
+      <button id="btnUpdateImage">Update Image</button>
+    </div>
+  </div>
   <div class="itemsSelectedContainer" id="itemsSelected"></div>
   <%- include("../partials/flashError.ejs") %> <%-
   include("../partials/flashSuccess.ejs") %> 
@@ -172,6 +196,11 @@
     document.querySelector('.newVideoFormContainer').classList.toggle('displayNone');
     document.querySelector('body').classList.toggle('overflowHidden');
   };
+  const toggleEditTopicImageForm = () => {
+    document.querySelector('.backdrop').classList.toggle('displayNone');
+    document.querySelector('.editImageFormContainer').classList.toggle('displayNone');
+    document.querySelector('body').classList.toggle('overflowHidden');
+  }
 
   const addNewVideoSubmitEvent = () => {
     document.getElementById('newVideoForm').addEventListener('submit', (e) => {
@@ -377,20 +406,28 @@
       itemsSelectedContainer.textContent = ``;
     }
   }
-
   const addSelectVideoEvents = (selectedVideos) => {
     const panels = document.getElementsByClassName('videoOptionsPanel');
     for (let i = 0; i < selectedVideos.length; i++) {
       selectedVideos[i].addEventListener('click', (e) => {
+        let btnSelectVideoList = document.getElementsByClassName('btnSelectVideo');
         if (e.shiftKey) {
           let done = false;
-          let j = i;
+          let j = 0;
+          do {
+            if (btnSelectVideoList[j] === e.target) {
+              done = true;
+              j--;
+            }
+            j++;
+          } while (!done && j < btnSelectVideoList.length);
+          done = false;
 
           if (!e.target.classList.contains('btnSelectVideoSelected')) {
             do {
               if (!selectedVideos[j].classList.contains('btnSelectVideoSelected')) {
                 selectedVideos[j].classList.add('btnSelectVideoSelected');
-                panels[j].classList.add('videoOptionsPanelSelected');
+                selectedVideos[j].parentNode.parentNode.classList.add('videoOptionsPanelSelected');
                 j--;
               }
               else {
@@ -402,7 +439,7 @@
             do {
               if (selectedVideos[j].classList.contains('btnSelectVideoSelected')) {
                 selectedVideos[j].classList.remove('btnSelectVideoSelected');
-                panels[j].classList.remove('videoOptionsPanelSelected');
+                selectedVideos[j].parentNode.parentNode.classList.remove('videoOptionsPanelSelected');
                 j--;
               }
               else {
@@ -413,7 +450,7 @@
         }
         else {
           e.target.classList.toggle('btnSelectVideoSelected');
-          panels[i].classList.toggle('videoOptionsPanelSelected');
+          e.target.parentNode.parentNode.classList.toggle('videoOptionsPanelSelected');
         }
         const numSelected = document.querySelectorAll('.btnSelectVideoSelected').length;
 
@@ -439,6 +476,13 @@
       });
     }
   };
+  const removeSelectVideoEvents = () => {
+    let selectVideoButtons = document.getElementsByClassName('btnSelectVideo');
+    let btnNew;
+    for (btn of selectVideoButtons) {
+      //btnNew = btn.cl
+    }
+  }
 
   const addSelectAllEvent = () => {
     document.getElementById('btnSelectAllTopics').addEventListener('click', (e) => {
@@ -499,8 +543,17 @@
               document.getElementById(`${videoList[i]}` + `Container`).remove();
             }
             document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
+            document.getElementById('btnRefreshMetadata').classList.remove('itemsSelected');
             toggleItemsSelected();
-            flashBanner('success', `Sucessfully deleted ${videoList.length} videos`);
+
+            //Update 'video select' buttons
+            //let updatedVideoButtons = document.getElementsByClassName('btnSelectVideo');
+            //addSelectVideoEvents(updatedVideoButtons);
+            if (videoList.length === 1) {
+              flashBanner('success', `Sucessfully deleted ${videoList.length} video`);
+            } else {
+              flashBanner('success', `Sucessfully deleted ${videoList.length} videos`);
+            }
           }
         } catch(err) {
 
@@ -561,14 +614,65 @@
     });
   };
   
+  const topicImageEvent = () => {
+    document.getElementById('btnFileUpload').addEventListener('change', function() {
+      
+      if (this.files[0].type.includes('image')) {
+        document.getElementById('fileSelected').textContent = this.files[0].name;
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        let img = document.querySelector('.file-upload img');
+        img.src = e.target.result;
+        img.classList.remove('displayNone');
+        document.querySelector('.file-upload div').classList.add('displayNone');
+      }
+      reader.readAsDataURL(this.files[0]);
+      }
+    });
+  }
+
+  const addUpdateImageEvent = async () => {
+    const btnUpdateImage = document.getElementById('btnUpdateImage');
+    btnUpdateImage.addEventListener('click',async () => {
+      toggleEditTopicImageForm();
+      toggleBackdrop(true, '#fff', '10%');
+      toggleModal(true, 'Updating image...');
+      const form = document.getElementById('editTopicImgForm');
+      const formData = new FormData(form);
+      let result = await fetch('/topics/<%=user.username%>/editImage/<%=topic.name%>', {
+        method:'POST',
+        body: formData,
+      });
+      let data = await result.json();
+      
+      toggleBackdrop(false);
+      toggleModal(false);
+      if (Object.keys(data).includes('error')) {
+        flashBanner('error', `${data.error}`);
+      }
+      else {
+        flashBanner('success', 'Successfully updated image');
+        document.querySelector('.topicPageImageContainer').style.backgroundImage = `url('${data}')`;
+        document.querySelector('.editTopicImageImageContainer').style.backgroundImage = `url('${data}')`;
+        document.getElementById('btnFileUpload').value = null;
+        document.querySelector('.streamedTopicImg').classList.add('displayNone');
+        document.querySelector('.file-upload div').classList.remove('displayNone');
+        document.getElementById('fileSelected').textContent = 'No file selected.';
+      }
+    });
+  }
+  
   const init = () => {
     document.querySelector('.backdrop').classList.toggle('displayNone');
     document.querySelector('.newVideoFormContainer').classList.add('displayNone');
-
+    
     document.getElementById("btnCreateTopicForm").addEventListener("click", toggleNewTopicForm);
     document.querySelector('.btnCancelNewTopic').addEventListener("click", toggleNewTopicForm);
-
     addNewVideoSubmitEvent();
+    
+    document.querySelector('.editImageFormContainer').classList.add('displayNone');
+    document.querySelector('.topicPageImageContainer').addEventListener("click", toggleEditTopicImageForm);
+    document.getElementById('cancelEditTopicImage').addEventListener('click', toggleEditTopicImageForm);
 
     const editVideoButtons = document.getElementsByClassName('btnVideoEdit');
     const cancelEditVideoButtons = document.getElementsByClassName('btnCancelEdit');
@@ -588,7 +692,10 @@
     addDeleteVideoSubmitEvents();
     addRemoveSelectedVideos();
     addRefreshMetadataEvent();
-  };
 
+    topicImageEvent();
+    addUpdateImageEvent();
+  };
+  
   init();
 </script>

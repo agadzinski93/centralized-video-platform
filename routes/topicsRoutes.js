@@ -8,6 +8,7 @@ const router = express.Router({ caseSensitive: false, strict: false });
 const {
   createTopic,
   editTopic,
+  editTopicImage,
   deleteTopic,
   deleteSelectedTopics,
 } = require("../controllers/topicsCont");
@@ -32,6 +33,9 @@ router.post(
   topicValidation,
   editTopic
 );
+
+router.post("/:username/editImage/:topic",isLoggedIn, isAuthor, parser.single('topic[file]'), editTopicImage);
+
 router.post("/:username/delete/:topic", isLoggedIn, isAuthor, deleteTopic);
 
 router.delete("/:username/deleteSelected", isLoggedIn, isAuthor, deleteSelectedTopics);

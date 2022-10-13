@@ -56,7 +56,8 @@
     background-repeat:no-repeat;
   }
   .newTopicFormContainer,
-  .newVideoFormContainer {
+  .newVideoFormContainer,
+  .editImageFormContainer {
     position:absolute;
     left:0;
     right:0;
@@ -88,8 +89,13 @@
     background-color:#444;
   }
   .newTopicFormContainer > h2,
-  .newVideoFormContainer > h2 {
+  .newVideoFormContainer > h2,
+  .editImageFormContainer > h2 {
     padding:1rem 0;
+  }
+  .editImageFormContainer > h2 {
+    text-align:center;
+    padding-left:2.25rem;
   }
   .newTopicNameContainer > input,
   .newVideoFormContainer > input {
@@ -166,6 +172,23 @@
   }
   .newTopicAddBtn > button:hover {
     background-color: #444;
+  }
+  .editImageFormContainer {
+    width:35rem;
+    height:30rem;
+    margin:calc(50vh - 20.125rem) auto;
+  }
+  .editTopicImageImageContainer {
+    margin:0 auto;
+    height:10rem;
+    width: 24rem;
+    background-repeat: no-repeat;
+    background-size:contain;
+    background-position: center;
+    text-align:center;
+  }
+  .editTopicImageImageContainer > p {
+    padding-top:4rem;
   }
   .itemsSelectedContainer {
     margin:1rem auto;
@@ -365,6 +388,7 @@
     background-repeat:no-repeat;
     background-size: contain;
     background-position: center;
+    cursor:pointer;
   }
   .dashboardTopicVideosList {
     flex:1;
@@ -591,10 +615,9 @@
     }
   }
   @media (max-width:800px) {
-    .newTopicFormContainer {
-      width:95%;
-    }
-    .newVideoFormContainer {
+    .newTopicFormContainer,
+    .newVideoFormContainer,
+    .editImageFormContainer {
       width:95%;
     }
     .newVideoFormContainer label {
@@ -635,6 +658,13 @@
   @media (max-height:35.25rem) {
     .newTopicFormContainer {
       margin:-5.125rem auto 0 auto;
+      height:100vh;
+    }
+  }
+  @media (max-height: 30rem) {
+    .editImageFormContainer {
+      margin-top:0;
+      top:0;
       height:100vh;
     }
   }

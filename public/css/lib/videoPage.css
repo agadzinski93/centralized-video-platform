@@ -28,18 +28,24 @@ body {
     margin:0 auto;
     text-align: center;
 }
+.videoPlaylistLeft {
+    display:flex;
+    flex-wrap:wrap;
+    width:75rem;
+    margin-top:1rem;
+}
 .videoPlaylistContainer {
     display:flex;
     flex-direction:column;
-    margin-top:1rem;
-    min-height:41.5rem;
-    width:75rem;
+    height:calc(100vh - 50px - 3.25rem);
+    width:100%;
     overflow:auto;
 }
-.videoPlaylistContainer > .topicTitleContainer {
+.videoPlaylistLeft > .topicTitleContainer {
+    width:100%;
     padding:0.5rem 0 0.5rem 1rem;
     text-align:center;
-    background-color:#111;
+    background-color:#000;
     color:#FFF;
 }
 a {
@@ -84,8 +90,8 @@ a {
         height:fit-content;
     }
     .mainVideoPlayerContainer > iframe {
-        width:80%;
-        height:40vw;
+        width:80vw;
+        height:calc(80vw / 1.78);
     }
     .mainVideoContainer > .mainVideoTitle {
         margin:0.75rem 10% 0 10%;
@@ -93,8 +99,14 @@ a {
     }
     .mainVideoContainer > .mainVideoDescription {
         margin:0.75rem 10% 0 10%;
+        height:5rem;
+        overflow: auto;
+    }
+    .videoPlaylistLeft {
+        width:100%;
     }
     .videoPlaylistContainer {
-        width:100%;
+        height:calc(100vh - 50px - (80vw / 1.78) - 12.375rem);
+        min-height:15rem;
     }
 }

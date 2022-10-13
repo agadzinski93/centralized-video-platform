@@ -4,7 +4,9 @@ const {
   topicExists,
   insertTopic,
   updateTopic,
+  modifyTopicImage,
   removeTopic,
+  deleteTopicImage,
   removeSelectedTopics,
 } = require("../utilities/helpers/topicHelpers");
 
@@ -13,7 +15,8 @@ module.exports = {
     const topicName = escapeHTML(req.body.topic.name);
     const topicDifficulty = req.body.topic.difficulty;
     const topicDescription = escapeHTML(req.body.topic.description);
-    let topicImage;
+    let topicImage,
+        filename;
     if (req.file != undefined) {
       topicImage = req.file.path;
       filename = req.file.filename;
@@ -60,6 +63,41 @@ module.exports = {
       req.flash("success", "Topic Updated");
       res.redirect(`/user/${req.user.username}/dashboard`);
     }
+  },
+  editTopicImage: async (req,res,next) => {
+    const topicName = escapeHTML(req.params.topic);
+    let newImgUrl = null;
+
+    let topicImage,
+        filename;
+    if (req.file != undefined) {
+      topicImage = req.file.path;
+      filename = req.file.filename;
+    }
+    else {
+      topicImage = null;
+      filename = null;
+    }
+
+    const exists = await topicExists(topicName);
+    if (exists instanceof AppError) return res.json({error:'Topic Not Found'});
+    else if (exists === 0) {
+      res.json({error:'Topic Doesn\'t Exist'});
+    } 
+    else {
+      let error = await deleteTopicImage(topicName);
+      if (error instanceof AppError) return res.json({error:'Error Deleting Image'});
+      error = await modifyTopicImage(
+        topicName,
+        topicImage,
+        filename
+      );
+      if (error instanceof AppError) return res.json({error:'Error Uploading New Image'});
+
+      newImgUrl = error;
+
+    }
+    res.json(newImgUrl);
   },
   deleteTopic: async (req, res, next) => {
     const topicName = escapeHTML(req.params.topic);
