@@ -4,13 +4,14 @@ require("dotenv").config();
 const app = express();
 const path = require("path");
 const AppError = require("./utilities/AppError");
-const PORT = process.env.PORT | 3000;
+const PORT = process.env.PORT || 3000;
 
 //EJS and Templates
 const expressLayouts = require("express-ejs-layouts");
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
+
 app.use(expressLayouts);
 app.set("layout", "./layouts/layout.ejs");
 
