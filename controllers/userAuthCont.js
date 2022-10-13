@@ -39,7 +39,7 @@ module.exports = {
 
     pp.authenticate("local", {
       successRedirect: successUrl,
-      failureRedirect: "/login",
+      failureRedirect: "/auth/login",
       failureFlash: true,
     })(req, res, next);
   },
@@ -88,7 +88,7 @@ module.exports = {
 
     if (exists) {
       req.flash("error", "Username Already Exists");
-      res.redirect("/register");
+      res.redirect("/auth/register");
       return;
     }
 

@@ -92,10 +92,12 @@
     const addPullMoreResultsEvent = () => {
         let lastResult = document.getElementById('result20');
         let pageNumber = 1;
+        let wait = false;
         const resultsPerPage = 20;
         if (lastResult !== undefined) {
             document.getElementById('searchListContainer').addEventListener('scroll', async () => {
-                if (lastResult !== undefined && lastResult !== null) {
+                if (lastResult !== undefined && lastResult !== null && !wait) {
+                    wait = true;
                     if (window.innerHeight - lastResult.getBoundingClientRect().top > 0) {
                         let videos = await fetch('/search', {
                             method:'POST',
@@ -112,6 +114,7 @@
                         pageNumber++;
                         lastResult = document.getElementById(`result${pageNumber*resultsPerPage}`);
                     }
+                    wait = false;
                 }
         });
         }

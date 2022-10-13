@@ -74,12 +74,12 @@
   <div class="homeRecentTopics">
     <p class="recentTopicsHeader">Recent Topics</p>
     <div class="recentTopicsContainer">
-      <%if (topics.length > 1) {%>
+      <%if (topics.length >= 1) {%>
         <%for (let i = 0; i < topics.length; i++) {%>
           <%if (i > 11) {%>
             <a class="recentTopicLink long2" href="/lib/<%=topics[i].name%>">
               <div class="recentTopic">
-                <div class="recentTopicImage"></div>
+                <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%if (topics[i].name.length > 55) {%>
                   <p><%=topics[i].name.substring(0,55)%>...</p>
                 <%}else{%>
@@ -91,7 +91,7 @@
           <%}else if (i > 9){%>
             <a class="recentTopicLink long1" href="/lib/<%=topics[i].name%>">
               <div class="recentTopic">
-                <div class="recentTopicImage"></div>
+                <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%if (topics[i].name.length > 55) {%>
                   <p><%=topics[i].name.substring(0,55)%>...</p>
                 <%}else{%>
@@ -103,7 +103,7 @@
           <%}else if (i > 8){%>
             <a class="recentTopicLink long9" href="/lib/<%=topics[i].name%>">
               <div class="recentTopic">
-                <div class="recentTopicImage"></div>
+                <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%if (topics[i].name.length > 55) {%>
                   <p><%=topics[i].name.substring(0,55)%>...</p>
                 <%}else{%>
@@ -115,7 +115,7 @@
           <%}else if (i > 7){%>
             <a class="recentTopicLink long8" href="/lib/<%=topics[i].name%>">
               <div class="recentTopic">
-                <div class="recentTopicImage"></div>
+                <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%if (topics[i].name.length > 55) {%>
                   <p><%=topics[i].name.substring(0,55)%>...</p>
                 <%}else{%>
@@ -127,7 +127,7 @@
           <%}else{%>
             <a class="recentTopicLink" href="/lib/<%=topics[i].name%>">
               <div class="recentTopic">
-                <div class="recentTopicImage"></div>
+                <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%if (topics[i].name.length > 55) {%>
                   <p><%=topics[i].name.substring(0,55)%>...</p>
                 <%}else{%>

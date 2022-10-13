@@ -4,6 +4,7 @@ require("dotenv").config();
 const app = express();
 const path = require("path");
 const AppError = require("./utilities/AppError");
+const PORT = process.env.PORT | 3000;
 
 //EJS and Templates
 const expressLayouts = require("express-ejs-layouts");
@@ -71,6 +72,4 @@ app.use((err, req, res, next) => {
 });
 
 //Port
-app.listen(3000, () => {
-  console.log("Listening on port 3000");
-});
+app.listen(PORT);

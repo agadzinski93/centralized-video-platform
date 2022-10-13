@@ -281,11 +281,14 @@ module.exports = {
           values += `('${videos[i].title}', 'youtube.com/watch?v=${videos[i].resourceId.videoId}', '${videos[i].description}', '5', '${videos[i].thumbnails.medium.url}', '${topicName}', '${username}'), `;
         }
       }
-    
       let result = await db.execute(`INSERT IGNORE INTO videos (title, url, description, views, thumbnail, topic, username) 
             VALUES ${values}`);
 
-      return null;
+      let data = result.map(o => Object.assign({},o))
+      return {
+        affectedRows: data[0].affectedRows,
+        info: data[0].info
+      };
     } catch(err) {
       return new AppError(500, `Error Adding Videos: ${err.message}`);
     }
