@@ -11,19 +11,19 @@ let host,
     password,
     database;
 
-if (process.env.NODE_ENV == 'production') {
-  host = process.env.PHP_MY_ADMIN_HOST;
-  port = process.env.PHP_MY_ADMIN_POST;
-  user = process.env.PHP_MY_ADMIN_USER;
-  password = process.env.PHP_MY_ADMIN_PASS;
-  database = process.env.PHP_MY_ADMIN_DATABASE;
-}
-else {
+if (process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'Development') {
   host = process.env.MYSQL_HOST;
   port = process.env.MYSQL_PORT;
   user = process.env.MYSQL_USER;
   password = process.env.MYSQL_PASS;
   database = process.env.MYSQL_DATABASE;
+}
+else {
+  host = process.env.PHP_MY_ADMIN_HOST;
+  port = process.env.PHP_MY_ADMIN_POST;
+  user = process.env.PHP_MY_ADMIN_USER;
+  password = process.env.PHP_MY_ADMIN_PASS;
+  database = process.env.PHP_MY_ADMIN_DATABASE;
 }
 
 /**
