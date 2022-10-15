@@ -71,7 +71,11 @@
     <div class="dashboardTopicLeft">
       <p><a href="/user/<%=user.username%>/dashboard/">&larr;</a> <%=topic.name%></p>
       <p><%=topic.difficulty%></p>
-      <div class="topicPageImageContainer" style="background-image: url('<%=topic.imageUrl%>');"></div>
+      <%if (topic.imageUrl !== 'null'){%>
+        <div class="topicPageImageContainer" style="background-image: url('<%=topic.imageUrl%>');"></div>
+      <%}else{%>
+        <div class="topicPageImageContainer" style="background-image: url('');"></div>
+      <%}%>
       <p><%=topic.description%></p>
     </div>
     <% if (videos.length > 0) { %>
