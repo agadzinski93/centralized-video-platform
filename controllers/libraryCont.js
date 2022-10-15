@@ -1,4 +1,5 @@
 const AppError = require('../utilities/AppError');
+const {pathCSS} = require('../utilities/config');
 const { escapeHTML, removeParams } = require("../utilities/helpers/sanitizers");
 
 module.exports = {
@@ -6,7 +7,7 @@ module.exports = {
     const {getTopic} = require('../utilities/helpers/topicHelpers');
     const {getTopicVideos} = require("../utilities/helpers/videoHelpers");
 
-    const pageStyles = 'lib/topicPage.css';
+    const pageStyles = `${pathCSS}lib/topicPage.css`;
 
     let topicName = escapeHTML(req.params.topic);
     let topic = await getTopic(topicName);
@@ -15,14 +16,14 @@ module.exports = {
     const videos = await getTopicVideos(topicName);
     if (videos instanceof AppError) return next(videos);
 
-    res.render("lib/topicPage", {title: `${topicName} | Playlist`, pageStyles, user: req.user , topic: topic[0], videos});
+    res.render("lib/topicPage", {title: `${topicName} | Playlist`, pageStyles, pathCSS, user: req.user , topic: topic[0], videos});
   },
   renderVideoPage: async (req, res, next) => {
     const {getTopic} = require('../utilities/helpers/topicHelpers');
     const {getTopicVideos} = require("../utilities/helpers/videoHelpers");
     const {getVideo} = require("../utilities/helpers/videoHelpers");
 
-    const pageStyles = 'lib/videoPage.css';
+    const pageStyles = `${pathCSS}lib/videoPage.css`;
 
     let topicName = escapeHTML(req.params.topic);
     let topic = await getTopic(topicName);
@@ -48,6 +49,7 @@ module.exports = {
     res.render("lib/videoPage", {
       title: `${topicName} | ${video[0].title.substring(0,50)}`, 
       pageStyles, 
+      pathCSS,
       user:req.user, 
       topic: topic[0], 
       videos, 

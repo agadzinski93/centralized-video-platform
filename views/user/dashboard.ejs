@@ -90,7 +90,11 @@
       <a href="/user/<%= user.username %>/dashboard/<%=topic.name%>"
         ><div class="dashboardTopicContainer">
           <div class="topicImageContainer">
-           <img src="<%=topic.imageUrl%>" alt="">
+            <%if (topic.imageUrl !== 'null'){%>
+              <img src="<%=topic.imageUrl%>" alt="">
+            <%}else{%>
+              <img src="" alt="">
+            <%}%>
           </div>
           <section id="topicInfo" class="topicInfo">
             <div class="dashboardTopicFirstRow">

@@ -1,4 +1,5 @@
 const AppError = require("../utilities/AppError");
+const {pathCSS} = require('../utilities/config');
 const { escapeHTML } = require("../utilities/helpers/sanitizers");
 const { getUser } = require("../utilities/helpers/authHelpers");
 const {updateRefreshSettings, deleteUser} = require("../utilities/helpers/userHelpers");
@@ -12,21 +13,23 @@ module.exports = {
 
     let pageStyles = null;
 
-    res.render("user/userPage", {
+    res.render(`user/userPage`, {
       title: `${user.username}'s Page`,
       pageStyles,
+      pathCSS,
       user,
     });
   },
   renderUserSettings: async (req, res) => {
     const username = escapeHTML(req.params.username);
     const user = await getUser(username);
-    let pageStyles = 'user/settings.css';
+    let pageStyles = `${pathCSS}user/settings.css`;
     if (user instanceof AppError) return next(user);
 
     res.render("user/settings", {
       title: `${user.username}'s Settings`,
       pageStyles,
+      pathCSS,
       user,
     });
   },
@@ -50,8 +53,8 @@ module.exports = {
     }
   },
   renderUserDashboard: async (req, res, next) => {
-    const { getUserTopics, getAllTopics, getTopic } = require("../utilities/helpers/topicHelpers");
-    const pageStyles = 'user/dashboard.css';
+    const { getUserTopics } = require("../utilities/helpers/topicHelpers");
+    const pageStyles = `${pathCSS}user/dashboard.css`;
     const username = escapeHTML(req.params.username);
     const user = await getUser(username);
     if (user instanceof AppError) return next(user);
@@ -62,6 +65,7 @@ module.exports = {
     res.render("user/dashboard", {
       title: `${user.username}'s Dashboard`,
       pageStyles,
+      pathCSS,
       user,
       topics,
     });
@@ -69,7 +73,7 @@ module.exports = {
   renderUserTopic: async (req, res, next) => {
     const {getTopicVideos} = require("../utilities/helpers/videoHelpers");
     const {getTopic} = require("../utilities/helpers/topicHelpers");
-    const pageStyles = 'user/dashboard.css';
+    const pageStyles = `${pathCSS}user/dashboard.css`;
     const username = escapeHTML(req.params.username);
     const user = await getUser(username);
     if (user instanceof AppError) return next(user);
@@ -84,6 +88,7 @@ module.exports = {
     res.render('user/topic', {
       title: topicTitle, 
       pageStyles,
+      pathCSS,
       topicName, 
       topic:topic[0],
       user, 

@@ -1,4 +1,5 @@
 const pp = require("../utilities/auth");
+const {pathCSS} = require('../utilities/config');
 const bcrypt = require("bcrypt");
 const { escapeHTML, containsHTML } = require("../utilities/helpers/sanitizers");
 const uuid = require("uuid");
@@ -23,8 +24,8 @@ module.exports = {
    * @param {*} res
    */
   renderLogin: (req, res) => {
-    const pageStyles = 'user/loginRegister.css';
-    res.render("login", { title: "Login", pageStyles, user: req.user });
+    const pageStyles = `${pathCSS}user/loginRegister.css`;
+    res.render("login", { title: "Login", pageStyles, pathCSS, user: req.user });
   },
   /**
    * Logs in the user using Passport. If successful, redirect to originally requested URL
@@ -58,8 +59,8 @@ module.exports = {
    * @param {*} res
    */
   renderRegistration: (req, res) => {
-    const pageStyles = 'user/loginRegister.css';
-    res.render("register", { title: "Register", pageStyles, user: req.user });
+    const pageStyles = `${pathCSS}user/loginRegister.css`;
+    res.render("register", { title: "Register", pageStyles, pathCSS, user: req.user });
   },
   registerUser: async (req, res, next) => {
     if (containsHTML(req.body.reg.username))
