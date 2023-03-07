@@ -46,13 +46,13 @@
     background-position:-160px 0px;
   }
   .dashboardOptionsContainer > .refreshMetadataContainer > button {
-    background-image: url('../../assets/svg/btnRefresh.png');
-    background-position:0px 0px;
+    background-image: url('../../assets/svg/topicIcons3.png');
+    background-position:-128px -32px;
     background-repeat:no-repeat;
   }
   .dashboardOptionsContainer > .refreshMetadataContainer > button.itemsSelected {
-    background-image: url('../../assets/svg/btnRefresh.png');
-    background-position:-32px 0px;
+    background-image: url('../../assets/svg/topicIcons3.png');
+    background-position:-160px -32px;
     background-repeat:no-repeat;
   }
   .newTopicFormContainer,
@@ -210,15 +210,14 @@
     width: 90%;
     margin: 1rem auto 0 auto;
     display: flex;
-    justify-content: space-between;
     flex-wrap: wrap;
   }
   .dashboardTopicList > .dashboardTopicWrapper,
   .dashboardTopicList > .dashboardTopicWrapperEdit{
     background-color: #333333;
     color:#FFF;
-    flex-basis: 45%;
-    margin-top:2rem;
+    flex-basis: 30%;
+    margin:2rem 1.5% 0 1.5%;
     border:2px solid #242424;
   }
   .dashboardTopicList > .dashboardTopicWrapper:not(.topicButtonsContainer):hover {
@@ -263,10 +262,9 @@
   .topicImageContainer {
     flex:1;
     text-align: center;
-  }
-  .topicImageContainer img {
-    max-height:10rem;
-    max-width:100%;
+    background-repeat:no-repeat;
+    background-size:contain;
+    background-position: center;
   }
   .topicInfo {
     flex:3;
@@ -389,6 +387,9 @@
     background-size: contain;
     background-position: center;
     cursor:pointer;
+  }
+  .topicPageImageContainer:hover {
+    background-color:#333;
   }
   .dashboardTopicVideosList {
     flex:1;
@@ -574,13 +575,14 @@
   .dashboardVideoLikes {
     margin-right: 1rem;
   }
-  @media (min-width:1300px) {
+  @media (max-width:1300px) {
     .dashboardTopicList {
       width: 90%;
     }
     .dashboardTopicList > .dashboardTopicWrapper,
     .dashboardTopicList > .dashboardTopicWrapperEdit{
-      flex-basis: 30%;
+      flex-basis: 45%;
+      margin:2rem 2% 0 2%;
     }
   }
   @media (max-width:1100px) {
@@ -601,7 +603,7 @@
     }
     .dashboardTopicList > .dashboardTopicWrapper,
     .dashboardTopicList > .dashboardTopicWrapperEdit{
-      flex-basis: 45%;
+      
     }
     .dashboardVideosContainer {
       flex-direction: column;

@@ -64,7 +64,7 @@ module.exports = {
       res.redirect(`/user/${req.user.username}/dashboard`);
     }
   },
-  editTopicImage: async (req,res,next) => {
+  editTopicImage: async (req,res) => {
     const topicName = escapeHTML(req.params.topic);
     let newImgUrl = null;
 

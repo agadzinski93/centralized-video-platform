@@ -11,7 +11,7 @@ passport.use(
       try {
         const db = await getDatabase();
         
-        const user = await db.execute(`SELECT user_id, username, password 
+        const user = await db.execute(`SELECT user_id, username, password
         FROM users 
         WHERE username = '${username}'`);
 
@@ -43,7 +43,7 @@ passport.serializeUser(function (user, done) {
 passport.deserializeUser(async function (id, done) {
   try {
     const db = await getDatabase();
-    const user = await db.execute(`SELECT username, email, account_type 
+    const user = await db.execute(`SELECT username, email, account_type, pic_url
       FROM users WHERE user_id = '${id}'`);
 
     const userObj = Object.assign({}, Object.values(user[0])[0]);

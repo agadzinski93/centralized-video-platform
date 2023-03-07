@@ -1,14 +1,16 @@
 const { getDatabase } = require("../mysql-connect");
+const {escapeSQL} = require("./sanitizers");
 const AppError = require("../AppError");
 const {cloudinary} = require("../../utilities/cloudinary");
 
 module.exports = {
   topicExists: async (name) => {
     try {
+      let topicName = escapeSQL(name);
       const db = await getDatabase();
       if (db instanceof AppError) return db;
       let exists = await db.execute(
-        `SELECT COUNT(name) FROM topics WHERE name = '${name}' LIMIT 1`
+        `SELECT COUNT(name) FROM topics WHERE name = '${topicName}' LIMIT 1`
       );
       
       return Object.values(Object.assign({}, exists[0][0]))[0];
@@ -27,6 +29,9 @@ module.exports = {
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
+      topicName = escapeSQL(topicName);
+      topicDescription = escapeSQL(topicDescription);
+      
       await db.execute(
         `INSERT INTO topics (name, description, difficulty, username, imageUrl, filename, dateCreated) 
         VALUES('${topicName}', '${topicDescription}', '${topicDifficulty}', '${username}', '${topicImage}', '${filename}', NOW())`
@@ -62,6 +67,7 @@ module.exports = {
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
+      topic = escapeSQL(topic);
       let topics = await db.execute(`SELECT name, description, difficulty, imageUrl 
       FROM topics WHERE name = '${topic}' LIMIT 1`);
       return topics[0].map((o) => Object.assign({}, o));
@@ -117,6 +123,7 @@ module.exports = {
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
+      topic = escapeSQL(topic);
       let topicInfo = await db.execute(`SELECT filename FROM topics WHERE name = '${topic}' LIMIT 1`);
       topicInfo = topicInfo[0].map((o) => Object.assign({},o))
       await cloudinary.uploader.destroy(topicInfo[0].filename);
@@ -130,6 +137,8 @@ module.exports = {
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
+
+      topicName = escapeSQL(topicName);
 
       //Get topic filename
       let result = await db.execute(`SELECT filename FROM topics WHERE name = '${topicName}'`);
@@ -150,7 +159,7 @@ module.exports = {
       if (db instanceof AppError) return db;
       let sql = '';
       for (let i = 0; i < topics.length; i++) {
-        (i === 0) ? sql += `'${topics[i]}'`: sql += `,'${topics[i]}'`;
+        (i === 0) ? sql += `'${escapeSQL(topics[i])}'`: sql += `,'${escapeSQL(topics[i])}'`;
       }
 
       //Select topics to get filenames
