@@ -66,10 +66,11 @@ app.all("*", (req, res, next) => {
 
 //Error Handler
 app.use((err, req, res, next) => {
+  const {pathCSS} = require('./utilities/config');
   res.locals.message = err.message;
   const status = err.status || 500;
   const pageStyles = null;
-  res.status(status).render("error", { title: `${status} Error`, status, pageStyles, user: req.user });
+  res.status(status).render("error", { title: `${status} Error`, status, pageStyles, pathCSS, user: req.user });
 });
 
 //Port

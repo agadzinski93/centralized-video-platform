@@ -1,8 +1,15 @@
 const AppError = require("../utilities/AppError");
 const {pathCSS} = require('../utilities/config');
+const {cloudinary} = require("../utilities/cloudinary");
 const { escapeHTML } = require("../utilities/helpers/sanitizers");
 const { getUser } = require("../utilities/helpers/authHelpers");
-const {updateRefreshSettings, deleteUser} = require("../utilities/helpers/userHelpers");
+const {
+  modifyImage,
+  updateRefreshSettings,
+  updateDisplayNameSetting,
+  updateEmailSetting,
+  deleteImage,
+  deleteUser} = require("../utilities/helpers/userHelpers");
 const {logoutUser} = require("./userAuthCont");
 
 module.exports = {
@@ -52,6 +59,115 @@ module.exports = {
       res.json({test: 'success'});
     }
   },
+  updateDisplayName: async (req,res) => {
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username);
+
+    let {displayName} = req.body;
+    
+    let newDisplayName = escapeHTML(displayName);
+    
+    let result = await updateDisplayNameSetting(user.user_id, newDisplayName);
+
+    if (result instanceof AppError) {
+      res.json({response: 'error', message:'Something went wrong!'});
+    }
+    else {
+      res.json({response: 'success', message:'Display name successfully updated!'});
+    }
+  },
+  updateEmail: async (req,res) => {
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username);
+
+    let {email} = req.body;
+    let newEmail = escapeHTML(email);
+
+    let result = await updateEmailSetting(user.user_id,newEmail);
+
+    if (result instanceof AppError) {
+      res.json({response: 'error', message:'Something went wrong!'});
+    }
+    else {
+      res.json({response: 'success', message:'Email successfully updated!'});
+    }
+  },
+  updateProfilePic: async (req,res) => {
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username);
+
+    let data = null;
+
+    let picUrl,
+        filename;
+    if (req.file != undefined) {
+      picUrl = req.file.path;
+      filename = req.file.filename;
+    }
+    else {
+      picUrl = null;
+      filename = null;
+    }
+    
+    let error = await deleteImage(user, 'PROFILE PIC');
+    if (error instanceof AppError) {
+      await cloudinary.uploader.destroy(filename);
+      return res.json({error:'Error Deleting Profile Pic'});
+    }
+    error = await modifyImage(
+      user.user_id,
+      picUrl,
+      filename,
+      'PROFILE PIC'
+    );
+    if (error instanceof AppError) {
+      await cloudinary.uploader.destroy(filename);
+      return res.json({error:'Error Uploading New Image'});
+    } 
+    
+    data = error;
+    res.json(data);
+  },
+  updateBanner: async (req,res) => {
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username);
+
+    let data = null;
+
+    let picUrl,
+        filename;
+    if (req.file != undefined) {
+      picUrl = req.file.path;
+      filename = req.file.filename;
+    }
+    else {
+      picUrl = null;
+      filename = null;
+    }
+    let error;
+    
+    if (user.banner_url !== null) {
+      error = await deleteImage(user, 'BANNER');
+      if (error instanceof AppError) {
+        await cloudinary.uploader.destroy(filename);
+        return res.json({error:'Error Deleting Banner'});
+      }
+    }
+    
+    error = await modifyImage(
+      user.user_id,
+      picUrl,
+      filename,
+      'BANNER'
+    );
+    if (error instanceof AppError) {
+      await cloudinary.uploader.destroy(filename);
+      return res.json({error:'Error Uploading New Image'});
+    } 
+
+    data = error;
+    res.json(data);
+  },
   renderUserDashboard: async (req, res, next) => {
     const { getUserTopics } = require("../utilities/helpers/topicHelpers");
     const pageStyles = `${pathCSS}user/dashboard.css`;
@@ -94,6 +210,24 @@ module.exports = {
       user, 
       videos
     });
+  },
+  deleteBanner: async (req,res) => {
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username);
+    const filename = user.banner_filename;
+
+    let data = null;
+    let error;
+    
+    if (user.banner_url !== null) {
+      error = await deleteImage(user, 'BANNER');
+      if (error instanceof AppError) {
+        await cloudinary.uploader.destroy(filename);
+        return res.json({error:'Error Deleting Banner'});
+      }
+    }
+    data = {response:'success', message:'Successfully Deleted Banner'};
+    res.json(data);
   },
   deleteAccount: async (req,res,next) => {
     const username = escapeHTML(req.params.username);

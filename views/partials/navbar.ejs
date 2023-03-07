@@ -12,7 +12,7 @@
         </div>
     <%}else{%>
         <div class="userDropDownLinks">
-            <a href="/user/<%= user.username %>"><%= user.username %></a>
+            <div><a href="/user/<%= user.username %>"><div id="avatar" class="navbarProfilePic" style="background-image:url('<%=user.pic_url%>')"></div></a></div>
             <ul class="userSubmenu">
                 <li><a href="/user/<%= user.username %>/dashboard">Dashboard</a></li>
                 <li><a href="/user/<%= user.username %>/settings">Settings</a></li>

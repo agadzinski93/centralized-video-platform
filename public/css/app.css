@@ -17,6 +17,15 @@
 .overflowHidden {
   overflow:hidden;
 }
+.textRight {
+  text-align:right;
+}
+.errorText {
+  color:#FF0000;
+}
+.errorBorder {
+  border:solid 2px #FF0000;
+}
 .modal {
   position:absolute;
   width:100%;
@@ -139,6 +148,15 @@
   background-color:#333;
   color:#FFF;
   font-size:1rem;
+}
+.navbarProfilePic{
+  margin:8px auto;
+  width:34px;
+  height:34px;
+  background-repeat:no-repeat;
+  background-position: center;
+  background-size:cover;
+  border-radius:50%;
 }
 .loginRegisterContainer {
   display:flex;

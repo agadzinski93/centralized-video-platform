@@ -1,4 +1,8 @@
 <div class="backdrop displayNone"></div>
+<div class="modal displayNone">
+    <div class="spinner"></div>
+    <p class="modelText" id="modalText"></p>
+</div>
 <div class="modalDeleteAccount displayNone">
     <h2>Are You Sure?<button id="btnCancelDeleteAcct" class="btnCancelDeleteAccount">X</button></h2>
     <p>This action is unreversable and will:</p>
@@ -11,9 +15,111 @@
         <form action="/user/<%=user.username%>/deleteAccount" method="POST"><button>Confirm Delete Account</button></form>
     </div>
 </div>
+<div id="editProfilePicContainer" class="editImageFormContainer profilePicContainer displayNone">
+    <h2>Edit Profile Picture<button class="btnCancelNewTopic" id="btnCancelEditProfilePic">X</button></h2>
+    <div id="editProfilePicImage" class="editTopicImageImageContainer" style="background-image: url('<%=user.pic_url%>');"></div>
+    <div class="newTopicFileContainer">
+      <form id="editProfilePicForm" enctype="multipart/form-data">
+        <label for="btnProfilePicUpload" class="file-upload" id="lblProfilePicUpload">
+          <div>Click or Drag Image to Upload</div>
+          <img id="streamedProfilePic" class="streamedTopicImg displayNone" src="" alt="">
+        </label>
+        <input type="file" id="btnProfilePicUpload" name="profileImage" hidden>
+      </form>
+    </div>
+    <div class="fileSelectedAndSizeLimitContainer">
+      <span class="fileSelected" id="profilePicSelected">No file selected.</span>
+      <span class="fileSizeLimit">Max File Size: 1MB</span>
+    </div>
+    <div class="newTopicAddBtn">
+      <button id="btnUpdateProfilePic">Update Image</button>
+    </div>
+  </div>
+  <div id="editBannerContainer" class="editImageFormContainer bannerContainer displayNone">
+    <h2>Edit Profile Banner<button class="btnCancelNewTopic" id="btnCancelEditBanner">X</button></h2>
+    <div class="newTopicFileContainer">
+      <form id="editBannerForm" enctype="multipart/form-data">
+        <label for="btnBannerUpload" class="file-upload" id="lblBannerUpload">
+          <div>Click or Drag Image to Upload</div>
+          <img id="streamedBanner" class="streamedTopicImg displayNone" src="" alt="">
+        </label>
+        <input type="file" id="btnBannerUpload" name="bannerImage" hidden>
+      </form>
+    </div>
+    <div class="fileSelectedAndSizeLimitContainer">
+      <span class="fileSelected" id="bannerSelected">No file selected.</span>
+      <span class="fileSizeLimit">Max File Size: 2MB</span>
+    </div>
+    <div class="newTopicAddBtn">
+      <button id="btnUpdateBanner">Update Image</button>
+    </div>
+  </div>
 <%- include("../partials/navbar.ejs") %>
 <div class="settingsPageContainer">
     <h1><a href="/user/<%= user.username %>">&larr;</a> Settings</h1>
+    <div id="flashReference" class="settingsContainer">
+        <h2>Basic Info</h2>
+        <div class="basicInfoContainer">
+            <div><div class="settingsProfilePic" style="background-image:url('<%=user.pic_url%>');"></div></div>
+            <div><button id="btnEditProfilePic">Change Profile Picture</button></div>
+            <div class="textRight">Display Name</div>
+            <div id="displayNameContainer">
+                <%if (user.display_name == null) {%>
+                    <span id="displayName"><span id="noDisplayName" class="noDisplayName">None</span></span>
+                <%}else{%>
+                    <span id="displayName"><%=user.display_name%></span>
+                <%}%>
+                <button id="btnEditDisplayName" class="basicInfoEditButtons">
+                    <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                    <span>Edit Display Name</span>
+                </button>
+            </div>
+            <div id="editDisplayNameContainer" class="displayNone">
+                <input id="txtDisplayName" type="text" placeholder="<%=user.display_name%>">
+                <button id="btnConfirmEditDisplayName" class="basicInfoEditButtons">
+                    <img class="icon" src="/assets/svg/accept.png" alt="edit" />
+                    <span>Confirm</span>
+                </button>
+                <button id="btnCancelEditDisplayName" class="basicInfoEditButtons">
+                    <img class="icon" src="/assets/svg/cancel.png" alt="edit" />
+                    <span>Cancel</span>
+                </button>
+                <p id="errorDisplayName" class="errorText displayNone">Username must be 3 to 24 characters</p>
+            </div>
+            <div class="textRight">Email</div>
+            <div id="displayEmailContainer">
+                <span id="email"><%=user.email%></span>
+                <button id="btnEditEmail" class="basicInfoEditButtons">
+                    <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                    <span>Edit Email</span>
+                </button>
+            </div>
+            <div id="editDisplayEmailContainer" class="displayNone">
+                <input id="txtEmail" type="text" placeholder="<%=user.email%>">
+                <button id="btnConfirmEditEmail" class="basicInfoEditButtons">
+                    <img class="icon" src="/assets/svg/accept.png" alt="edit" />
+                    <span>Confirm</span>
+                </button>
+                <button id="btnCancelEditEmail" class="basicInfoEditButtons">
+                    <img class="icon" src="/assets/svg/cancel.png" alt="edit" />
+                    <span>Cancel</span>
+                </button>
+                <p id="errorEmail" class="errorText displayNone">Please enter a valid email</p>
+            </div>
+        </div>
+    </div>
+    <div class="settingsChannelBannerContainer">
+        <h2>Channel Banner</h2>
+        <div class="channelBannerPreview" style="background-image:url('<%=user.banner_url%>');"></div>
+        <div class="editDeleteBannerButtons">
+            <button id="btnEditBanner">Edit</button>
+            <%if (user.banner_url == null){%>
+                <button id="btnDeleteBanner" class="displayNone">Delete</button>
+            <%}else{%>
+                <button id="btnDeleteBanner">Delete</button>
+            <%}%>
+        </div>
+    </div>
     <div class="settingsContainer">
         <h2>Refresh Metadata</h2>
         <div class="settingContainer">Title</div>
@@ -47,116 +153,9 @@
         </div>
     </div>
 </div>
+<script type="application/javascript" src="/js/global.js"></script>
+<script type="application/javascript" src="/js/user/settings.js"></script>
 <script>
-    const toggleBackdrop = (enable = false, bgColor = "#000", opacity = '50%') => {
-        let backdrop = document.querySelector('.backdrop');
-        if (enable) {
-            backdrop.classList.remove('displayNone');
-            document.querySelector('body').classList.add('overflowHidden');
-        }
-        else {
-            backdrop.classList.add('displayNone');
-            document.querySelector('body').classList.remove('overflowHidden');
-        }
-        backdrop.style.backgroundColor = bgColor;
-        backdrop.opacity = opacity;
-    };
-    const toggleDisplayDeleteModal = (enable = false) => {
-        let modalDeleteAccount = document.querySelector('.modalDeleteAccount');
-        if (enable) {
-            modalDeleteAccount.classList.remove('displayNone');
-        }
-        else {
-            modalDeleteAccount.classList.add('displayNone');
-        }
-    }
-    const toggleSettingSelected = (btn) => {
-        btn.classList.toggle('btnSettingSelected');
-    };
-    const setSettingsButtonEvents = () => {
-        document.getElementById('btnRefreshTitle').addEventListener('click', async (e) => {
-            let result;
-            let currentlyChecked = (e.target.classList.contains('btnSettingSelected')) ? '0' : '1';
-            try {
-                result = await fetch('/user/<%=user.username%>/settings/updateRefreshMetadata',{
-                    method:'PATCH',
-                    headers: {
-                        'Content-Type':'application/json',
-                    },
-                    body: JSON.stringify(
-                        {
-                            setting: 'Title',
-                            value:currentlyChecked,
-                        }
-                    )
-                });
-                toggleSettingSelected(e.target);
-            } catch(err) {
-                result = err;
-            }
-            const data = await result.json();
-        });
-        document.getElementById('btnRefreshDescription').addEventListener('click', async (e) => {
-            let result;
-            let currentlyChecked = (e.target.classList.contains('btnSettingSelected')) ? '0' : '1';
-            try {
-                result = await fetch('/user/<%=user.username%>/settings/updateRefreshMetadata',{
-                    method:'PATCH',
-                    headers: {
-                        'Content-Type':'application/json',
-                    },
-                    body: JSON.stringify(
-                        {
-                            setting: 'Description',
-                            value:currentlyChecked,
-                        }
-                    )
-                });
-                toggleSettingSelected(e.target);
-            } catch(err) {
-                result = err;
-            }
-            const data = await result.json();
-        });
-        document.getElementById('btnRefreshThumbnail').addEventListener('click', async (e) => {
-            let result;
-            let currentlyChecked = (e.target.classList.contains('btnSettingSelected')) ? '0' : '1';
-            try {
-                result = await fetch('/user/<%=user.username%>/settings/updateRefreshMetadata',{
-                    method:'PATCH',
-                    headers: {
-                        'Content-Type':'application/json',
-                    },
-                    body: JSON.stringify(
-                        {
-                            setting: 'Thumbnail',
-                            value:currentlyChecked,
-                        }
-                    )
-                });
-                toggleSettingSelected(e.target);
-            } catch(err) {
-                result = err;
-            }
-            const data = await result.json();
-        });
-    };
-    const addDeleteAccountEvent = () => {
-        let btnDeleteAcct = document.getElementById('deleteAccountButton');
-        btnDeleteAcct.addEventListener('click', (e) => {
-            toggleBackdrop(true, '#000', '50%');
-            toggleDisplayDeleteModal(true);
-        });
-
-        let btnCancelDeleteAcct = document.getElementById('btnCancelDeleteAcct');
-        btnCancelDeleteAcct.addEventListener('click', (e) => {
-            toggleBackdrop(false);
-            toggleDisplayDeleteModal(false);
-        });
-    }
-    const init = () => {
-        setSettingsButtonEvents();
-        addDeleteAccountEvent();
-    };
-    init();
+    const FLASH_REFERENCE = document.querySelector('#flashReference');
+    const USERNAME = '<%=user.username%>';
 </script>

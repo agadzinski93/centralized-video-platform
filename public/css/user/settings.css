@@ -1,3 +1,6 @@
+.icon {
+    height:1rem;
+}
 .settingsPageContainer {
     width:100%;
     height:calc(100vh - 3.125rem);
@@ -34,6 +37,157 @@
     width:calc(50% - 1rem);
     padding-right:1rem;
     text-align:right;
+}
+.basicInfoContainer {
+    width:100%;
+    margin:0 auto;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content: space-between;
+    align-items: center;;
+}
+.basicInfoContainer > div {
+    width:49%;
+    margin-top:1rem;
+}
+.noDisplayName {
+    font-style: italic;
+}
+.settingsProfilePic {
+    float:right;
+    width:5rem;
+    height:5rem;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size:contain;
+    border-radius:50%;
+}
+.basicInfoEditButtons {
+    border:none;
+    background: none;
+}
+.editImageFormContainer {
+    position:absolute;
+    left:0;
+    right:0;
+    width:36%;
+    padding:0 2%;
+    background-color:#333;
+    color:#FFF;
+    z-index:1;
+    overflow:auto;
+  }
+  .createTopicHeader {
+    font-size:1.25rem;
+    text-align: center;
+  }
+  .btnCancelNewTopic {
+    padding:0.5rem 0.75rem;
+    float:right;
+    color:#FFF;
+    background-color:#242424;
+    border:none;
+  }
+  .btnCancelNewTopic:hover {
+    background-color:#444;
+  }
+  .editImageFormContainer > h2 {
+    padding:1rem 0;
+  }
+  .editImageFormContainer > h2 {
+    text-align:center;
+    padding-left:2.25rem;
+  }
+  .editImageFormContainer {
+    width:35rem;
+    height:30rem;
+    
+  }
+  .profilePicContainer,
+  .bannerContainer {
+    margin:calc(50vh - 15rem) auto;
+  }
+  .bannerContainer {
+    margin:calc(50vh - 10rem) auto;
+    height:20rem;
+  }
+  .editTopicImageImageContainer {
+    margin:0 auto;
+    height:10rem;
+    width: 24rem;
+    background-repeat: no-repeat;
+    background-size:contain;
+    background-position: center;
+    text-align:center;
+  }
+  .editTopicImageImageContainer > p {
+    padding-top:4rem;
+  }
+  .newTopicFileContainer {
+    margin:1rem 0;
+    width:100%;
+  }
+  .file-upload {
+    height:9rem;
+    background-color: #242424;
+    display:block;
+    text-align: center;
+  }
+  .file-upload > div {
+    padding-top:3.75rem;
+  }
+  .file-upload img {
+    max-height:7rem;
+    max-width:90%;
+    padding:1rem 0;
+  }
+  .file-upload:hover {
+    background-color:#444;
+  }
+  .fileSizeLimit {
+    float:right;
+  }
+  .newTopicAddBtn {
+    text-align:center;
+  }
+  .newTopicAddBtn > button {
+    padding:0.5rem 0.75rem;
+    margin:1rem 0;
+    border:none;
+    color:#FFF;
+    background-color:#242424;
+    text-transform: capitalize;
+  }
+  .newTopicAddBtn > button:hover {
+    background-color: #444;
+  }
+.settingsChannelBannerContainer {
+    width:90%;
+    margin:1rem auto 0 auto;
+    padding:1rem 0;
+    background-color:#1E1E1E;
+}
+.settingsChannelBannerContainer > h2 {
+    text-align: center;
+}
+.channelBannerPreview {
+    margin:1rem auto 0 auto;
+    width:18rem;
+    height:9rem;
+    background-color:tan;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    box-shadow:0 -10px 10px #000 inset;
+}
+.editDeleteBannerButtons {
+    margin-top:1rem;
+    text-align: center;
+}
+.editDeleteBannerButtons > button {
+    width:6rem;
+    padding:0.25rem 0;
+    border:none;
 }
 .settingButtonContainer {
     width:calc(50% - 1rem);
@@ -115,4 +269,23 @@
         margin:0 auto;
         height:100vh;
     }
+    .bannerContainer {
+        margin-top:0;
+        top:0;
+        height:100vh;
+    }
 }
+@media (max-height:19.5rem) {
+    .bannerContainer {
+        margin-top:0;
+        top:0;
+        height:100vh;
+    }
+}
+@media (max-height: 30rem) {
+    .profilePicContainer {
+      margin-top:0;
+      top:0;
+      height:100vh;
+    }
+  }

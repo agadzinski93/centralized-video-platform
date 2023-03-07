@@ -9,6 +9,7 @@ module.exports = {
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
+      topic = escapeSQL(topic);
       const videos = await db.execute(
         `SELECT * FROM videos WHERE topic = '${topic}' ORDER BY id`
       );
@@ -23,6 +24,8 @@ module.exports = {
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
+
+      topicName = escapeSQL(topicName);
 
       const vidUrl = 'youtube.com/watch?v=' + vidId;
 
@@ -233,6 +236,8 @@ module.exports = {
       let exists;
       const db = await getDatabase();
       if (db instanceof AppError) return db;
+
+      topicName = escapeSQL(topicName);
 
       const result = await db.execute(
         `SELECT COUNT(url) FROM videos WHERE url = 'youtube.com/watch?v=${vidId}' AND topic = '${topicName}' LIMIT 1`
