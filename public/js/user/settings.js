@@ -148,10 +148,39 @@ const addBasicInfoEvents = () => {
                 document.getElementById('streamedProfilePic').classList.add('displayNone');
                 document.querySelector('#lblProfilePicUpload div').classList.remove('displayNone');
                 document.getElementById('profilePicSelected').textContent = 'No file selected.';
+                document.getElementById('btnDeleteProfilePic').classList.remove('displayNone');
             }
         });
     }
     updateProfilePicEvent();
+    const deleteProfilePicEvent = () => {
+        const btnDeleteprofilePic = document.getElementById('btnDeleteProfilePic');
+        btnDeleteprofilePic.addEventListener('click', async () => {
+            toggleBackdrop(true, '#fff', '10%');
+            toggleModal(true, 'Deleting profile pic...');
+
+            let result = await fetch(`/user/${USERNAME}/settings/updateProfilePic`,{
+                method:'DELETE'
+            });
+            let data = await result.json();
+
+            toggleBackdrop(false);
+            toggleModal(false);
+            if (Object.keys(data).includes('error')) {
+                flashBanner('error', `${data.error}`, FLASH_REFERENCE);
+            }
+            else {
+                flashBanner('success', 'Successfully deleted profile picture.', FLASH_REFERENCE);
+                document.querySelector('.settingsProfilePic').style.backgroundImage = `url('${data.image.path}')`;
+                document.getElementById('editProfilePicImage').style.backgroundImage = `url('${data.image.path}')`;
+                document.getElementById('avatar').style.backgroundImage = `url('${data.image.path}')`;
+                document.getElementById('btnProfilePicUpload').value = null;
+                document.getElementById('profilePicSelected').textContent = 'No file selected.';
+                document.getElementById('btnDeleteProfilePic').classList.add('displayNone');
+            }
+        });
+    }
+    deleteProfilePicEvent();
     //Display Name Validator
    const validateDisplayName = (e) => {
     const input = e.target.value;

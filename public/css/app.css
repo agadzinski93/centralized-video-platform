@@ -46,6 +46,10 @@
   width:100%;
   color:#000;
 }
+.clearButtonStyles {
+  border:none;
+  background-color:initial;
+}
 .icon + span {
   display: none;
   position: absolute;

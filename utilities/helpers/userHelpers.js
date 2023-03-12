@@ -96,27 +96,34 @@ module.exports = {
             const db = await getDatabase();
             if (db instanceof AppError) return db;
 
-            let filename;
+            let path = null,
+                filename = null;
             switch(target) {
                 case 'PROFILE PIC':
-                    path = user.pic_url;
                     filename = user.pic_filename;
                     if (filename !== process.env.DEFAULT_PIC_FILENAME) {
                         await cloudinary.uploader.destroy(filename);
-                      }
-                      db.execute(`UPDATE users SET pic_url = ${process.env.DEFAULT_PROFILE_PIC}, pic_filename = ${process.env.DEFAULT_PIC_FILENAME}
+                    }
+                    db.execute(`UPDATE users SET pic_url = '${process.env.DEFAULT_PROFILE_PIC}', pic_filename = '${process.env.DEFAULT_PIC_FILENAME}'
                         WHERE user_id = '${user.user_id}'`);
+                    path = process.env.DEFAULT_PROFILE_PIC;
+                    filename = process.env.DEFAULT_PIC_FILENAME;
                     break;
                 case 'BANNER':
-                    path = user.banner_url;
                     filename = user.banner_filename;
                     await cloudinary.uploader.destroy(filename);
-                    db.execute(`UPDATE users SET banner_url = null, banner_filename = null
+                   db.execute(`UPDATE users SET banner_url = null, banner_filename = null
                         WHERE user_id = '${user.user_id}'`);
                     break;
                 default:
             }
-            return null;
+            return {
+                message:'Successfully deleted image.', 
+                image:{
+                    path,
+                    filename
+                }
+            };
           } catch(err) {
             return new AppError(500, "Error Updating Topic Image");
           }
