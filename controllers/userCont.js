@@ -33,11 +33,17 @@ module.exports = {
     let pageStyles = `${pathCSS}user/settings.css`;
     if (user instanceof AppError) return next(user);
 
+    let usingDefaultProfilePic = false;
+    if (user.pic_filename === process.env.DEFAULT_PIC_FILENAME) {
+      usingDefaultProfilePic = true;
+    }
+
     res.render("user/settings", {
       title: `${user.username}'s Settings`,
       pageStyles,
       pathCSS,
       user,
+      usingDefaultProfilePic
     });
   },
   updateRefreshMetadata: async (req,res) => {
@@ -125,6 +131,18 @@ module.exports = {
       return res.json({error:'Error Uploading New Image'});
     } 
     
+    data = error;
+    res.json(data);
+  },
+  deleteProfilePic: async(req,res) => {
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username);
+
+    let data = null;
+    let error = await deleteImage(user, 'PROFILE PIC');
+    if (error instanceof AppError) {
+      return res.json({error:'Error Deleting Profile Pic'});
+    }
     data = error;
     res.json(data);
   },

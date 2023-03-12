@@ -61,7 +61,23 @@
         <h2>Basic Info</h2>
         <div class="basicInfoContainer">
             <div><div class="settingsProfilePic" style="background-image:url('<%=user.pic_url%>');"></div></div>
-            <div><button id="btnEditProfilePic">Change Profile Picture</button></div>
+            <div>
+                <button class="clearButtonStyles" id="btnEditProfilePic">
+                    <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                    <span>Change Profile Picture</span>
+                </button>
+                <%if (usingDefaultProfilePic){%>
+                    <button class="clearButtonStyles displayNone" id="btnDeleteProfilePic">
+                        <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit" />
+                        <span>Delete Profile Picture</span>
+                    </button>
+                <%}else{%>
+                    <button class="clearButtonStyles" id="btnDeleteProfilePic">
+                        <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit" />
+                        <span>Delete Profile Picture</span>
+                    </button>
+                <%}%>
+            </div>
             <div class="textRight">Display Name</div>
             <div id="displayNameContainer">
                 <%if (user.display_name == null) {%>
