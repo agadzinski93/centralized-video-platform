@@ -1,6 +1,6 @@
 <div class="topicContainer">
     <%- include("../partials/navbar.ejs") %>
-    <div class="videoPageContainer">
+    <div id="flashReference" class="videoPageContainer">
       <div class="mainVideoContainer">
         <div class="mainVideoPlayerContainer">
           <%if (timestamp === null) {%>
@@ -10,6 +10,34 @@
           <%}%>
         </div>
         <p class="mainVideoTitle"><%=video.title%></p>
+        <div class="authorInfo">
+          <div class="authorAvatar" style="background-image:url('<%=video.pic_url%>')"></div>
+          <div class="authorDetails">
+            <ul>
+              <li><%=video.username%></li>
+              <li>
+                <%=video.subscribers%>
+                <%if (video.subscribers === 1){%>
+                  Subscriber
+                <%}else{%>
+                  Subscribers
+                <%}%>
+              </li>
+            </ul>
+          </div>
+          <div class="subscribeButtonsContainer">
+            <%if (subscribed === null){%>
+              <button id="btnSubscribe" class="subscribe displayNone">Subscribe</button>
+              <button id="btnUnsubscribe" class="unsubscribe displayNone">Unsubscribe</button>
+            <%}else if(subscribed === false){%>
+              <button id="btnSubscribe" class="subscribe">Subscribe</button>
+              <button id="btnUnsubscribe" class="unsubscribe displayNone">Unsubscribe</button>
+            <%}else{%>
+              <button id="btnSubscribe" class="subscribe displayNone">Subscribe</button>
+              <button id="btnUnsubscribe" class="unsubscribe">Unsubscribe</button>
+            <%}%>
+          </div>
+        </div>
         <p class="mainVideoDescription"><%=video.description%></p>
       </div>
       <div class="videoPlaylistLeft">
@@ -60,9 +88,14 @@
       </div>
     </div>
 </div>
-  <script>
-    const init = () => {
-      document.getElementById('selectedVideo').scrollIntoView(true);
-    }
-    init();
-  </script>
+<script>
+  const FLASH_REFERENCE = document.querySelector('#flashReference');
+  <%if (user){%>
+    const USER_ID = '<%=user.user_id%>';
+  <%}else{%>
+    const USER_ID = null;
+  <%}%>
+  const AUTHOR_ID = '<%=video.user_id%>';
+</script>
+<script type="application/javascript" src="/js/global.js"></script>
+<script type="application/javascript" src="/js/lib/videoPage.js"></script>

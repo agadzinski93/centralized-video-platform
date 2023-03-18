@@ -59,6 +59,7 @@ app.use("/lib", require("./routes/libraryRoutes"));
 app.use("/user", require("./routes/userRoutes"));
 app.use("/topics", require("./routes/topicsRoutes"));
 app.use("/video", require("./routes/videoRoutes"));
+app.use("/subscribe",require("./routes/subscriberRoutes"));
 
 app.all("*", (req, res, next) => {
   return next(new AppError(404, "Page Not Found"));
