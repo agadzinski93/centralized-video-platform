@@ -122,6 +122,34 @@
                 </button>
                 <p id="errorEmail" class="errorText displayNone">Please enter a valid email</p>
             </div>
+            <div class="textRight">About Me</div>
+            <div id="aboutMeContainer">
+                <%if (user.about_me === null || user.about_me === ""){%>
+                    <span id="txtAboutMe" class="noDisplayName">None</span>
+                <%}else{%>
+                    <span id="txtAboutMe" class="aboutMeContainer"><%=user.about_me%></span>
+                <%}%>
+                <button id="btnEditAboutMe" class="basicInfoEditButtons">
+                    <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                    <span>Edit Your Bio</span>
+                </button>
+            </div>
+            <div id="editAboutMeContainer" class="displayNone">
+                <%if (user.about_me === null){%>
+                    <textarea name="aboutMe" id="aboutMe" cols="30" rows="10"></textarea>
+                <%}else{%>
+                    <textarea name="aboutMe" id="aboutMe" cols="30" rows="10"><%=user.about_me%></textarea>
+                <%}%>
+                <button id="btnConfirmEditAboutMe" class="basicInfoEditButtons">
+                    <img class="icon" src="/assets/svg/accept.png" alt="edit" />
+                    <span>Confirm</span>
+                </button>
+                <button id="btnCancelEditAboutMe" class="basicInfoEditButtons">
+                    <img class="icon" src="/assets/svg/cancel.png" alt="edit" />
+                    <span>Cancel</span>
+                </button>
+                <p>1024 characters remaining</p>
+            </div>
         </div>
     </div>
     <div class="settingsChannelBannerContainer">

@@ -15,6 +15,7 @@ const {
   updateEmail,
   updateProfilePic,
   deleteProfilePic,
+  updateAboutMe,
   updateBanner,
   renderUserDashboard,
   renderUserTopic,
@@ -29,6 +30,7 @@ router.patch("/:username/settings/updateDisplayName", isLoggedIn, isAuthor, upda
 router.patch("/:username/settings/updateEmail", isLoggedIn, isAuthor, updateEmail);
 router.patch("/:username/settings/updateProfilePic", isLoggedIn, isAuthor, parserProfilePic.single('profileImage'), updateProfilePic);
 router.delete("/:username/settings/updateProfilePic", isLoggedIn, isAuthor, deleteProfilePic);
+router.patch("/:username/settings/updateAboutMe",isLoggedIn,isAuthor,updateAboutMe);
 router.patch("/:username/settings/updateBanner", isLoggedIn, isAuthor, parserBanner.single('bannerImage'), updateBanner);
 router.get("/:username/dashboard", isLoggedIn, isAuthor, renderUserDashboard);
 router.get("/:username/dashboard/:topic", isLoggedIn, isAuthor, renderUserTopic);

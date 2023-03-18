@@ -5,14 +5,15 @@ module.exports = {
   /**
    * Retrieve all columns for a user
    * @param {string} username username used to identify the proper user
+   * @param {string} columns which columns to include in SELECT, separate with commas
    * @returns {Promise<object>} The user object from the database or an error object
    */
-  getUser: async (username) => {
+  getUser: async (username, columns = '*') => {
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
       const user = await db.execute(
-        `SELECT * FROM users WHERE username = '${username}'`
+        `SELECT ${columns} FROM users WHERE username = '${username}'`
       );
 
       if (user[0].length === 0) {

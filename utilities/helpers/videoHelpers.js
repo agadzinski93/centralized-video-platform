@@ -19,7 +19,14 @@ module.exports = {
       return new AppError(500, "Error Retrieving Videos");
     }
   },
-  getVideo: async (vidId, topicName) => {
+  /**
+   * 
+   * @param {string} vidId - Unique ID of video 
+   * @param {string} topicName - Unique topic name video belongs to
+   * @param {boolean} author - True if you want to include info on video's author
+   * @returns AppError or Object containing video info
+   */
+  getVideo: async (vidId, topicName, author = false) => {
     let video;
     try {
       const db = await getDatabase();
@@ -28,8 +35,12 @@ module.exports = {
       topicName = escapeSQL(topicName);
 
       const vidUrl = 'youtube.com/watch?v=' + vidId;
-
-      let video = await db.execute(`SELECT * FROM videos WHERE url = '${vidUrl}' AND topic = '${topicName}' LIMIT 1`);
+      let video;
+      if (!author) {
+        video = await db.execute(`SELECT * FROM videos WHERE url = '${vidUrl}' AND topic = '${topicName}' LIMIT 1`);
+      } else {
+        video = await db.execute(`SELECT v.*,u.user_id,u.subscribers,u.pic_url FROM videos v JOIN users u ON v.username = u.username WHERE url = '${vidUrl}' AND topic = '${topicName}' LIMIT 1`);
+      }
 
       let videoInfo = video[0].map((v) => Object.assign({}, v));
       if (videoInfo.length < 1) {

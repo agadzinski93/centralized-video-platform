@@ -22,16 +22,18 @@ module.exports = {
     const {getTopic} = require('../utilities/helpers/topicHelpers');
     const {getTopicVideos} = require("../utilities/helpers/videoHelpers");
     const {getVideo} = require("../utilities/helpers/videoHelpers");
+    const {isSubscribed} = require("../utilities/helpers/subscribeHelpers");
 
     const pageStyles = `${pathCSS}lib/videoPage.css`;
 
     let topicName = escapeHTML(req.params.topic);
+    let userId = null;
     let topic = await getTopic(topicName);
     if (topic instanceof AppError) return next(topic);
 
     const videos = await getTopicVideos(topicName);
     if (videos instanceof AppError) return next(videos);
-
+    
     let videoId = escapeHTML(req.params.video);
     let timestamp = null;
     if (videoId.includes('&t=')) {
@@ -41,10 +43,17 @@ module.exports = {
     }
     videoId = removeParams(videoId);
     
-    let video = await getVideo(videoId, topicName);
+    let video = await getVideo(videoId, topicName, true);
     if (video instanceof AppError) return next(video);
 
     video[0].videoId = videoId;
+    let subscribed = null;
+    if (req.user) {
+      userId = req.user.user_id;
+      if (userId !== video[0].user_id) {
+        subscribed = await isSubscribed(userId,video[0].user_id);
+      }
+    }
 
     res.render("lib/videoPage", {
       title: `${topicName} | ${video[0].title.substring(0,50)}`, 
@@ -54,6 +63,7 @@ module.exports = {
       topic: topic[0], 
       videos, 
       video: video[0],
+      subscribed,
       timestamp
     });
   }

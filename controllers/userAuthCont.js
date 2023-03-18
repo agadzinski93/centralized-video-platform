@@ -138,12 +138,13 @@ module.exports = {
 
     try {
       await db.execute(
-        `INSERT INTO users (user_id, username, email, password, account_type, pic_url, pic_filename) 
+        `INSERT INTO users (user_id, username, email, password, dateJoined, account_type, pic_url, pic_filename) 
           VALUES(
             '${id}',
             '${req.body.reg.username}',
             '${req.body.reg.email}',
             '${pw}',
+            CURDATE(),
             'admin',
             '${process.env.DEFAULT_PROFILE_PIC}',
             '${process.env.DEFAULT_PIC_FILENAME}'

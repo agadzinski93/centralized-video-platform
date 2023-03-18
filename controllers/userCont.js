@@ -1,16 +1,23 @@
 const AppError = require("../utilities/AppError");
 const {pathCSS} = require('../utilities/config');
 const {cloudinary} = require("../utilities/cloudinary");
-const { escapeHTML } = require("../utilities/helpers/sanitizers");
+const { escapeHTML,escapeSQL } = require("../utilities/helpers/sanitizers");
 const { getUser } = require("../utilities/helpers/authHelpers");
 const {
   modifyImage,
   updateRefreshSettings,
   updateDisplayNameSetting,
   updateEmailSetting,
+  updateAboutMeSetting,
   deleteImage,
   deleteUser} = require("../utilities/helpers/userHelpers");
-const {logoutUser} = require("./userAuthCont");
+const {
+  USER_ID,
+  PIC_FILENAME,
+  BANNER_URL,
+  BANNER_FILENAME,
+  concat_user_columns
+} = require("../utilities/globals/user");
 
 module.exports = {
   renderUserPage: async (req, res, next) => {
@@ -32,7 +39,7 @@ module.exports = {
     const user = await getUser(username);
     let pageStyles = `${pathCSS}user/settings.css`;
     if (user instanceof AppError) return next(user);
-
+    
     let usingDefaultProfilePic = false;
     if (user.pic_filename === process.env.DEFAULT_PIC_FILENAME) {
       usingDefaultProfilePic = true;
@@ -48,15 +55,15 @@ module.exports = {
   },
   updateRefreshMetadata: async (req,res) => {
     const username = escapeHTML(req.params.username);
-    const user = await getUser(username);
-
+    const user = await getUser(username, USER_ID);
+    
     let {setting} = req.body;
     let {value} = req.body;
-
+    console.log(user);
     setting = escapeHTML(setting);
     value = escapeHTML(value);
     
-    let result = await updateRefreshSettings(user.user_id,setting, value);
+    let result = await updateRefreshSettings(user.user_id, setting, value);
     
     if (result instanceof AppError) {
       res.json({test: 'error'});
@@ -67,11 +74,10 @@ module.exports = {
   },
   updateDisplayName: async (req,res) => {
     const username = escapeHTML(req.params.username);
-    const user = await getUser(username);
+    const user = await getUser(username, USER_ID);
 
     let {displayName} = req.body;
-    
-    let newDisplayName = escapeHTML(displayName);
+    let newDisplayName = escapeHTML(escapeSQL(displayName.toString()));
     
     let result = await updateDisplayNameSetting(user.user_id, newDisplayName);
 
@@ -84,10 +90,10 @@ module.exports = {
   },
   updateEmail: async (req,res) => {
     const username = escapeHTML(req.params.username);
-    const user = await getUser(username);
-
+    const user = await getUser(username, USER_ID);
+    
     let {email} = req.body;
-    let newEmail = escapeHTML(email);
+    let newEmail = escapeHTML(escapeSQL(email.toString()));
 
     let result = await updateEmailSetting(user.user_id,newEmail);
 
@@ -100,8 +106,9 @@ module.exports = {
   },
   updateProfilePic: async (req,res) => {
     const username = escapeHTML(req.params.username);
-    const user = await getUser(username);
-
+    const user_cols = concat_user_columns([USER_ID,PIC_FILENAME]);
+    const user = await getUser(username, user_cols);
+    console.log(user);
     let data = null;
 
     let picUrl,
@@ -146,12 +153,30 @@ module.exports = {
     data = error;
     res.json(data);
   },
-  updateBanner: async (req,res) => {
+  updateAboutMe: async(req,res)=>{
     const username = escapeHTML(req.params.username);
-    const user = await getUser(username);
+    const user = await getUser(username, USER_ID);
 
     let data = null;
+    let {txtAboutMe} = req.body;
+    let aboutMe = escapeSQL(txtAboutMe.toString());
 
+    let error = await updateAboutMeSetting(user.user_id,txtAboutMe);
+    if (error instanceof AppError) {
+      data = {response:'error',message:'Error Updating \'About Me\''};
+    }
+    else {
+      data = {response:'success',message:'Successfully updated your \'About Me\'',aboutMe};
+    }
+    res.json(data);
+  },
+  updateBanner: async (req,res) => {
+    const username = escapeHTML(req.params.username);
+    const user_cols = concat_user_columns([USER_ID,BANNER_URL,BANNER_FILENAME]);
+    const user = await getUser(username, user_cols);
+
+    let data = null;
+  
     let picUrl,
         filename;
     if (req.file != undefined) {
@@ -231,9 +256,10 @@ module.exports = {
   },
   deleteBanner: async (req,res) => {
     const username = escapeHTML(req.params.username);
-    const user = await getUser(username);
+    const user_cols = concat_user_columns([USER_ID,BANNER_URL,BANNER_FILENAME]);
+    const user = await getUser(username, user_cols);
     const filename = user.banner_filename;
-
+    
     let data = null;
     let error;
     
@@ -249,7 +275,7 @@ module.exports = {
   },
   deleteAccount: async (req,res,next) => {
     const username = escapeHTML(req.params.username);
-    const user = await getUser(username);
+    const user = await getUser(username, USER_ID);
     if (user instanceof AppError) return next(user);
 
     const result = await deleteUser(user.user_id);

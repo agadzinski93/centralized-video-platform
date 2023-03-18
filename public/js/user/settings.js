@@ -288,6 +288,55 @@ const addBasicInfoEvents = () => {
         document.getElementById('displayEmailContainer').classList.remove('displayNone');
         document.getElementById('txtEmail').removeEventListener('input',validateEmail);
     });
+    //About Me
+    document.getElementById('btnEditAboutMe').addEventListener("click",()=>{
+        document.getElementById('aboutMeContainer').classList.add('displayNone');
+        document.getElementById('editAboutMeContainer').classList.remove('displayNone');
+    });
+    //Confirm About Me
+    document.getElementById('btnConfirmEditAboutMe').addEventListener('click',async (e) => {
+        let txtAboutMe = document.getElementById('aboutMe').value;
+        if (txtAboutMe.length <= 1024) {
+            toggleBackdrop(true,'#FFF','10%');
+            toggleModal('Updating your \'About Me\'...');
+            let result = await fetch(`/user/${USERNAME}/settings/updateAboutMe`,{
+                method:'PATCH',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify({
+                    txtAboutMe
+                })
+            });
+            let data = await result.json();
+            toggleBackdrop(false);
+            toggleModal(false);
+            if (data.response === 'error') {
+                flashBanner('error', `${data.error}`, FLASH_REFERENCE);
+            }
+            else {
+                flashBanner('success', data.message, FLASH_REFERENCE);
+                let aboutMe = document.getElementById('txtAboutMe');
+                if (data.aboutMe === "") {
+                    aboutMe.classList.add('noDisplayName');
+                    aboutMe.classList.remove('aboutMeContainer');
+                    aboutMe.textContent = 'None';
+                }
+                else {
+                    aboutMe.classList.remove('noDisplayName');
+                    aboutMe.classList.add('aboutMeContainer');
+                    aboutMe.textContent = data.aboutMe;
+                }
+                document.getElementById('aboutMeContainer').classList.remove('displayNone');
+                document.getElementById('editAboutMeContainer').classList.add('displayNone');
+            }
+        }
+    });
+    //Cancel About Me
+    document.getElementById('btnCancelEditAboutMe').addEventListener('click',()=>{
+        document.getElementById('aboutMeContainer').classList.remove('displayNone');
+        document.getElementById('editAboutMeContainer').classList.add('displayNone');
+    });
     //Banner Code
     document.getElementById('btnEditBanner').addEventListener('click',()=>{
         document.querySelector('body').classList.add('overflowHidden');

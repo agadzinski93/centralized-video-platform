@@ -74,7 +74,7 @@ module.exports = {
         try {
             const db = await getDatabase();
             result = await db.execute(`UPDATE users SET display_name = '${newDisplayName}'
-            WHERE user_id = '${userId}'`);
+                WHERE user_id = '${userId}'`);
         } catch(err) {
             result = new AppError(500, err.message);
         }
@@ -85,9 +85,20 @@ module.exports = {
         try {
             const db = await getDatabase();
             result = await db.execute(`UPDATE users SET email = '${newEmail}'
-            WHERE user_id = '${userId}'`);
+                WHERE user_id = '${userId}'`);
         } catch(err) {
             result = new AppError(500, err.message);
+        }
+        return result;
+    },
+    updateAboutMeSetting: async (userId,newAboutMe) => {
+        let result;
+        try {
+            const db = await getDatabase();
+            result = await db.execute(`UPDATE users SET about_me = '${newAboutMe}'
+                WHERE user_id = '${userId}'`);
+        } catch(err) {
+            result = new AppError(500,err.message);
         }
         return result;
     },
