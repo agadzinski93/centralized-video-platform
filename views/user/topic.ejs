@@ -79,7 +79,7 @@
       <p><%=topic.description%></p>
     </div>
     <% if (videos.length > 0) { %>
-      <div class="dashboardTopicVideosList">
+      <div id="dashboardTopicVideosList" class="dashboardTopicVideosList">
         <% for (video of videos) { %>
         <div class="dashboardTopicVideoContainer" id="<%=video.id%>Container">
           <div class="videoOptionsPanel">

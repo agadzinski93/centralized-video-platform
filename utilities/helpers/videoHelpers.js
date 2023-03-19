@@ -356,7 +356,6 @@ module.exports = {
       else if (thumbnail !== null) {
         await db.execute(`UPDATE videos SET thumbnail = '${thumbnail}' WHERE id = ${id}`);
       }
-
       return {title, description, thumbnail};
     } catch(err) {
       return new AppError(500, `Error Updating Video: ${err.message}`);

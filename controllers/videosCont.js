@@ -104,7 +104,7 @@ module.exports = {
             let result = await swapVideoRecords(currentVidId, swapVidId);
 
             if (result instanceof AppError) return next(result);
-
+            
             res.json(result);
         }
         else {
@@ -131,6 +131,7 @@ module.exports = {
                         result = await modifyVideo(videos[i], vidInfo.title, vidInfo.description.substring(0,1023), vidInfo.thumbnail);
                         if (result instanceof AppError) break;
                         result.description = unescapeSQL(result.description);
+                        result.title = unescapeSQL(result.title);
                         finalResult.push(result);
                     }
                 }
@@ -141,6 +142,7 @@ module.exports = {
                         result = await modifyVideo(videos[i], vidInfo.title, vidInfo.description.substring(0,1023), null);
                         if (result instanceof AppError) break;
                         result.description = unescapeSQL(result.description);
+                        result.title = unescapeSQL(result.title);
                         result.thumbnail = null;
                         finalResult.push(result);
                     }
@@ -153,6 +155,7 @@ module.exports = {
                         result = await modifyVideo(videos[i], vidInfo.title, null, vidInfo.thumbnail);
                         if (result instanceof AppError) break;
                         result.description = null;
+                        result.title = unescapeSQL(result.title);
                         finalResult.push(result);
                     }
             }
@@ -163,6 +166,7 @@ module.exports = {
                         result = await modifyVideo(videos[i], vidInfo.title, null, null);
                         if (result instanceof AppError) break;
                         result.description = null;
+                        result.title = unescapeSQL(result.title);
                         result.thumbnail = null;
                         finalResult.push(result);
                     }

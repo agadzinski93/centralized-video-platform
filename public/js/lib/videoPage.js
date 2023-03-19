@@ -3,6 +3,7 @@ const addSubscribeEvents = () => {
     const btnSubscribe = document.getElementById('btnSubscribe');
     const btnUnsubscribe = document.getElementById('btnUnsubscribe');
     btnSubscribe.addEventListener('click',async()=>{
+        toggleBackgroundLoading(true,btnSubscribe,true);
         let result = await fetch("/subscribe",{
             method:'POST',
             headers:{
@@ -14,8 +15,8 @@ const addSubscribeEvents = () => {
             })
         });
         let data = await result.json();
+        toggleBackgroundLoading(false,btnSubscribe,false,'Subscribe');
         if (data.response === 'success') {
-            flashBanner('success', data.message,FLASH_REFERENCE);
             btnSubscribe.classList.add('displayNone');
             btnUnsubscribe.classList.remove('displayNone');
         } else {
@@ -23,6 +24,7 @@ const addSubscribeEvents = () => {
         }
     });
     btnUnsubscribe.addEventListener('click',async()=>{
+        toggleBackgroundLoading(true,btnUnsubscribe,true);
         let result = await fetch("/subscribe",{
             method:'DELETE',
             headers:{
@@ -34,8 +36,8 @@ const addSubscribeEvents = () => {
             })
         });
         let data = await result.json();
+        toggleBackgroundLoading(false,btnUnsubscribe,false,'Unsubscribe');
         if (data.response === 'success') {
-            flashBanner('success', data.message,FLASH_REFERENCE);
             btnUnsubscribe.classList.add('displayNone');
             btnSubscribe.classList.remove('displayNone');
         } else {

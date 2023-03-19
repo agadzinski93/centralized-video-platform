@@ -1,4 +1,6 @@
 <%- include("../partials/navbar.ejs") %>
-<p>Viewing <%= user.username %>'s Page</p>
-<a href="/user/<%= user.username %>/settings">Settings</a>
-<a href="/user/<%= user.username %>/dashboard">Dashboard</a>
+<p>Viewing <%= author.username %>'s Page</p>
+<%if (user.username === author.username){%>
+<a href="/user/<%= author.username %>/settings">Settings</a>
+<a href="/user/<%= author.username %>/dashboard">Dashboard</a>
+<%}%>

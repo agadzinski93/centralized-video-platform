@@ -14,7 +14,7 @@
           <div class="authorAvatar" style="background-image:url('<%=video.pic_url%>')"></div>
           <div class="authorDetails">
             <ul>
-              <li><%=video.username%></li>
+              <li><a href="/user/<%=video.username%>"><%=video.username%></a></li>
               <li>
                 <%=video.subscribers%>
                 <%if (video.subscribers === 1){%>
