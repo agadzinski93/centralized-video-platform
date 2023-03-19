@@ -116,6 +116,12 @@
     height:0;
   }
 }
+.backgroundLoading{
+  background-repeat:no-repeat;
+  background-position: center;
+  background-size:contain;
+  background-image:url("/assets/svg/spinner.gif");
+}
 .navbar {
   background-color:#1E1E1E;
   display:flex;

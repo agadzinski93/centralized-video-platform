@@ -22,16 +22,21 @@ const {
 module.exports = {
   renderUserPage: async (req, res, next) => {
     const username = escapeHTML(req.params.username);
-    const user = await getUser(username);
-    if (user instanceof AppError) return next(user);
+    const author = await getUser(username);
+    if (author instanceof AppError) return next(author);
+    let user = null;
+    if (req.user) {
+      user = req.user;
+    }
 
     let pageStyles = null;
 
     res.render(`user/userPage`, {
-      title: `${user.username}'s Page`,
+      title: `${author.username}'s Page`,
       pageStyles,
       pathCSS,
-      user,
+      author,
+      user
     });
   },
   renderUserSettings: async (req, res) => {

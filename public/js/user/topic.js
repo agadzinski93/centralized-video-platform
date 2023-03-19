@@ -52,6 +52,31 @@ const toggleNewTopicForm = () => {
       });
     }
   };
+  /**
+   * If either the current video or swap video is highlighted, switch the highlight
+   * @param {number} current - ID of video to swap
+   * @param {number} swap - ID of video to swap with
+   */
+  const swapHighlight = (current, swap) => {
+    const btnCurrent = document.getElementById(current.toString());
+    const btnSwap = document.getElementById(swap.toString());
+    const currentHighlighted = (btnCurrent.classList.contains('btnSelectVideoSelected')) ? true : false;
+    const swapHighlighted = (btnSwap.classList.contains('btnSelectVideoSelected')) ? true : false;
+    if ((currentHighlighted && !swapHighlighted) || (!currentHighlighted && swapHighlighted)) {
+        if (currentHighlighted) {
+          btnCurrent.classList.remove('btnSelectVideoSelected');
+          btnCurrent.parentElement.parentElement.classList.remove('videoOptionsPanelSelected');
+          btnSwap.classList.add('btnSelectVideoSelected');
+          btnSwap.parentElement.parentElement.classList.add('videoOptionsPanelSelected');
+        }
+        else {
+          btnCurrent.classList.add('btnSelectVideoSelected');
+          btnCurrent.parentElement.parentElement.classList.add('videoOptionsPanelSelected');
+          btnSwap.classList.remove('btnSelectVideoSelected');
+          btnSwap.parentElement.parentElement.classList.remove('videoOptionsPanelSelected');
+        }
+    }
+  };
   const swapVideoInfo = (current, swap) => {
     //Swap Thumbnails
     const currentThumbnail = document.getElementById(`thumbnail${current}`).style.backgroundImage;
@@ -84,6 +109,7 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
             try {
               const currentVidId = downButtons[i].getAttribute('id').substring(8);
               const swapVidId = upButtons[i+1].getAttribute('id').substring(6);
+              swapHighlight(currentVidId,swapVidId);
 
               const result = await fetch(`/video/${USERNAME}/swapVideos`, {
                 method:'POST',
@@ -101,6 +127,7 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
               }
             }
             catch (err) {
+              flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
             }
             toggleBackdrop(false);
             toggleModal(false);
@@ -113,6 +140,7 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
             try {
               const currentVidId = upButtons[i].getAttribute('id').substring(6);
               const swapVidId = downButtons[i-1].getAttribute('id').substring(8);
+              swapHighlight(currentVidId,swapVidId);
 
               const result = await fetch(`/video/${USERNAME}/swapVideos`, {
                 method:'POST',
@@ -129,11 +157,13 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
               if (data == null) {
                 swapVideoInfo(currentVidId, swapVidId);
               }
+              else {
+                flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
+              }
             } catch(err) {
             }
             toggleBackdrop(false);
             toggleModal(false);
-            //flashBanner('success', 'Successfully swapped videos', REFERENCE_NODE);
           });
         }
         else {
@@ -143,6 +173,7 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
             try {
               const currentVidId = upButtons[i].getAttribute('id').substring(6);
               const swapVidId = downButtons[i-1].getAttribute('id').substring(8);
+              swapHighlight(currentVidId,swapVidId);
 
               const result = await fetch(`/video/${USERNAME}/swapVideos`, {
                 method:'POST',
@@ -159,10 +190,10 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
                 swapVideoInfo(currentVidId, swapVidId);
               }
             } catch(err) {
+              flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
             }
             toggleBackdrop(false);
             toggleModal(false);
-            //flashBanner('success', 'Successfully swapped videos', REFERENCE_NODE);
           });
           downButtons[i].addEventListener('click', async (e) => {
             toggleBackdrop(true, '#FFF', '10%');
@@ -170,6 +201,7 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
             try {
               const currentVidId = downButtons[i].getAttribute('id').substring(8);
               const swapVidId = upButtons[i+1].getAttribute('id').substring(6);
+              swapHighlight(currentVidId,swapVidId);
 
               const result = await fetch(`/video/${USERNAME}/swapVideos`, {
                 method:'POST',
@@ -186,10 +218,10 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
                 swapVideoInfo(currentVidId, swapVidId);
               }
             } catch(err) {
+              flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
             }
             toggleBackdrop(false);
             toggleModal(false);
-            //flashBanner('success', 'Successfully swapped videos', REFERENCE_NODE);
           });
         }
       }
@@ -321,6 +353,7 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
   const addRemoveSelectedVideos = () => {
     document.getElementById('btnDeleteSelected').addEventListener('click', async (e) => {
       const selectedVideos = document.getElementsByClassName('btnSelectVideoSelected');
+      const totalVideos = document.querySelectorAll('dashboardTopicVideoContainer').length;
       if (selectedVideos.length > 0) {
         toggleBackdrop(true, '#fff', '10%');
         toggleModal(true, 'Deleting videos. Please be patient.');
@@ -355,6 +388,12 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
               flashBanner('success', `Sucessfully deleted ${videoList.length} video`, REFERENCE_NODE);
             } else {
               flashBanner('success', `Sucessfully deleted ${videoList.length} videos`, REFERENCE_NODE);
+            }
+            if (selectedVideos.length === totalVideos) {
+              document.getElementById('btnSelectAllTopics').classList.remove('selectedAll');
+              let text = document.createElement('h2');
+              text.textContent = 'No Videos in Topic';
+              document.getElementById('dashboardTopicVideosList').append(text);
             }
           }
         } catch(err) {
@@ -408,7 +447,7 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
             flashBanner('success', `Sucessfully refreshed ${videoList.length} videos`, REFERENCE_NODE);
           }
         } catch(err) {
-
+          flashBanner('error', `Error refreshing video(s)`, REFERENCE_NODE);
         }
         toggleBackdrop(false);
         toggleModal(false);
