@@ -10,6 +10,7 @@ module.exports = {
     const pageStyles = `${pathCSS}lib/topicPage.css`;
 
     let topicName = escapeHTML(req.params.topic);
+    req.session.prevUrl = `/lib/${topicName}`;
     let topic = await getTopic(topicName);
     if (topic instanceof AppError) return next(topic);
 
@@ -35,6 +36,7 @@ module.exports = {
     if (videos instanceof AppError) return next(videos);
     
     let videoId = escapeHTML(req.params.video);
+    req.session.prevUrl = `/lib/${topicName}/${videoId}`;
     let timestamp = null;
     if (videoId.includes('&t=')) {
       if (videoId.charAt(videoId.length - 1 === 's')) {

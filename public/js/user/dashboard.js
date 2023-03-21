@@ -6,7 +6,6 @@ const toggleNewTopicForm = () => {
     document.querySelector('html').classList.toggle('overflowHidden');
   };
   const toggleTopicSelected = () => {
-    
     document.querySelector('.btnSelectTopic').classList.toggle('btnSelectTopicSelected');
   };
   const toggleSelectAllTopics = (e) => {

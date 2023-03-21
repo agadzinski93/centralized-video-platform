@@ -11,7 +11,7 @@ passport.use(
       try {
         const db = await getDatabase();
         
-        const user = await db.execute(`SELECT user_id, username, password
+        const user = await db.execute(`SELECT user_id, username, password, activation_status
         FROM users 
         WHERE username = '${username}'`);
 
@@ -20,6 +20,14 @@ passport.use(
         }
 
         const userObj = Object.assign({}, Object.values(user[0])[0]);
+
+        switch(userObj.activation_status) {
+          case 'pending':
+            return done(null,false,{message:"Account has not been activated. Please check your email for confirmation link"});
+          case 'disabled':
+            return done(null,false,{message:"Account has been disabled."});
+          default:
+        }
 
         bcrypt.compare(password, userObj.password, (err, isMatch) => {
           if (err) {

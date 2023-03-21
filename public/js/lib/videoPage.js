@@ -3,6 +3,7 @@ const addSubscribeEvents = () => {
     const btnSubscribe = document.getElementById('btnSubscribe');
     const btnUnsubscribe = document.getElementById('btnUnsubscribe');
     btnSubscribe.addEventListener('click',async()=>{
+        btnSubscribe.disabled = true;
         toggleBackgroundLoading(true,btnSubscribe,true);
         let result = await fetch("/subscribe",{
             method:'POST',
@@ -22,8 +23,10 @@ const addSubscribeEvents = () => {
         } else {
             flashBanner('error',data.message,FLASH_REFERENCE);
         }
+        btnSubscribe.disabled = false;
     });
     btnUnsubscribe.addEventListener('click',async()=>{
+        btnUnsubscribe.disabled = true;
         toggleBackgroundLoading(true,btnUnsubscribe,true);
         let result = await fetch("/subscribe",{
             method:'DELETE',
@@ -43,6 +46,7 @@ const addSubscribeEvents = () => {
         } else {
             flashBanner('error',data.message,FLASH_REFERENCE);
         }
+        btnUnsubscribe.disabled = false;
     });
 }
 const init = () => {

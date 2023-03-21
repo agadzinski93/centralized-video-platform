@@ -9,6 +9,7 @@ const {
   logoutUser,
   renderRegistration,
   registerUser,
+  verifyEmail
 } = require("../controllers/userAuthCont");
 
 router.route("/login").get(renderLogin).post(loginUser);
@@ -17,5 +18,6 @@ router
   .route("/register")
   .get(renderRegistration)
   .post(registrationValidation, registerUser);
+router.get("/:userId/verify/:key",verifyEmail);
 
 module.exports = router;
