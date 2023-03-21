@@ -173,9 +173,9 @@ module.exports = {
       );
     }
 
-    let domain = 'https://programminghelp.org';
+    let domain = `https://${process.env.DOMAIN_PUBLIC}`;
     if (process.env.NODE_ENV == 'development') {
-      domain = 'http://localhost:3000'
+      domain = `http://${process.env.DOMAIN_PRIVATE}:${process.env.PORT}`
     }
   
     const subject = `Email Verification`;
