@@ -90,14 +90,20 @@ const toggleNewTopicForm = () => {
     const currentEditDescription = document.getElementById(`editDescription${current}`).textContent;
     document.getElementById(`editDescription${current}`).textContent = document.getElementById(`editDescription${swap}`).textContent;
     document.getElementById(`editDescription${swap}`).textContent = currentEditDescription;
-    //Swap Main Text
+    //Swap Main Text and Links
     const currentTitle = document.getElementById(`vidTitle${current}`).textContent;
-    document.getElementById(`vidTitle${current}`).textContent = document.getElementById(`vidTitle${swap}`).textContent;
-    document.getElementById(`vidTitle${swap}`).textContent = currentTitle;
+    const currentLink = document.querySelector(`#vidTitle${current} > a`);
+    const swapLink = document.querySelector(`#vidTitle${swap} > a`);
+    currentLink.textContent = document.getElementById(`vidTitle${swap}`).textContent;
+    swapLink.textContent = currentTitle;
 
     const currentVidDescription = document.getElementById(`vidDescription${current}`).textContent;
     document.getElementById(`vidDescription${current}`).textContent = document.getElementById(`vidDescription${swap}`).textContent;
     document.getElementById(`vidDescription${swap}`).textContent = currentVidDescription;
+    
+    const linkHolder = currentLink.getAttribute('href');
+    currentLink.setAttribute('href',swapLink.getAttribute('href'));
+    swapLink.setAttribute('href',linkHolder);
 };
 const addSwapVideoEvents = async (upButtons, downButtons) => {
     if (upButtons.length > 1) {

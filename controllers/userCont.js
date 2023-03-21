@@ -22,6 +22,7 @@ const {
 module.exports = {
   renderUserPage: async (req, res, next) => {
     const username = escapeHTML(req.params.username);
+    req.session.prevUrl = `/user/${username}`;
     const author = await getUser(username);
     if (author instanceof AppError) return next(author);
     let user = null;

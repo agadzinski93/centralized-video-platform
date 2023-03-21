@@ -7,6 +7,7 @@ const {getRecentTopic} = require('../utilities/helpers/topicHelpers');
 module.exports = {
     renderHome: async (req,res,next) => {
         try {
+            req.session.prevUrl = "/";
             const pageStyles = `${pathCSS}home.css`;
             const videos = await getRecentVideos();
             const topics = await getRecentTopic();
@@ -17,6 +18,7 @@ module.exports = {
           }
     },
     renderSearch: async (req,res,next) => {
+      //req.session.prevUrl = "/search";
       const pageStyles = `${pathCSS}search.css`;
       let searchQuery = null,
           topics = null,

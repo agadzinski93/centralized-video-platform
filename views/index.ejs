@@ -2,6 +2,8 @@
 <div class="homeContainer">
   <%- include("./partials/navbar.ejs") %>
   <div class="homeRecentVideos">
+    <%- include("./partials/flashError.ejs") %>
+    <%- include("./partials/flashSuccess.ejs") %>
     <p class="recentVideosHeader">Recent Videos</p>
     <div class="recentVideosContainer">
       <%if (videos.length >= 1) {%>
