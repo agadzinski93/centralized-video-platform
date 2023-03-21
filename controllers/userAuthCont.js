@@ -114,7 +114,7 @@ module.exports = {
 
     if (exists) {
       req.flash("error", "Email Already Exists");
-      res.redirect("/register");
+      res.redirect("/auth/register");
       return;
     }
     const pw = await generatePassword(req.body.reg.password);
