@@ -1,6 +1,8 @@
 .loggingContainer {
-    background-color:#242424;
+  background: rgb(29,18,33);
+  background: linear-gradient(0deg, rgba(29,18,33,1) 0%, rgba(60,50,66,1) 100%); 
     height: 100vh;
+  overflow:hidden;
   }
   .loggingFormContainer {
     background-color:#333;

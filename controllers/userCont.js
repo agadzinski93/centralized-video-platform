@@ -4,6 +4,7 @@ const {cloudinary} = require("../utilities/cloudinary");
 const { escapeHTML,escapeSQL } = require("../utilities/helpers/sanitizers");
 const { getUser } = require("../utilities/helpers/authHelpers");
 const {
+  getUserInfo,
   modifyImage,
   updateRefreshSettings,
   updateDisplayNameSetting,
@@ -20,6 +21,15 @@ const {
 } = require("../utilities/globals/user");
 
 module.exports = {
+  getUserContent: async (req,res,next)=>{
+    const username = escapeHTML(req.params.username);
+    let content = (req.query.content) ? (escapeSQL(escapeHTML(req.query.content.toString()))) : 'topics';
+    let all = (req.query.viewAll) ? (escapeSQL(escapeHTML(req.query.viewAll.toString()))) : false;
+    let page = (req.query.page) ? (escapeSQL(escapeHTML(req.query.page.toString()))): 0;
+    page = parseInt(page);
+    let data = await getUserInfo(username,content,all,page);
+    res.json(data);
+  },
   renderUserPage: async (req, res, next) => {
     const username = escapeHTML(req.params.username);
     req.session.prevUrl = `/user/${username}`;
@@ -30,10 +40,10 @@ module.exports = {
       user = req.user;
     }
 
-    let pageStyles = null;
+    let pageStyles = `${pathCSS}user/page.css`;
 
     res.render(`user/userPage`, {
-      title: `${author.username}'s Page`,
+      title: `${author.username}'s Channel`,
       pageStyles,
       pathCSS,
       author,

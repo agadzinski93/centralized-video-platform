@@ -3,6 +3,7 @@ const {pathCSS} = require('../utilities/config');
 const { escapeHTML, escapeSQL } = require("../utilities/helpers/sanitizers");
 const {getRecentVideos, searchVideos, getMoreVideos} = require('../utilities/helpers/videoHelpers');
 const {getRecentTopic} = require('../utilities/helpers/topicHelpers');
+const {testGeneration} = require("../utilities/email/Email");
 
 module.exports = {
     renderHome: async (req,res,next) => {
@@ -11,7 +12,7 @@ module.exports = {
             const pageStyles = `${pathCSS}home.css`;
             const videos = await getRecentVideos();
             const topics = await getRecentTopic();
-            
+
             res.render("index", { title: "Home Page", pageStyles, pathCSS, user: req.user, videos, topics});
           } catch (err) {
             next(new AppError(500, err.message));

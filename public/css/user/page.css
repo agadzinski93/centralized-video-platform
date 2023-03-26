@@ -1,0 +1,113 @@
+.userPageContainer {
+    background: rgb(29,18,33);
+    background: linear-gradient(0deg, rgba(29,18,33,1) 0%, rgba(60,50,66,1) 100%); 
+    min-height:100vh;
+    overflow:hidden;
+}
+.userProfileContainer {
+    margin:50px auto 0 auto;
+    width:64rem;
+}
+.userBanner {
+    height:18rem;
+    background-color:#242424;
+    background-repeat:no-repeat;
+    background-position: center;
+    background-size:cover;
+    overflow:hidden;
+}
+.userAvatarLinksContainer {
+    height:3.125rem;
+    background-color:#1B1321;
+}
+.userInfoContainer {
+    margin-top:9rem;
+    margin-left:2rem;
+    display:flex;
+}
+.userAvatar {
+    width:7rem;
+    height:7rem;
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:contain;
+    border-radius:50%;
+}
+.userInfo {
+    margin-top:1rem;
+    margin-left:1rem;
+}
+.authorUsername {
+    color:#FFF;
+    font-size:2rem;
+    font-weight:bold;
+}
+.authorSubscribers {
+    color:#D3D2D2;
+}
+.userLinksContainer {
+    margin-left:4rem;
+    height:3rem;
+}
+.userLinksContainer > button {
+    margin:0 1rem;
+    width:5rem;
+    height:3rem;
+    border:none;
+    color:#FFF;
+    background-color:initial;
+    font-weight:bold;
+    text-transform: uppercase;
+}
+.userLinksContainer > button.contentSelected {
+    border-bottom:solid 4px red;
+}
+.userLinksContainer > button:hover {
+    cursor:pointer;
+}
+.contentOptions {
+    margin-top:2rem;
+    padding-left:1rem;
+}
+.userContent {
+    margin:2rem auto 0 auto;
+    min-height:1rem;
+    color:#FFF;
+    text-align:center;
+    display:flex;
+    flex-wrap:wrap;
+}
+.noContent {
+    font-style:italic;
+}
+.contentLink {
+    width:14rem;
+    height:10.75rem;
+    margin-bottom:2rem;
+    text-decoration: none;
+    overflow:hidden;
+}
+.videoContainer {
+    width:14rem;
+    height:10.75rem;
+}
+.contentLink:not(:nth-child(4n)) {
+    margin-right:2.625rem;
+}
+.thumbnail {
+    width:14rem;
+    height:calc(14rem / 1.78);
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size: contain;
+}
+.title {
+    padding:0.5rem 0rem;
+    width:100%;
+    height:2rem;
+    text-align:left;
+}
+.moreResultsContainer {
+    text-align:center;
+    padding:1rem 0;
+}

@@ -45,6 +45,8 @@ app.use(
       saveUninitialized: false,
       secret: COOKIE_SECRET,
       store: sessionStore,
+      maxAge: 60*60*1000,
+      sameSite:"Lax"
     },
   })
 );
@@ -71,7 +73,7 @@ app.use((err, req, res, next) => {
   res.locals.message = err.message;
   const status = err.status || 500;
   const pageStyles = null;
-  res.status(status).render("error", { title: `${status} Error`, status, pageStyles, pathCSS, user: req.user });
+  res.status(status).render("error", { title: `${status} Error`, status, message:err.message, pageStyles, pathCSS, user: req.user });
 });
 
 //Port

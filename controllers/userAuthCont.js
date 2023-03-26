@@ -6,7 +6,7 @@ const uuid = require("uuid");
 const AppError = require("../utilities/AppError");
 const { getDatabase } = require("../utilities/mysql-connect");
 const {getUserById} = require("../utilities/helpers/authHelpers");
-const {sendEmail} = require("../utilities/email/Email");
+const {createEmail,sendEmail} = require("../utilities/email/Email");
 const {
   USER_ID,
   USERNAME,
@@ -172,7 +172,7 @@ module.exports = {
         new AppError(500, `Database Insertion Error: ${err.message}`)
       );
     }
-
+    
     let domain = `https://${process.env.DOMAIN_PUBLIC}`;
     if (process.env.NODE_ENV == 'development') {
       domain = `http://${process.env.DOMAIN_PRIVATE}:${process.env.PORT}`
@@ -182,11 +182,11 @@ module.exports = {
     const txtBody = `Please confirm your registration by clicking here: ${domain}/auth/${newUser.user_id}/verify/${newUser.key}`;
     const htmlBody = `Please confirm your registration by clicking here: <a href="${domain}/auth/${newUser.user_id}/verify/${newUser.key}">${domain}/auth/${newUser.user_id}/verify/${newUser.key}</a>`;
     
-    let result = await sendEmail(newUser.email,subject,txtBody,htmlBody);
+    const email = createEmail(newUser.email,subject,txtBody,htmlBody);
+    let result = await sendEmail(email);
     if (result instanceof AppError) {
-      return next(500,`Error Sending Email`);
+      return next(new AppError(500,'Error Sending Email'));
     }
-    
 
     req.flash("success","An email was sent with a confirmation link!");
     res.redirect("/");
@@ -202,13 +202,14 @@ module.exports = {
       
       let result = await db.execute(`CALL verifyEmail('${userId}','${key}')`);
       
-
       const subject = `Welcome to Programming Help, ${user.username}`;
       const txtBody = `Thanks for joining our site. We hope you have a great time!`;
       const htmlBody = `Thanks for joining our site. We hope you have a great time!`;
-      result = await sendEmail(user.email,subject,txtBody,htmlBody);
+
+      const email = createEmail(user.email,subject,txtBody,htmlBody);
+      result = await sendEmail(email);
       if (result instanceof AppError) {
-        return next(500,`Error Sending Email`);
+        return next(new AppError(500,`Error Sending Email`));
       }
       
       req.flash("success","Email successfully validated!");

@@ -1,13 +1,16 @@
 body {
-    background-color:#242424;
+    background: rgb(29,18,33);
+    background: linear-gradient(0deg, rgba(29,18,33,1) 0%, rgba(60,50,66,1) 100%); 
 }
 .videoPageContainer {
     display:flex;
     width:100%;
-    height:calc(100vh - 3.125rem);
-    background-color:#242424;
+    min-height:100vh;
+    background: rgb(29,18,33);
+    background: linear-gradient(0deg, rgba(29,18,33,1) 0%, rgba(60,50,66,1) 100%);  
 }
 .mainVideoContainer {
+    margin-top:50px;
     width:100%;
     color:#FFF;
 }
@@ -70,7 +73,7 @@ body {
     display:flex;
     flex-wrap:wrap;
     width:75rem;
-    margin-top:1rem;
+    margin-top:calc(50px + 1rem);
 }
 .videoPlaylistContainer {
     display:flex;

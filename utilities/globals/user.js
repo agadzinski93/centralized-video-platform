@@ -7,6 +7,7 @@ module.exports = {
     PASSWORD:'password',
     DATE_JOINED:'dateJoined',
     ACCOUNT_TYPE:'account_type',
+    ACTIVATION_STATUS:'activation_status',
     SETTING_REFRESH_TITLE:'settingRefreshTitle',
     SETTING_REFRESH_DESCRIPTION:'settingRefreshDescription',
     SETTING_REFRESH_THUMBNAIL:'settingRefreshThumbnail',

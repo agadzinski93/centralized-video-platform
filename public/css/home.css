@@ -1,13 +1,20 @@
 .homeContainer {
     width:100%;
     min-height:100vh;
-    background-color:#242424;
+    background: rgb(29,18,33);
+    background: linear-gradient(0deg, rgba(29,18,33,1) 0%, rgba(60,50,66,1) 100%); 
     color:#FFF;
+    overflow:hidden;
+}
+.recentVideosHeader {
+    margin:50px auto 0 auto;
+}
+.recentTopicsHeader {
+    margin:1rem auto 0 auto;
 }
 .recentVideosHeader,
 .recentTopicsHeader {
     width:95vw;
-    margin:1rem auto 0 auto;
     font-size:1.25rem;
     font-weight:bold;
 }

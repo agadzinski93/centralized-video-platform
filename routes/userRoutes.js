@@ -8,6 +8,7 @@ const parserBanner = multer({storage, fileFilter:filter, limits:{fileSize:204800
 const { isLoggedIn, isAuthor } = require("../utilities/userAuth");
 const {logoutUser} = require("../controllers/userAuthCont");
 const {
+  getUserContent,
   renderUserPage,
   renderUserSettings,
   updateRefreshMetadata,
@@ -24,6 +25,7 @@ const {
 } = require("../controllers/userCont");
 
 router.get("/:username", renderUserPage);
+router.get("/:username/getUserContent",getUserContent);
 router.get("/:username/settings", isLoggedIn, isAuthor, renderUserSettings);
 router.patch("/:username/settings/updateRefreshMetadata", isLoggedIn, isAuthor, updateRefreshMetadata);
 router.patch("/:username/settings/updateDisplayName", isLoggedIn, isAuthor, updateDisplayName);
