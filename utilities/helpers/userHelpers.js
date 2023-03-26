@@ -1,11 +1,58 @@
 const { getDatabase } = require("../mysql-connect");
 const AppError = require("../AppError");
 const {cloudinary} = require("../../utilities/cloudinary");
+const {setPaginationData,endOfResults} = require("./pagination");
 
 module.exports = {
     /**
+     * 
+     * @param {string} username - username of user
+     * @param {string} content - retrieve user's topics, videos, or About Me
+     * @param {boolean} getAll - get all results, will be paginated (topics and videos only)
+     * @param {uint} page - if retrieving all, which page number
+     */
+    getUserInfo: async (username,content,getAll=false,page=0) => {
+        const RESULTS_DEFAULT = 12;
+        const RESULTS_PER_PAGE = 24;
+        let data = null;
+        let choice = content.toLowerCase();
+        if (choice === 'topics' || choice === 'videos'){
+            let {resultsPerPage,pageNum} = setPaginationData(RESULTS_DEFAULT,0);
+            if (getAll && choice !== 'about-me') {
+                ({resultsPerPage,pageNum} = setPaginationData(RESULTS_PER_PAGE,page));
+            }
+            try {
+                const db = await getDatabase();
+                if (db instanceof AppError) {
+                    data = {response:'error',message:'Couldn\'t connet to database.'};
+                }
+                let result = await db.execute(`SELECT * FROM ${choice} 
+                    WHERE username = '${username}' ORDER BY timeCreated DESC LIMIT ${resultsPerPage} OFFSET ${pageNum * resultsPerPage}`);
+                data = result[0];
+                result = await db.execute(`SELECT count(*) AS count FROM ${choice} WHERE username = '${username}'`);
+                let count = Object.assign({},result[0][0]).count;
+                const moreResults = (getAll) ? endOfResults(resultsPerPage,page,count) : false;
+                data = {response:'success',data,moreResults};
+            } catch(err) {
+                data = {response:'error',message:`Error: ${err.message}`};
+            }
+        }
+        else if (choice === 'about-me') {
+            const db = await getDatabase();
+            if (db instanceof AppError) {
+                data = {response:'error',message:'Couldn\'t connet to database.'};
+            }
+            let result = await db.execute(`SELECT dateJoined,about_me,subscriptions FROM users WHERE username = '${username}'`);
+            data = {response:'success',data:result[0]};
+        }
+        else {
+            data = {response:'error',message:'Invalid query.'};
+        }
+        return data;
+    },
+    /**
      * Alter of path and filename of an image
-     * @param {*} userId 
+     * @param {string} userId 
      * @param {string} path - URL of image
      * @param {string} filename - filename of image used by Cloudinary for ID
      * @param {string} target - which image property (e.g. 'PROFILE PIC', 'BANNER')

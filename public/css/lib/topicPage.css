@@ -1,12 +1,14 @@
 .topicVideoContainer {
     display:flex;
-    height:calc(100vh - 3.125rem);
+    min-height:100vh;
     min-height:40rem;
-    background-color:#242424;
+    background: rgb(29,18,33);
+    background: linear-gradient(0deg, rgba(29,18,33,1) 0%, rgba(60,50,66,1) 100%); 
 }
 .topicHeader {
+    position:fixed;
     width:50%;
-    margin-top:1rem;
+    margin-top:calc(50px + 1rem);
     color:#FFF;
 }
 .topicTitleDifficulty {
@@ -35,7 +37,8 @@
     display:flex;
     flex-direction: column;
     width:50%;
-    margin-top:1rem;
+    margin-top:calc(50px + 1rem);
+    margin-left:50%;
     overflow: auto;
 }
 .topicVideoList > h2 {
@@ -76,9 +79,11 @@
         flex-direction:column;
     }
     .topicHeader {
+        position:static;
         width:100%;
     }
     .topicVideoList {
+        margin-left:0;
         width:100%;
     }
 }

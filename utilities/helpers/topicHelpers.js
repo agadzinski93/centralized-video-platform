@@ -33,7 +33,7 @@ module.exports = {
       topicDescription = escapeSQL(topicDescription);
       
       await db.execute(
-        `INSERT INTO topics (name, description, difficulty, username, imageUrl, filename, dateCreated) 
+        `INSERT INTO topics (name, description, difficulty, username, imageUrl, filename, timeCreated) 
         VALUES('${topicName}', '${topicDescription}', '${topicDifficulty}', '${username}', '${topicImage}', '${filename}', NOW())`
       );
     } catch (err) {
@@ -80,7 +80,7 @@ module.exports = {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      let topics = await db.execute('SELECT * FROM topics ORDER BY dateCreated DESC LIMIT 14');
+      let topics = await db.execute('SELECT * FROM topics ORDER BY timeCreated DESC LIMIT 14');
       return topics[0].map(o => Object.assign({}, o));
     } catch(err) {
       return new AppError(500, 'Error Retrieving Recent Videos');

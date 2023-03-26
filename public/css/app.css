@@ -14,6 +14,9 @@
 .displayFlex {
   display:flex;
 }
+.displayBlock {
+  display:block;
+}
 .overflowHidden {
   overflow:hidden;
 }
@@ -123,7 +126,8 @@
   background-image:url("/assets/svg/spinner.gif");
 }
 .navbar {
-  background-color:#1E1E1E;
+  position:fixed;
+  background-color:#1B1321;
   display:flex;
   width:100%;
   height:50px;
@@ -152,12 +156,18 @@
 }
 .searchContainer > .searchContainerForm > input {
   width:50%;
+  height:1.5rem;
   border:none;
-  padding:0.25rem;
-  margin-top:0.75rem;
+  border-radius:0.5rem;
+  padding:0.25rem 0.5rem;
+  margin-top:0.5rem;
   background-color:#333;
   color:#FFF;
   font-size:1rem;
+  outline-color:red;
+}
+.searchContainer > .searchContainerForm > input:focus {
+  outline-color:red;
 }
 .navbarProfilePic{
   margin:8px auto;
@@ -176,7 +186,7 @@
   position: absolute;
   display: none;
   width: 8rem;
-  background-color: #1E1E1E;
+  background-color: #1B1321;
 }
 .userDropDownLinks:hover .userSubmenu {
   display: flex;
