@@ -262,7 +262,7 @@ module.exports = {
     if(!topic[0]) {
       return next(new AppError(400,"Topic Does Not Exist"));
     }
-    //topic[0].topicUrl = enableHyphens(topic[0].name,true);
+    topic[0].topicUrl = enableHyphens(topic[0].name,true);
 
     const videos = await getTopicVideos(topicName);
     if (videos instanceof AppError) return next(videos);

@@ -1,10 +1,32 @@
 .homeContainer {
     width:100%;
     min-height:100vh;
-    
     color:#FFF;
     overflow:hidden;
 }
+.flashError,
+.flashSuccess {
+    /*Margin-bottom will remove extra space only occurring on home page*/
+    margin:calc(1rem + 50px) auto -50px;
+}
+@keyframes fadeOut {
+    80% {
+      opacity:100%;
+    }
+    99% {
+    /*Margin-bottom will remove extra space only occurring on home page*/
+      margin: calc(1rem + 50px) auto -50px auto;
+      padding: 0.5rem 1%;
+      height:initial;
+    }
+    100% {
+      opacity:0%;
+      visibility:hidden;
+      padding:0;
+      margin:0;
+      height:0;
+    }
+  }
 .recentVideosHeader {
     margin-top:calc(50px + 1rem);
     margin-left:2.5vw;
@@ -216,7 +238,28 @@ div.recentVideo {
     }
 }
 @media (max-width:25rem) {
+    .flashError,
+    .flashSuccess {
+        margin:calc(1rem + 100px) auto 0;
+    }
     .recentVideosHeader {
         margin:calc(100px + 1rem) auto 0 auto;
     }
+    @keyframes fadeOut {
+        80% {
+          opacity:100%;
+        }
+        99% {
+          margin: calc(1rem + 100px) auto 0 auto;
+          padding: 0.5rem 1%;
+          height:initial;
+        }
+        100% {
+          opacity:0%;
+          visibility:hidden;
+          padding:0;
+          margin:0;
+          height:0;
+        }
+      }
 }

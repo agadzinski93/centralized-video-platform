@@ -68,12 +68,13 @@
   include("../partials/flashSuccess.ejs") %> 
   <div class="dashboardVideosContainer">
     <div class="dashboardTopicLeft">
-      <p><a href="/user/<%=user.username%>/dashboard/">&larr;</a> <%=topic.name%></p>
+      <div class="backLinkContainer"><a href="/user/<%=user.username%>/dashboard/">&larr;</a></div>
+      <p><%=topic.name%></p>
       <p><%=topic.difficulty%></p>
       <%if (topic.imageUrl !== 'null'){%>
-        <div class="topicPageImageContainer" style="background-image: url('<%=topic.imageUrl%>');"></div>
+        <div class="topicPageImageContainer" style="background-image: url('<%=topic.imageUrl%>');"><p class="txtNoTopicImage diaplyNone">Click to add image</p></div>
       <%}else{%>
-        <div class="topicPageImageContainer" style="background-image: url('');"></div>
+        <div class="topicPageImageContainer" style="background-image: url('');"><p class="txtNoTopicImage">Click to add image</p></div>
       <%}%>
       <p><%=topic.description%></p>
     </div>
