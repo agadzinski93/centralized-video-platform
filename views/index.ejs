@@ -9,65 +9,70 @@
       <%if (videos.length >= 1) {%>
         <%for (let i = 0; i < videos.length; i++) {%>
           <%if (i>11){%>
-            <a class="recentVideoLink long2" href="/lib/<%=videos[i].topic%>/<%=videos[i].url.substring(20)%>">
-              <div class="recentVideo">
+            <div class="recentVideo long2">
+              <a class="recentVideoLink" href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
                 <div class="recentVideoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>
-                <%if (videos[i].title.length > 55) {%>
-                  <p><%=videos[i].title.substring(0,55)%>...</p>
-                <%}else{%>
-                  <p><%=videos[i].title%></p>
-                <%}%>
-                <p><%=videos[i].username%></p>
-              </div>
-            </a>
+                <p class="videoTitle"><%=videos[i].title%></p>
+              </a>
+              <a href="/user/<%=videos[i].username%>">
+                <div>
+                  <div class="authorProfilePic" style="background-image:url('<%=videos[i].pic_url%>')"></div>
+                  &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
+                </div>
+              </a>
+            </div>
           <%}else if (i>9){%>
-            <a class="recentVideoLink long1" href="/lib/<%=videos[i].topic%>/<%=videos[i].url.substring(20)%>">
-              <div class="recentVideo">
+            <div class="recentVideo long1">
+              <a class="recentVideoLink" href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
                 <div class="recentVideoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>
-                <%if (videos[i].title.length > 55) {%>
-                  <p><%=videos[i].title.substring(0,55)%>...</p>
-                <%}else{%>
-                  <p><%=videos[i].title%></p>
-                <%}%>
-                <p><%=videos[i].username%></p>
-              </div>
-            </a>
+                <p class="videoTitle"><%=videos[i].title%></p>
+              </a>
+              <a href="/user/<%=videos[i].username%>">
+                <div>
+                  <div class="authorProfilePic" style="background-image:url('<%=videos[i].pic_url%>')"></div>
+                  &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
+                </div>
+              </a>
+            </div>
           <%}else if (i>8){%>
-            <a class="recentVideoLink long9" href="/lib/<%=videos[i].topic%>/<%=videos[i].url.substring(20)%>">
-              <div class="recentVideo">
+            <div class="recentVideo long9">
+              <a class="recentVideoLink" href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
                 <div class="recentVideoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>
-                <%if (videos[i].title.length > 55) {%>
-                  <p><%=videos[i].title.substring(0,55)%>...</p>
-                <%}else{%>
-                  <p><%=videos[i].title%></p>
-                <%}%>
-                <p><%=videos[i].username%></p>
+                <p class="videoTitle"><%=videos[i].title%></p>
+              </a>
+              <a href="/user/<%=videos[i].username%>">
+                <div>
+                  <div class="authorProfilePic" style="background-image:url('<%=videos[i].pic_url%>')"></div>
+                  &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
+                </div>
+              </a>
               </div>
-            </a>
           <%}else if (i>7){%>
-            <a class="recentVideoLink long8" href="/lib/<%=videos[i].topic%>/<%=videos[i].url.substring(20)%>">
-              <div class="recentVideo">
-                <div class="recentVideoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>
-                <%if (videos[i].title.length > 55) {%>
-                  <p><%=videos[i].title.substring(0,55)%>...</p>
-                <%}else{%>
-                  <p><%=videos[i].title%></p>
-                <%}%>
-                <p><%=videos[i].username%></p>
-              </div>
-            </a>
+            <div class="recentVideo long8">
+              <a class="recentVideoLink" href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
+                <div class="recentVideoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>               
+                <p class="videoTitle"><%=videos[i].title%></p>
+              </a>
+              <a href="/user/<%=videos[i].username%>">
+                <div>
+                  <div class="authorProfilePic" style="background-image:url('<%=videos[i].pic_url%>')"></div>
+                  &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
+                </div>
+              </a>
+            </div>
           <%}else{%>
-            <a class="recentVideoLink" href="/lib/<%=videos[i].topic%>/<%=videos[i].url.substring(20)%>">
-              <div class="recentVideo">
+            <div class="recentVideo">
+              <a class="recentVideoLink" href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
                 <div class="recentVideoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>
-                <%if (videos[i].title.length > 55) {%>
-                  <p><%=videos[i].title.substring(0,55)%>...</p>
-                <%}else{%>
-                  <p><%=videos[i].title%></p>
-                <%}%>
-                <p><%=videos[i].username%></p>
-              </div>
-            </a>
+                <p class="videoTitle"><%=videos[i].title%></p>
+              </a>
+              <a href="/user/<%=videos[i].username%>">
+                <div>
+                  <div class="authorProfilePic" style="background-image:url('<%=videos[i].pic_url%>')"></div>
+                  &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
+                </div>
+              </a>
+            </div>
           <%}%>
         <%}%>
       <%}%>
@@ -79,85 +84,90 @@
       <%if (topics.length >= 1) {%>
         <%for (let i = 0; i < topics.length; i++) {%>
           <%if (i > 11) {%>
-            <a class="recentTopicLink long2" href="/lib/<%=topics[i].name%>">
-              <div class="recentTopic">
+            <div class="recentTopic long2">
+              <a class="recentTopicLink" href="/lib/<%=topics[i].topicUrl%>">
                 <%if (topics[i].imageUrl !== 'null'){%>
                   <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%}else{%>
                   <div class="recentTopicImage" style="background-image:url('')"></div>
                 <%}%>
-                <%if (topics[i].name.length > 55) {%>
-                  <p><%=topics[i].name.substring(0,55)%>...</p>
-                <%}else{%>
-                  <p><%=topics[i].name%></p>
-                <%}%>
-                <p><%=topics[i].username%></p>
-              </div>
-            </a>
+                <p class="topicTitle"><%=topics[i].name%></p>
+              </a>
+              <a href="/user/<%=topics[i].username%>">
+                <div>
+                  <div class="authorProfilePic" style="background-image:url('<%=topics[i].pic_url%>')"></div>
+                  &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
+                </div>
+              </a>
+            </div>
           <%}else if (i > 9){%>
-            <a class="recentTopicLink long1" href="/lib/<%=topics[i].name%>">
-              <div class="recentTopic">
+            <div class="recentTopic long1">
+              <a class="recentTopicLink" href="/lib/<%=topics[i].topicUrl%>">
                 <%if (topics[i].imageUrl !== 'null'){%>
                   <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%}else{%>
                   <div class="recentTopicImage" style="background-image:url('')"></div>
                 <%}%>
-                <%if (topics[i].name.length > 55) {%>
-                  <p><%=topics[i].name.substring(0,55)%>...</p>
-                <%}else{%>
-                  <p><%=topics[i].name%></p>
-                <%}%>
-                <p><%=topics[i].username%></p>
-              </div>
-            </a>
+                <p class="topicTitle"><%=topics[i].name%></p>
+              </a>
+              <a href="/user/<%=topics[i].username%>">
+                <div>
+                  <div class="authorProfilePic" style="background-image:url('<%=topics[i].pic_url%>')"></div>
+                  &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
+                </div>
+              </a>
+            </div>
           <%}else if (i > 8){%>
-            <a class="recentTopicLink long9" href="/lib/<%=topics[i].name%>">
-              <div class="recentTopic">
+            <div class="recentTopic long9">
+              <a class="recentTopicLink" href="/lib/<%=topics[i].topicUrl%>">
                 <%if (topics[i].imageUrl !== 'null'){%>
                   <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%}else{%>
                   <div class="recentTopicImage" style="background-image:url('')"></div>
                 <%}%>
-                <%if (topics[i].name.length > 55) {%>
-                  <p><%=topics[i].name.substring(0,55)%>...</p>
-                <%}else{%>
-                  <p><%=topics[i].name%></p>
-                <%}%>
-                <p><%=topics[i].username%></p>
-              </div>
-            </a>
+                <p class="topicTitle"><%=topics[i].name%></p>
+              </a>
+              <a href="/user/<%=topics[i].username%>">
+                <div>
+                  <div class="authorProfilePic" style="background-image:url('<%=topics[i].pic_url%>')"></div>
+                  &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
+                </div>
+              </a>
+            </div>
           <%}else if (i > 7){%>
-            <a class="recentTopicLink long8" href="/lib/<%=topics[i].name%>">
-              <div class="recentTopic">
+            <div class="recentTopic long8">
+              <a class="recentTopicLink" href="/lib/<%=topics[i].topicUrl%>">
                 <%if (topics[i].imageUrl !== 'null'){%>
                   <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%}else{%>
                   <div class="recentTopicImage" style="background-image:url('')"></div>
                 <%}%>
-                <%if (topics[i].name.length > 55) {%>
-                  <p><%=topics[i].name.substring(0,55)%>...</p>
-                <%}else{%>
-                  <p><%=topics[i].name%></p>
-                <%}%>
-                <p><%=topics[i].username%></p>
-              </div>
-            </a>
+                <p class="topicTitle"><%=topics[i].name%></p>
+              </a>
+              <a href="/user/<%=topics[i].username%>">
+                <div>
+                  <div class="authorProfilePic" style="background-image:url('<%=topics[i].pic_url%>')"></div>
+                  &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
+                </div>
+              </a>
+            </div>
           <%}else{%>
-            <a class="recentTopicLink" href="/lib/<%=topics[i].name%>">
-              <div class="recentTopic">
+            <div class="recentTopic">
+              <a class="recentTopicLink" href="/lib/<%=topics[i].topicUrl%>">
                 <%if (topics[i].imageUrl !== 'null'){%>
                   <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%}else{%>
                   <div class="recentTopicImage" style="background-image:url('')"></div>
                 <%}%>
-                <%if (topics[i].name.length > 55) {%>
-                  <p><%=topics[i].name.substring(0,55)%>...</p>
-                <%}else{%>
-                  <p><%=topics[i].name%></p>
-                <%}%>
-                <p><%=topics[i].username%></p>
-              </div>
-            </a>
+                <p class="topicTitle"><%=topics[i].name%></p>
+              </a>
+              <a href="/user/<%=topics[i].username%>">
+                <div>
+                  <div class="authorProfilePic" style="background-image:url('<%=topics[i].pic_url%>')"></div>
+                  &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
+                </div>
+              </a>
+            </div>
           <%}%>
         <%}%>
       <%}%>

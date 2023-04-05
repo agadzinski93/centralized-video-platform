@@ -4,6 +4,16 @@ const AppError = require("../AppError");
 const {cloudinary} = require("../../utilities/cloudinary");
 
 module.exports = {
+  /**
+   * Choose whether topic's title has hyphens or whitespaces
+   * @param {string} name - name of topic
+   * @param {boolean} enable - true replaces whitespaces with hyphens, false for opposite
+   * @returns {string} modified topic title
+   */
+  enableHyphens: (name,enable) => {
+    let output = (enable) ?  name.replaceAll(' ','-') :  name.replaceAll('-',' ')
+    return output;
+  },
   topicExists: async (name) => {
     try {
       let topicName = escapeSQL(name);
@@ -80,7 +90,7 @@ module.exports = {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      let topics = await db.execute('SELECT * FROM topics ORDER BY timeCreated DESC LIMIT 14');
+      let topics = await db.execute('SELECT * FROM recent_topics LIMIT 14');
       return topics[0].map(o => Object.assign({}, o));
     } catch(err) {
       return new AppError(500, 'Error Retrieving Recent Videos');

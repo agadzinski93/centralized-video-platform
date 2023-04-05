@@ -1,18 +1,17 @@
 .loggingContainer {
-  background: rgb(29,18,33);
-  background: linear-gradient(0deg, rgba(29,18,33,1) 0%, rgba(60,50,66,1) 100%); 
-    height: 100vh;
-  overflow:hidden;
+    width:100%; 
+    min-height: 100vh;
+    overflow:hidden;
   }
   .loggingFormContainer {
-    background-color:#333;
+    background-color:#1B1321;
     width: 40rem;
     margin: 5rem auto 0;
     padding: 2rem 2rem;
-    box-shadow: #333;
+    border-radius:1rem;
   }
   .loggingHeader {
-    color: #DDD;
+    color: #FFF;
     font-size: 1.5rem;
     text-transform: uppercase;
     text-align: center;
@@ -22,15 +21,24 @@
     display: block;
     padding: 1rem 0 0.5rem 0;
     text-transform: uppercase;
-    color: #DDD;
+    color: #FFF;
     font-weight: bold;
   }
   .loggingText {
     width: 98%;
     height: 2rem;
-    background-color: #eee;
+    color:#FFF;
+    background-color: #242424;
     border: solid 1px #d8d8d9;
     padding-left: 1%;
+    filter:none;
+  }
+  .loggingText:-webkit-autofill,
+  .loggingText:-webkit-autofill:hover, 
+  .loggingText:-webkit-autofill:focus, 
+  .loggingText:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px #444 inset !important;
+    -webkit-text-fill-color: #CCC;
   }
   .loggingTextError {
     border: solid 2px red;
@@ -38,7 +46,6 @@
   .loggingTextErrorMessage {
     display: none;
     margin-top: 0.5rem;
-    color: red;
   }
   .loggingTextErrorMessageShow {
     display: block;
@@ -48,17 +55,20 @@
     margin: 2rem 0 0.5rem 0;
     padding: 0.5rem 0;
     border: none;
-    background-color: #242424;
+    background-color: #108B51;
+    border-radius:1rem;
     color: #fff;
     text-transform: uppercase;
+    font-weight:bold;
   }
   .btnLoginError {
-    background-color: #4f94aa;
-    pointer-events: none;
+    background-color: #44634c;
+    color:#BDBCBC;
+    cursor:not-allowed;
   }
   .signUpContainer {
     width: 42rem;
-    margin: 0.5rem auto 0;
+    margin: 0.5rem auto;
     color: #fff;
     text-align: right;
   }
@@ -66,14 +76,20 @@
     color: #fff;
     text-decoration: none;
   }
-  @media (max-width:1200px) {
+  @media (max-width:45rem) {
     .loggingFormContainer {
-      width: 90%;
-      padding: 2rem 2%;
+      max-width:40rem;
+      width:90%;
+      padding: 2rem 4%;
     }
     .signUpContainer {
       width: 93%;
       color: #fff;
       text-align: right;
+    }
+  }
+  @media (max-width:25rem) {
+    .loggingFormContainer {
+      margin: calc(5rem + 50px) auto 0;
     }
   }

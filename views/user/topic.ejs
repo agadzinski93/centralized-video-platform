@@ -14,25 +14,24 @@
       <button id="btnSelectAllTopics" class="icon iconLarge"></button>
     <span>Select All</span>
     </div>
-    <div class="deleteAllTopicsContainer">
-      <button id="btnDeleteSelected" class="icon iconLarge"></button>
-    <span>Delete Selected</span>
-    </div>
     <div class="refreshMetadataContainer">
       <button id="btnRefreshMetadata" class="icon iconLarge"></button>
     <span>Refresh Metadata</span>
     </div>
+    <div class="deleteAllTopicsContainer">
+      <button id="btnDeleteSelected" class="icon iconLarge"></button>
+    <span>Delete Selected</span>
+    </div>
   </div>
   <div class="newVideoFormContainer">
-    <h2 class="createTopicHeader">Add Video<button class="btnCancelNewTopic">X</button></h2>
+    <h2 class="createTopicHeader">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add Video<button class="btnCancelNewTopic">&#10006;</button></h2>
     <form id="newVideoForm" action="/video/<%= user.username %>/<%= topicName %>/create" method="POST">
-      <label for="ytUrl">Enter Video or Playlist URL</label>
       <input
         type="text"
         name="ytUrl"
         class="ytUrl"
         id="ytUrl"
-        placeholder="youtube.com/watch?v=id"
+        placeholder="Enter video or playlist link (e.g. youtube.com/watch?v=id")
         required
       />
       <div class="newTopicAddBtn">
@@ -90,9 +89,9 @@
           <div class="videoThumbnailContainer" id="thumbnail<%=video.id%>" style="background-image:url('<%=video.thumbnail%>')">
           </div>
           <div class="editVideoForm displayNone" id="editVideoForm<%=video.id%>">
-            <form class="editForm" action="/video/<%=user.username%>/<%=video.topic%>/<%=video.id%>/edit" method="POST">
+            <form class="editForm" action="/video/<%=user.username%>/<%=video.topicUrl%>/<%=video.id%>/edit" method="POST">
               <div class="firstRow">
-                <input id="editTitle<%=video.id%>" type="text" name="title" placeholder="<%=video.title%>">
+                <input id="editTitle<%=video.id%>" type="text" name="title" placeholder="<%=video.title%>" value="<%=video.title%>">
                 <section class="editVideoButtons">
                   <button class="btnSaveEdit icon" id="btnSaveEdit<%=video.id%>"></button>
                   <button class="btnCancelEdit icon" id="btnCancelEdit<%=video.id%>"></button>
@@ -104,8 +103,7 @@
           <div class="displayVideoInfo displayFlex" id="displayVideoInfo<%=video.id%>">
             <div class="videoContentContainer">
               <div class="dashboardTopicVideoContainerFirstRow">
-                <p class="dashboardVideoTitle full" id="vidTitle<%=video.id%>"><a href="/lib/<%=video.topic%>/<%=video.url.substring(20)%>"><%= video.title %></a></p>
-                <p class="dashboardVideoTitle short"><a href="/lib/<%=video.topic%>/<%=video.url.substring(20)%>"><%= video.title %>...</a></p>
+                <p class="dashboardVideoTitle" id="vidTitle<%=video.id%>"><a href="/lib/<%=video.topicUrl%>/<%=video.url.substring(20)%>"><%= video.title %></a></p>
                 <div class="btnEditDelete">
                   <button class="btnVideoEdit" id="btnVideoEdit<%=video.id%>">
                     <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
@@ -113,7 +111,7 @@
                   </button>
                   <form
                     class="deleteVideoForm"
-                    action="/video/<%= user.username %>/<%=topicName%>/<%=video.id%>/delete"
+                    action="/video/<%= user.username %>/<%=video.topicUrl%>/<%=video.id%>/delete"
                     method="POST"
                   >
                     <button class="btnVideoDelete">
@@ -123,8 +121,7 @@
                 </div>
               </div>
               <div class="vidDescriptionContainer">
-                <p id="vidDescription<%=video.id%>" class="full"><%=video.description.substring(0, 100)%>...</p>
-                <p id="vidDescription<%=video.id%>Short" class="short"><%=video.description.substring(0, 50)%>...</p>
+                <p id="vidDescription<%=video.id%>"><%=video.description%></p>
               </div>
             </div>
           </div>
@@ -144,6 +141,6 @@
 <script>
   let topics;
   const USERNAME = '<%=user.username%>';
-  const TOPIC_NAME = '<%=topic.name%>';
+  const TOPIC_URL = '<%=topic.topicUrl%>';
   const REFERENCE_NODE = document.querySelector('.itemsSelectedContainer');
 </script>

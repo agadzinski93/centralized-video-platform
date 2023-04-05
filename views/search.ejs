@@ -1,36 +1,37 @@
 <div class="searchPageContainer">
     <%- include("./partials/navbar.ejs") %>
-    <%if (searchQuery === null){%>
-        <p>No search results</p>
-    <%}else{%>
-        <p>Showing results for &ldquo;<%=searchQuery%>&rdquo;</p>
-        <%if (videos.length < 1){%>
-            <p>No search results</p>
+    <div class="searchResultsContainer">
+        <%if (searchQuery === null){%>
+            <p class="resultsText">No search results</p>
         <%}else{%>
-            <div class="searchListContainer" id="searchListContainer">
-                <%for (let i = 0; i < videos.length; i++){%>
-                    <a id="result<%=i+1%>" href="/lib/<%=videos[i].topic%>/<%=videos[i].url.substring(20)%>">
-                        <div class="searchResultVideo">
-                            <div class="videoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>
-                            <div class="videoInfo">
-                                <%if (videos[i].title.length > 80){%>
-                                    <p><%=videos[i].title.substring(0,80)%>...</p>
-                                <%}else{%>
-                                    <p><%=videos[i].title%></p>
-                                <%}%>
-                                <p><%=videos[i].username%></p>
-                                <%if (videos[i].description.length > 320){%>
-                                    <p><%=videos[i].description.substring(0,320)%>...</p>
-                                <%}else{%>
+            <p class="resultsText">Showing results for &ldquo;<%=searchQuery%>&rdquo;</p>
+            <%if (videos.length < 1){%>
+                <p>No search results</p>
+            <%}else{%>
+                <div id="searchListContainer" class="searchListContainer">
+                    <%for (let i = 0; i < videos.length; i++){%>
+                        <a id="result<%=i+1%>" href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
+                            <div class="searchResultVideo">
+                                <div class="videoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>
+                                <div class="videoInfo">
+                                    <%if (videos[i].title.length > 80){%>
+                                        <p><%=videos[i].title.substring(0,80)%>...</p>
+                                    <%}else{%>
+                                        <p><%=videos[i].title%></p>
+                                    <%}%>
+                                    <div class="userAvatarUsername">
+                                        <div class="avatar" style="background-image: url('<%=videos[i].pic_url%>');"></div>
+                                        <p class="username"><%=videos[i].username%></p>
+                                    </div>   
                                     <p><%=videos[i].description%></p>
-                                <%}%>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                <%}%>
-            </div>
+                        </a>
+                    <%}%>
+                </div>
+            <%}%>
         <%}%>
-    <%}%>
+    </div>
 </div>
 <script type="application/javascript" src="/js/search.js"></script>
 <script>

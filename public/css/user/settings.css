@@ -4,8 +4,6 @@
 .settingsPageContainer {
     width:100%;
     min-height:100vh;
-    background: rgb(29,18,33);
-    background: linear-gradient(0deg, rgba(29,18,33,1) 0%, rgba(60,50,66,1) 100%); 
     color:#FFF;
     overflow:hidden;
 }
@@ -23,10 +21,9 @@
     display:flex;
     flex-wrap: wrap;
     align-items: center;
-    width:90%;
-    margin:0 auto;
+    width:50rem;
+    margin:0 auto 1rem;
     padding:1rem 0;
-    background-color:#1E1E1E;
 }
 .settingsContainer:last-child{
   background-color: initial;
@@ -41,8 +38,13 @@
 }
 .settingContainer {
     width:calc(50% - 1rem);
-    padding-right:1rem;
     text-align:right;
+    padding-top:0.5rem;
+}
+.settingsContainer,
+.settingsChannelBannerContainer {
+  padding:1rem;
+  background-color:#503D55;
 }
 .basicInfoContainer {
     width:100%;
@@ -50,17 +52,56 @@
     display:flex;
     flex-wrap:wrap;
     justify-content: space-between;
-    align-items: center;;
 }
 .basicInfoContainer > div {
-    width:49%;
+    width:calc(49% - 1rem);
     margin-top:1rem;
+}
+.settingInfoPropertyHeader {
+  font-weight:bold;
+  color:#BFB6C7;
+  border-right:solid 2px #BFB6C7;
+}
+.settingInfoPropertyHeader > p {
+  margin:0 1rem 0.25rem 0;
+  font-size:1.125rem;
+}
+.txtInfoContainer {
+  display:flex;
+  justify-content: space-between;
+}
+.txtInfoContainer:nth-child(2) {
+  align-items:center;
+}
+.txtInfoContainer > p {
+  width:calc(100% - 2rem);
+  height:1.5rem;
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+.txtInfoContainer > .txtAboutMe {
+  height:initial;
+  white-space: pre-line;
+}
+.txtInfoContainer > div:not(:first-child) {
+  width:1.25rem;
+}
+.editInfoContainer {
+  display:flex;
+  justify-content: space-between;
+}
+.editInfoContainer > div:first-child {
+  width:calc(100% - 3rem);
+}
+.editInfoContainer > div:last-child {
+  width:3rem;
 }
 .noDisplayName {
     font-style: italic;
 }
 .settingsProfilePic {
-    float:right;
+    display:inline-block;
     width:5rem;
     height:5rem;
     background-repeat: no-repeat;
@@ -68,18 +109,49 @@
     background-size:contain;
     border-radius:50%;
 }
+.profilePicButtons {
+  max-width:3rem;
+}
 .basicInfoEditButtons {
     border:none;
     background: none;
 }
+.basicInfoEditButtons > img {
+  width:0.875rem;
+  height:0.875rem;
+}
+.basicInfoEditButtons:last-child {
+  margin-top:0.5rem;
+}
+.inputLabel {
+  width:calc(100% - 1rem);
+  background-color:#6A5A76;
+  color:#FFF;
+  border:none;
+}
+.inputLabel:focus {
+  background-color:#5A4C6D;
+}
+#editAboutMeContainer > textarea {
+  height:8rem;
+  width:calc(100% - 1rem);
+  background-color:#6A5A76;
+  color:#FFF;
+  border:none;
+}
+#editAboutMeContainer > textarea:focus {
+  background-color:#5A4C6D;
+}
 .editImageFormContainer {
-    position:absolute;
+    position:fixed;
     left:0;
     right:0;
-    width:36%;
-    padding:0 2%;
-    background-color:#333;
+    width:35rem;
+    height:30rem;
+    padding:0 2rem;
+    background-color:#503D55;
     color:#FFF;
+    border-radius:1rem;
     z-index:1;
     overflow:auto;
   }
@@ -91,11 +163,12 @@
     padding:0.5rem 0.75rem;
     float:right;
     color:#FFF;
-    background-color:#242424;
+    background-color:#FF0000;
+    border-radius:0.5rem;
     border:none;
   }
   .btnCancelNewTopic:hover {
-    background-color:#444;
+    background-color:#C00002;
   }
   .editImageFormContainer > h2 {
     padding:1rem 0;
@@ -103,11 +176,6 @@
   .editImageFormContainer > h2 {
     text-align:center;
     padding-left:2.25rem;
-  }
-  .editImageFormContainer {
-    width:35rem;
-    height:30rem;
-    
   }
   .profilePicContainer,
   .bannerContainer {
@@ -135,7 +203,7 @@
   }
   .file-upload {
     height:9rem;
-    background-color: #242424;
+    background-color:#6A5A76;
     display:block;
     text-align: center;
   }
@@ -148,7 +216,7 @@
     padding:1rem 0;
   }
   .file-upload:hover {
-    background-color:#444;
+    background-color:#5A4C6D;
   }
   .fileSizeLimit {
     float:right;
@@ -160,18 +228,17 @@
     padding:0.5rem 0.75rem;
     margin:1rem 0;
     border:none;
+    border-radius:0.5rem;
     color:#FFF;
-    background-color:#242424;
+    background-color:#108B51;
     text-transform: capitalize;
   }
   .newTopicAddBtn > button:hover {
-    background-color: #444;
+    background-color:#306F4A;
   }
 .settingsChannelBannerContainer {
-    width:90%;
+    width:50rem;
     margin:1rem auto 0 auto;
-    padding:1rem 0;
-    background-color:#1E1E1E;
 }
 .settingsChannelBannerContainer > h2 {
     text-align: center;
@@ -201,9 +268,9 @@
 }
 .btnSetting {
     height:32px;
-    width:64px;
+    width:63px;
     border:none;
-    background-image:url('../../assets/svg/topicIcons2.png');
+    background-image:url('../../assets/svg/topicIcons5.png');
     background-repeat:no-repeat;
     background-position:0px -32px;
     background-color:initial;
@@ -218,7 +285,7 @@
 .deleteAccountButton,
 .deleteAccountConfirm button {
     padding:0.25rem 0.5rem;
-    background-color:#9C0000;
+    background-color:#FF0000;
     color:#FFF;
     border:none;
     text-transform: uppercase;
@@ -226,28 +293,31 @@
 }
 .deleteAccountButton:hover,
 .deleteAccountConfirm button:hover {
-    background-color:red;
+    background-color:#C00002;
 }
 .modalDeleteAccount {
-    position:absolute;
+    position:fixed;
     left:0;
     right:0;
-    width:50%;
+    width:37rem;
     margin:calc(50vh - 6.875rem) auto;
-    background-color:#333;
+    background-color:#503D55;
     color:#FFF;
+    border-radius:1rem;
     overflow:auto;
+    z-index:1;
 }
 .modalDeleteAccount > h2 > .btnCancelDeleteAccount {
     padding:0.5rem 0.75rem;
     margin-right:1rem;
     float:right;
     color:#FFF;
-    background-color:#242424;
+    background-color:#FF0000;
     border:none;
+    border-radius:0.5rem;
 }
 .modalDeleteAccount > h2 > .btnCancelDeleteAccount:hover {
-    background-color:#444;
+  background-color:#C00002;
 }
 .modalDeleteAccount > h2 {
     padding:1rem 0;
@@ -270,10 +340,42 @@
     margin:1rem auto;
     text-align:center;
 }
-@media (max-width: 1100px) {
-    .modalDeleteAccount {
-        width:90%;
-    }
+@media (max-width:55rem) {
+  .settingsContainer,
+  .settingsChannelBannerContainer {
+    width:calc(100% - 4rem);
+  }
+}
+@media (max-width:39rem) {
+  .editImageFormContainer {
+    width:calc(100% - 4rem);
+  }
+  .modalDeleteAccount {
+    width:calc(100% - 2rem);
+  }
+  .txtInfoContainer,
+  .editInfoContainer {
+    flex-wrap: wrap;
+  }
+  .txtInfoContainer > .settingsProfilePic {
+    width:3.5rem;
+    height:3.5rem;
+    margin-right:calc(100% - 4rem);
+  }
+  .basicInfoEditButtons {
+    margin-top:0.5rem;
+  }
+  .txtInfoContainer > p,
+  .editInfoContainer > div:first-child {
+    width:100%;
+  }
+  #editAboutMeContainer > textarea {
+    height:10rem;
+  }
+  .channelBannerPreview {
+    width:14rem;
+    height:7rem;
+  }
 }
 @media (max-height:14rem) {
     .modalDeleteAccount {
@@ -299,4 +401,9 @@
       top:0;
       height:100vh;
     }
+}
+@media (max-width: 25rem) {
+  .settingsPageContainer > h1 {
+    margin-top:100px;
   }
+}

@@ -1,17 +1,19 @@
 .searchPageContainer {
     min-height:100vh;
-    background-color:#242424;
     color:#FFF;
+    overflow:hidden;
 }
-.searchPageContainer > p {
+.searchResultsContainer {
+    margin-top:50px;
+}
+.resultsText {
     padding:1rem 0;
     text-align:center;
 }
 .searchListContainer {
     display:flex;
     flex-direction: column;
-    width:60rem;
-    height:calc(100vh - 51px - 3.125rem);
+    width:70rem;
     margin:0 auto;
     overflow:auto;
 }
@@ -33,18 +35,101 @@
     background-position: center;
 }
 .videoInfo {
-    width:calc(100% - 17rem);
-    padding-left:1rem;
+    width:calc(100% - 18rem);
+    padding:0 1rem;
 }
 .videoInfo > p:first-child {
+    height:1.5rem;
+    display:block;
     font-weight:bold;
     font-size:1.125rem;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    overflow:hidden;
 }
-.videoInfo > P:nth-child(2) {
+.videoInfo > .userAvatarUsername {
     padding-top:0.25rem;
+    height:1.5rem;
+    display:flex;
+}
+.avatar {
+    width:1.5rem;
+    height:1.5rem;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    border-radius:50%;
+}
+.username {
+    margin-left:1rem;
 }
 .videoInfo > p:nth-child(3) {
     padding-top:0.5rem;
+    height:4rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow:hidden;
     font-size:0.875rem;
     color:#AAA;
+}
+@media (max-width:70rem) {
+    .searchListContainer {
+        width:100%;
+    }
+}
+@media (max-width:42rem) {
+    .searchResultVideo {
+        height:calc(10rem / 1.78);
+    }
+    .videoThumbnail {
+        width:10rem;
+        height:calc(10rem / 1.78);
+    }
+    .videoInfo {
+        width:calc(100% - 12rem);
+    }
+    .videoInfo > .userAvatarUsername {
+        height:1.25rem;
+    }
+    .avatar {
+        width:1.25rem;
+        height:1.25rem;
+    }
+    .videoInfo > p:nth-child(3) {
+        height:2rem;
+        -webkit-line-clamp: 2;
+    }
+}
+@media (max-width:25rem) {
+    .searchResultVideo {
+        height:calc(8rem / 1.78);
+    }
+    .videoThumbnail {
+        width:8rem;
+        height:calc(8rem / 1.78);
+    }
+    .videoInfo {
+        width:calc(100% - 10rem);
+    }
+    .videoInfo > p:first-child {
+        height:1rem;
+        font-size:0.875rem;
+    }
+    .videoInfo > .userAvatarUsername {
+        height:1rem;
+    }
+    .avatar {
+        width:1rem;
+        height:1rem;
+    }
+    .username {
+        font-size:0.875rem;
+    }
+    .videoInfo > p:nth-child(3) {
+        padding-top:0.25rem;
+        height:1.875rem;
+        -webkit-line-clamp: 2;
+        font-size:0.75rem;
+    }
 }

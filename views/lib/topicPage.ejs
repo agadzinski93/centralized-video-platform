@@ -18,13 +18,13 @@
     <div class="topicVideoList">
       <% if (videos.length > 0) { %> 
         <% for (video of videos) { %>
-          <a href="/lib/<%=topic.name%>/<%=video.url.substring(20)%>">
+          <a href="/lib/<%=video.topicUrl%>/<%=video.url.substring(20)%>">
             <div class="topicVideo">
               <div class="topicVideoThumbnail" style="background-image:url('<%=video.thumbnail%>')"></div>
               <div class="topicVideoInfoContainer">
                 <p class="topicVideoTitle"><%= video.title %></p>
                 <%if (video.description.length > 65) {%>
-                  <p class="topicVideoDescription"><%= video.description.substring(0,65) %>...</p>
+                  <p class="topicVideoDescription"><%= video.description%></p>
                 <%}else{%>
                   <p class="topicVideoDescription"><%= video.description %></p>
                 <%}%>

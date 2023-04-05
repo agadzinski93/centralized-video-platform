@@ -1,7 +1,7 @@
 const AppError = require("../utilities/AppError");
 const { getUser } = require("../utilities/helpers/authHelpers");
 const { escapeHTML, unescapeSQL} = require("../utilities/helpers/sanitizers");
-const {topicExists} = require("../utilities/helpers/topicHelpers");
+const {topicExists, enableHyphens} = require("../utilities/helpers/topicHelpers");
 const {getVideos, getVideoInfo, getPlaylistInfo, getPlaylistVideos, insertVideo, insertManyVideos,
     videoExists, videoExistsInTopic, 
     modifyVideo, swapVideoRecords, 
@@ -9,8 +9,10 @@ const {getVideos, getVideoInfo, getPlaylistInfo, getPlaylistVideos, insertVideo,
 
 module.exports = {
     createVideo: async (req, res, next) => {
+        const USERNAME = escapeHTML(req.params.username);
         const videoUrl = escapeHTML(req.body.ytUrl);
         const topicName = escapeHTML(req.params.topic);
+        const topicUrl = enableHyphens(topicName,true);
         let isPlaylist = false;
 
         const ytUrlTemplate = 'watch?v=';
@@ -30,7 +32,7 @@ module.exports = {
             let wait = await videoExistsInTopic(vidId, topicName);
             if (wait) {
                 req.flash("error", "Video Already Exists in Topic");
-                res.redirect(`/user/${req.user.username}/dashboard/${topicName}`);
+                res.redirect(`/user/${USERNAME}/dashboard/${topicUrl}`);
             }
         }
     
@@ -39,17 +41,17 @@ module.exports = {
         if (exists instanceof AppError) return next(exists);
         else if (exists === 0) {
             req.flash("error", "Topic Doesn't Exists");
-            res.redirect(`/user/${req.user.username}/dashboard`);
+            res.redirect(`/user/${USERNAME}/dashboard`);
         } else {
             if (!isPlaylist) {
                 let video = await getVideoInfo(vidId);
                 if (video instanceof AppError) return next(video);
                 
-                let error = await insertVideo(video, topicName, req.user.username);
+                let error = await insertVideo(video, topicName, USERNAME);
                 if (error instanceof AppError) return next(error);
                 
                 req.flash('success', "Video Added");
-                res.redirect(`/user/${req.params.username}/dashboard/${topicName}`);
+                res.redirect(`/user/${USERNAME}/dashboard/${topicUrl}`);
             }
             else {
                 let playlistInfo = await getPlaylistInfo(vidId);
@@ -58,7 +60,7 @@ module.exports = {
                 let result = await getPlaylistVideos(playlistInfo);
                 if (result instanceof AppError) return next(result);
                 
-                let error = await insertManyVideos(result, topicName, req.user.username);
+                let error = await insertManyVideos(result, topicName, USERNAME);
                 if (error instanceof AppError) return next(error);
 
                 let numOfVidsRequested = error.info.substring(error.info.indexOf('Records:') + 9, error.info.indexOf('Duplicates') - 2);
@@ -70,7 +72,7 @@ module.exports = {
                 else {
                     req.flash('success', `${numOfVidsAdded} videos added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`);
                 }
-                res.redirect(`/user/${req.params.username}/dashboard/${topicName}`);
+                res.redirect(`/user/${USERNAME}/dashboard/${topicUrl}`);
             }
             
         }
@@ -80,8 +82,9 @@ module.exports = {
         const title = escapeHTML(req.body.title);
         let description = escapeHTML(req.body.description);
         const id = req.params.video;
+        const topicName = escapeHTML(req.params.topic);
 
-        if (description.length > 1024) description = description.substring(0,1023);
+        if (description.length > 2048) description = description.substring(0,2047);
 
         if (await videoExists(id)) {
             let result = await modifyVideo(id, title, description, null, false);
@@ -89,11 +92,11 @@ module.exports = {
             if (result instanceof AppError) return next(result);
 
             req.flash('success', 'Video Updated');
-            res.redirect(`/user/${req.params.username}/dashboard/${req.params.topic}`);
+            res.redirect(`/user/${req.params.username}/dashboard/${topicName}`);
         }
         else {
             req.flash('error', "Video Doesn't Exist");
-            res.redirect(`/user/${req.params.username}/dashboard/${req.params.topic}`);
+            res.redirect(`/user/${req.params.username}/dashboard/${topicName}`);
         }
     },
     swapVideos: async (req, res, next) => {
@@ -128,7 +131,7 @@ module.exports = {
                     vidInfos = await getVideos(videos);
                     for (let i = 0; i < vidInfos.length; i++) {
                         vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
-                        result = await modifyVideo(videos[i], vidInfo.title, vidInfo.description.substring(0,1023), vidInfo.thumbnail);
+                        result = await modifyVideo(videos[i], vidInfo.title, vidInfo.description.substring(0,2047), vidInfo.thumbnail);
                         if (result instanceof AppError) break;
                         result.description = unescapeSQL(result.description);
                         result.title = unescapeSQL(result.title);
@@ -139,7 +142,7 @@ module.exports = {
                     vidInfos = await getVideos(videos);
                     for (let i = 0; i < vidInfos.length; i++) {
                         vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
-                        result = await modifyVideo(videos[i], vidInfo.title, vidInfo.description.substring(0,1023), null);
+                        result = await modifyVideo(videos[i], vidInfo.title, vidInfo.description.substring(0,2047), null);
                         if (result instanceof AppError) break;
                         result.description = unescapeSQL(result.description);
                         result.title = unescapeSQL(result.title);
@@ -177,7 +180,7 @@ module.exports = {
                 vidInfos = await getVideos(videos);
                     for (let i = 0; i < vidInfos.length; i++) {
                         vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
-                        result = await modifyVideo(videos[i], null, vidInfo.description.substring(0,1023), vidInfo.thumbnail);
+                        result = await modifyVideo(videos[i], null, vidInfo.description.substring(0,2047), vidInfo.thumbnail);
                         if (result instanceof AppError) break;
                         result.title = null;
                         result.description = unescapeSQL(result.description);
@@ -188,7 +191,7 @@ module.exports = {
                 vidInfos = await getVideos(videos);
                     for (let i = 0; i < vidInfos.length; i++) {
                         vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
-                        result = await modifyVideo(videos[i], null, vidInfo.description.substring(0,1023), null);
+                        result = await modifyVideo(videos[i], null, vidInfo.description.substring(0,2047), null);
                         if (result instanceof AppError) break;
                         result.title = null;
                         result.description = unescapeSQL(result.description);
@@ -220,6 +223,8 @@ module.exports = {
     },
     deleteVideo: async (req, res, next) => {
         const id = escapeHTML(req.params.video);
+        const username = escapeHTML(req.params.username);
+        const topicName = escapeHTML(req.params.topic);
 
         if (await videoExists(id)) {
             let result = await removeVideo(id);
@@ -227,11 +232,11 @@ module.exports = {
             if (result instanceof AppError) return next(result);
 
             req.flash('success', 'Video Deleted');
-            res.redirect(`/user/${req.params.username}/dashboard/${req.params.topic}`);
+            res.redirect(`/user/${username}/dashboard/${topicName}`);
         }
         else {
             req.flash('error', "Video Doesn't Exist");
-            res.redirect(`/user/${req.params.username}/dashboard/${req.params.topic}`);
+            res.redirect(`/user/${username}/dashboard/${topicName}`);
         }
     },
     deleteSelectedVideos: async (req, res, next) => {

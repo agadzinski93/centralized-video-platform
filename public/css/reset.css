@@ -83,6 +83,7 @@ video {
   padding: 0;
   border: 0;
   font-size: 16px;
+  line-height:1.2;
 }
 a {
   color: inherit;

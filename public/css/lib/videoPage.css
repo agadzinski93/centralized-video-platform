@@ -1,31 +1,27 @@
-body {
-    background: rgb(29,18,33);
-    background: linear-gradient(0deg, rgba(29,18,33,1) 0%, rgba(60,50,66,1) 100%); 
-}
 .videoPageContainer {
     display:flex;
-    width:100%;
+    
     min-height:100vh;
-    background: rgb(29,18,33);
-    background: linear-gradient(0deg, rgba(29,18,33,1) 0%, rgba(60,50,66,1) 100%);  
+    overflow:hidden;
 }
 .mainVideoContainer {
     margin-top:50px;
-    width:100%;
+    width:calc(100vw - 40rem);
     color:#FFF;
 }
 .mainVideoPlayerContainer > iframe {
-    margin-top:1rem;
+    margin:1rem auto 0;
     width:90%;
-    height:30vw;
+    height:calc((100vw - 40rem) * 0.9 / 1.78);
 }
 .mainVideoContainer > .mainVideoTitle {
-    margin:1rem 5% 0 5%;
+    margin:1rem auto 0;
+    width:90%;
     font-size:1.5rem;
     font-weight: bold;
 }
 .mainVideoContainer > .authorInfo {
-    margin:1rem 5% 0 5%;
+    margin:1rem auto;
     width:90%;
     height:4rem;
     display:flex;
@@ -48,13 +44,13 @@ body {
 .subscribe,
 .unsubscribe {
     border:none;
+    border-radius:1rem;
     margin-top:1rem;
     margin-left:1rem;
     height:2rem;
     width:8rem;
     color:#FFF;
     font-weight:bold;
-    
 }
 .subscribe {
     background-color:teal;
@@ -62,8 +58,21 @@ body {
 .unsubscribe {
     background-color:red;
 }
-.mainVideoContainer > .mainVideoDescription {
-    margin:1rem 5% 0 5%;
+.mainVideoDescriptionContainer {
+    margin:1rem 5%;
+    padding:1rem 1rem;
+    border-radius:1rem;
+}
+.mainVideoDescription {
+    max-height:6rem;
+    white-space: pre-line;
+}
+.mainVideoDescription.heightInitial {
+    max-height:initial;
+    height:initial;
+}
+.mainVideoDescription a {
+    color:#4BBACA;
 }
 .mainVideoPlayerContainer {
     margin:0 auto;
@@ -71,83 +80,130 @@ body {
 }
 .videoPlaylistLeft {
     display:flex;
+    flex-flow:column;
     flex-wrap:wrap;
-    width:75rem;
+    width:40rem;
     margin-top:calc(50px + 1rem);
 }
 .videoPlaylistContainer {
     display:flex;
     flex-direction:column;
+    justify-content: flex-start;
+    min-height:36rem;
     height:calc(100vh - 50px - 3.25rem);
-    width:100%;
+    width:40rem;
     overflow:auto;
+    flex:auto;
 }
 .videoPlaylistLeft > .topicTitleContainer {
-    width:100%;
+    width:40rem;
     padding:0.5rem 0 0.5rem 1rem;
     text-align:center;
-    background-color:#000;
+    background-color:#1B1321;
     color:#FFF;
+    height:1.25rem;
 }
 a {
     text-decoration: none;
 }
 .playlistVideoContainer {
     display:flex;
-    width:100%;
-    height:6rem;
-    background-color:#333;
+    max-width:40rem;
     color:#FFF;
 }
 .playlistVideoContainer:hover {
-    background-color:#555;
+    background-color:#503D55;
 }
 .playlistVideoContainerSelected {
-    background-color:#555;
+    background-color:#503D55;
 }
 .playlistVideoImageContainer {
-    width:15rem;
+    width:12rem;
+    height:calc(12rem / 1.78);
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: center;;
 }
 .playlistVideoInfoContainer {
-    width:100%;
+    width:28rem;
 }
 .playlistVideoInfoContainer > p:first-child {
-    font-weight: bold;;
+    width:25rem;
+    font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow:hidden;
 }
 .playlistVideoInfoContainer > p {
-    margin-top:0.5rem;
-    margin-left:1rem;
+   margin:0.5rem 1rem 0;
 }
-
+.playlistVideoInfoContainer > p:last-child {
+    color:#AAA;
+    width:25rem;
+    height:2.4rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow:hidden;
+}
 @media (max-width:1100px) {
     .videoPageContainer {
         flex-direction: column;
         min-height:50rem;
-        background-color:#242424;
     }
     .mainVideoContainer {
+        width:100%;
         height:fit-content;
     }
     .mainVideoPlayerContainer > iframe {
-        width:80vw;
-        height:calc(80vw / 1.78);
+        width:90vw;
+        height:calc(90vw / 1.78);
     }
     .mainVideoContainer > .mainVideoTitle {
-        margin:0.75rem 10% 0 10%;
         font-size:1.25rem;
     }
-    .mainVideoContainer > .mainVideoDescription {
-        margin:0.75rem 10% 0 10%;
-        height:5rem;
-        overflow: auto;
-    }
     .videoPlaylistLeft {
+        margin-top:0;
+        width:100%;
+        min-height:fit-content;
+    }
+    .videoPlaylistLeft > .topicTitleContainer {
         width:100%;
     }
     .videoPlaylistContainer {
-        height:calc(100vh - 50px - (80vw / 1.78) - 12.375rem);
+        width:100%;
+        height:initial;
+        max-height:45rem;
         min-height:15rem;
+    }
+    .playlistVideoContainer {
+        max-width:initial;
+    }
+    .playlistVideoImageContainer {
+        width:15rem;
+        height:calc(15rem / 1.78);
+    }
+    .playlistVideoInfoContainer {
+        width:calc(100% - 15rem);
+    }
+    .playlistVideoInfoContainer > p:first-child {
+        width:calc(100% - 2rem);
+    }
+    .playlistVideoInfoContainer > p:last-child {
+        width:calc(100% - 2rem);
+    }
+}
+@media (max-width:600px){
+    .playlistVideoImageContainer {
+        width:9rem;
+        height:calc(9rem / 1.78);
+    }
+    .playlistVideoInfoContainer {
+        width:calc(100% - 9rem);
+    }
+}
+@media (max-width:25rem) {
+    .mainVideoContainer {
+        margin-top:100px;
     }
 }

@@ -8,12 +8,21 @@
     <%if (user === undefined || user === null) {%>
         <div class="loginRegisterContainer">
             <div class="loginButton"><a href="/auth/login">Login</a></div>
-            <div class="registerButton"><a href="/auth/register">Register</a></div>
+            <div class="registerButton"><a href="/auth/register"><span class="txtRegisterButton">Sign Up</span></a></div>
         </div>
     <%}else{%>
-        <div class="userDropDownLinks">
+        <div class="userDropDownLinks desktopMenu">
             <div><a href="/user/<%= user.username %>"><div id="avatar" class="navbarProfilePic" style="background-image:url('<%=user.pic_url%>')"></div></a></div>
             <ul class="userSubmenu">
+                <li><a href="/user/<%= user.username %>/dashboard">Dashboard</a></li>
+                <li><a href="/user/<%= user.username %>/settings">Settings</a></li>
+                <li><a href="/auth/logout">Logout</a></li>
+            </ul>
+        </div>
+        <div class="userDropDownLinks mobileMenu">
+            <div class="hamburger"></div>
+            <ul class="userSubmenu">
+                <li><a class="profileLink" href="/user/<%= user.username %>"><div id="avatar" class="navbarProfilePic" style="background-image:url('<%=user.pic_url%>')"></div></a></li>
                 <li><a href="/user/<%= user.username %>/dashboard">Dashboard</a></li>
                 <li><a href="/user/<%= user.username %>/settings">Settings</a></li>
                 <li><a href="/auth/logout">Logout</a></li>

@@ -60,85 +60,110 @@
     <div id="flashReference" class="settingsContainer">
         <h2>Basic Info</h2>
         <div class="basicInfoContainer">
-            <div><div class="settingsProfilePic" style="background-image:url('<%=user.pic_url%>');"></div></div>
-            <div>
-                <button class="clearButtonStyles" id="btnEditProfilePic">
-                    <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
-                    <span>Change Profile Picture</span>
-                </button>
-                <%if (usingDefaultProfilePic){%>
-                    <button class="clearButtonStyles displayNone" id="btnDeleteProfilePic">
-                        <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit" />
-                        <span>Delete Profile Picture</span>
-                    </button>
-                <%}else{%>
-                    <button class="clearButtonStyles" id="btnDeleteProfilePic">
-                        <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit" />
-                        <span>Delete Profile Picture</span>
-                    </button>
-                <%}%>
+            <div class="settingInfoPropertyHeader textRight">
+                <p>Profile Picture</p>
             </div>
-            <div class="textRight">Display Name</div>
-            <div id="displayNameContainer">
+            <div class="txtInfoContainer">
+                <div class="settingsProfilePic" style="background-image:url('<%=user.pic_url%>');"></div>
+                <div class="profilePicButtons">
+                    <%if (usingDefaultProfilePic){%>
+                        <button class="clearButtonStyles basicInfoEditButtons displayNone" id="btnDeleteProfilePic">
+                            <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit" />
+                            <span>Delete Profile Picture</span>
+                        </button>
+                    <%}else{%>
+                        <button class="clearButtonStyles basicInfoEditButtons" id="btnDeleteProfilePic">
+                            <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit" />
+                            <span>Delete Profile Picture</span>
+                        </button>
+                    <%}%>
+                    <button class="clearButtonStyles basicInfoEditButtons" id="btnEditProfilePic">
+                        <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                        <span>Change Profile Picture</span>
+                    </button>
+                </div>
+            </div>
+            <div class="settingInfoPropertyHeader textRight">
+                <p>Display Name</p>
+            </div>
+            <div id="displayNameContainer" class="txtInfoContainer">
                 <%if (user.display_name == null) {%>
-                    <span id="displayName"><span id="noDisplayName" class="noDisplayName">None</span></span>
+                    <p id="displayName"><span id="noDisplayName" class="noDisplayName">None</span></p>
                 <%}else{%>
-                    <span id="displayName"><%=user.display_name%></span>
+                    <p id="displayName"><%=user.display_name%></p>
                 <%}%>
-                <button id="btnEditDisplayName" class="basicInfoEditButtons">
-                    <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
-                    <span>Edit Display Name</span>
-                </button>
+                <div>
+                    <button id="btnEditDisplayName" class="basicInfoEditButtons">
+                        <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                        <span>Edit Display Name</span>
+                    </button>
+                </div>
             </div>
-            <div id="editDisplayNameContainer" class="displayNone">
-                <input id="txtDisplayName" type="text" placeholder="<%=user.display_name%>">
-                <button id="btnConfirmEditDisplayName" class="basicInfoEditButtons">
-                    <img class="icon" src="/assets/svg/accept.png" alt="edit" />
-                    <span>Confirm</span>
-                </button>
-                <button id="btnCancelEditDisplayName" class="basicInfoEditButtons">
-                    <img class="icon" src="/assets/svg/cancel.png" alt="edit" />
-                    <span>Cancel</span>
-                </button>
-                <p id="errorDisplayName" class="errorText displayNone">Username must be 3 to 24 characters</p>
+            <div id="editDisplayNameContainer" class="editInfoContainer displayNone">
+                <div>
+                    <input id="txtDisplayName" class="inputLabel" type="text" placeholder="<%=user.display_name%>">
+                </div>
+                <div>
+                    <button id="btnConfirmEditDisplayName" class="basicInfoEditButtons">
+                        <img class="icon" src="/assets/svg/accept.png" alt="edit" />
+                        <span>Confirm</span>
+                    </button>
+                    <button id="btnCancelEditDisplayName" class="basicInfoEditButtons">
+                        <img class="icon" src="/assets/svg/cancel.png" alt="edit" />
+                        <span>Cancel</span>
+                    </button>
+                    <p id="errorDisplayName" class="errorText displayNone">Username must be 3 to 24 characters</p>
+                </div>
             </div>
-            <div class="textRight">Email</div>
-            <div id="displayEmailContainer">
-                <span id="email"><%=user.email%></span>
-                <button id="btnEditEmail" class="basicInfoEditButtons">
-                    <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
-                    <span>Edit Email</span>
-                </button>
+            <div class="settingInfoPropertyHeader textRight">
+                <p>Email</p>
             </div>
-            <div id="editDisplayEmailContainer" class="displayNone">
-                <input id="txtEmail" type="text" placeholder="<%=user.email%>">
-                <button id="btnConfirmEditEmail" class="basicInfoEditButtons">
-                    <img class="icon" src="/assets/svg/accept.png" alt="edit" />
-                    <span>Confirm</span>
-                </button>
-                <button id="btnCancelEditEmail" class="basicInfoEditButtons">
-                    <img class="icon" src="/assets/svg/cancel.png" alt="edit" />
-                    <span>Cancel</span>
-                </button>
-                <p id="errorEmail" class="errorText displayNone">Please enter a valid email</p>
+            <div id="displayEmailContainer" class="txtInfoContainer">
+                <p id="email"><%=user.email%></p>
+                <div>
+                    <button id="btnEditEmail" class="basicInfoEditButtons">
+                        <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                        <span>Edit Email</span>
+                    </button>
+                </div>
             </div>
-            <div class="textRight">About Me</div>
-            <div id="aboutMeContainer">
+            <div id="editDisplayEmailContainer" class="editInfoContainer displayNone">
+                <div>
+                    <input id="txtEmail" class="inputLabel" type="text" placeholder="<%=user.email%>">
+                </div>
+                <div>
+                    <button id="btnConfirmEditEmail" class="basicInfoEditButtons">
+                        <img class="icon" src="/assets/svg/accept.png" alt="edit" />
+                        <span>Confirm</span>
+                    </button>
+                    <button id="btnCancelEditEmail" class="basicInfoEditButtons">
+                        <img class="icon" src="/assets/svg/cancel.png" alt="edit" />
+                        <span>Cancel</span>
+                    </button>
+                    <p id="errorEmail" class="errorText displayNone">Please enter a valid email</p>
+                </div>
+            </div>
+            <div class="settingInfoPropertyHeader textRight">
+                <p>About Me</p>
+            </div>
+            <div id="aboutMeContainer" class="txtInfoContainer">
                 <%if (user.about_me === null || user.about_me === ""){%>
-                    <span id="txtAboutMe" class="noDisplayName">None</span>
+                    <p id="txtAboutMe" class="noDisplayName">None</p>
                 <%}else{%>
-                    <span id="txtAboutMe" class="aboutMeContainer"><%=user.about_me%></span>
+                    <p id="txtAboutMe" class="txtAboutMe"><%=user.about_me%></p>
                 <%}%>
-                <button id="btnEditAboutMe" class="basicInfoEditButtons">
-                    <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
-                    <span>Edit Your Bio</span>
-                </button>
+                <div>
+                    <button id="btnEditAboutMe" class="basicInfoEditButtons">
+                        <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                        <span>Edit Your Bio</span>
+                    </button>
+                </div>
             </div>
             <div id="editAboutMeContainer" class="displayNone">
                 <%if (user.about_me === null){%>
-                    <textarea name="aboutMe" id="aboutMe" cols="30" rows="10"></textarea>
+                    <textarea name="aboutMe" id="aboutMe" cols="30" rows="10" maxlength="1024"></textarea>
                 <%}else{%>
-                    <textarea name="aboutMe" id="aboutMe" cols="30" rows="10"><%=user.about_me%></textarea>
+                    <textarea name="aboutMe" id="aboutMe" cols="30" rows="10" maxlength="1024"><%=user.about_me%></textarea>
                 <%}%>
                 <button id="btnConfirmEditAboutMe" class="basicInfoEditButtons">
                     <img class="icon" src="/assets/svg/accept.png" alt="edit" />
@@ -148,7 +173,6 @@
                     <img class="icon" src="/assets/svg/cancel.png" alt="edit" />
                     <span>Cancel</span>
                 </button>
-                <p>1024 characters remaining</p>
             </div>
         </div>
     </div>
@@ -156,17 +180,28 @@
         <h2>Channel Banner</h2>
         <div class="channelBannerPreview" style="background-image:url('<%=user.banner_url%>');"></div>
         <div class="editDeleteBannerButtons">
-            <button id="btnEditBanner">Edit</button>
+            <button id="btnEditBanner" class="basicInfoEditButtons">
+                <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                <span>Change Channel Banner</span>
+            </button>
             <%if (user.banner_url == null){%>
-                <button id="btnDeleteBanner" class="displayNone">Delete</button>
+                <button id="btnDeleteBanner" class="basicInfoEditButtons displayNone">
+                    <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit" />
+                    <span>Delete Banner</span>
+                </button>
             <%}else{%>
-                <button id="btnDeleteBanner">Delete</button>
+                <button id="btnDeleteBanner" class="basicInfoEditButtons">
+                    <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit" />
+                    <span>Delete Banner</span>
+                </button>
             <%}%>
         </div>
     </div>
     <div class="settingsContainer">
         <h2>Refresh Metadata</h2>
-        <div class="settingContainer">Title</div>
+        <div class="settingContainer settingInfoPropertyHeader">
+            <p>Title</p>
+        </div>
         <div class="settingButtonContainer">
             <%if (user.settingRefreshTitle === 1) {%>
                 <button id="btnRefreshTitle" class="btnSetting btnSettingSelected"></button>
@@ -174,7 +209,9 @@
                 <button id="btnRefreshTitle" class="btnSetting"></button>
             <%}%>
         </div>
-        <div class="settingContainer">Description</div>
+        <div class="settingContainer settingInfoPropertyHeader">
+            <p>Description</p>
+        </div>
         <div class="settingButtonContainer">
             <%if (user.settingRefreshDescription === 1) {%>
                 <button id="btnRefreshDescription" class="btnSetting btnSettingSelected"></button>
@@ -182,7 +219,9 @@
                 <button id="btnRefreshDescription" class="btnSetting"></button>
             <%}%>
         </div>
-        <div class="settingContainer">Thumbnail</div>
+        <div class="settingContainer settingInfoPropertyHeader">
+            <p>Thumbnail</p>
+        </div>
         <div class="settingButtonContainer">
             <%if (user.settingRefreshThumbnail === 1) {%>
                 <button id="btnRefreshThumbnail" class="btnSetting btnSettingSelected"></button>

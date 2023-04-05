@@ -44,7 +44,7 @@ module.exports = {
   loginUser: async (req, res, next) => {
     let url = "/";
     if (req.session.prevUrl) {
-      url = (req.session === "/login") ? "/" : req.session.prevUrl;
+      url = (req.session === "/auth/login") ? "/" : req.session.prevUrl;
     }
 
     pp.authenticate("local", {

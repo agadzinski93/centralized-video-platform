@@ -107,3 +107,71 @@ const toggleBackgroundLoading = (enable = false, element, removeTxtContent = fal
         element.classList.remove('backgroundLoading');
     }
 }
+/**
+ * 
+ * @param {string} input - date as formatted by DATE or DATETIME in SQL
+ * @returns E.g. January 5, 2022 or 'invalid' if wrong input
+ */
+const convertSQLDate = (input) => {
+    let output = '';
+    if (input.length >= 10) {
+        switch(input.substring(5,7)) {
+            case "01":
+                output += 'January ';
+                break;
+            case "02":
+                output += 'February ';
+                break;
+            case "03":
+                output += 'March ';
+                break;
+            case "04":
+                output += 'April ';
+                break;
+            case "05":
+                output += 'May ';
+                break;
+            case "06":
+                output += 'June ';
+                break;
+            case "07":
+                output += 'July ';
+                break;
+            case "08":
+                output += 'August ';
+                break;
+            case "09":
+                output += 'September ';
+                break;
+            case "10":
+                output += 'October ';
+                break;
+            case "11":
+                output += 'November ';
+                break;
+            case "12":
+                output += 'December ';
+                break;
+            default:
+        }
+        output += (input.charAt(8) === '0') ? `${input.charAt(9)}, ` : `${input.substring(8,10)}, `;
+        output += input.substring(0,4);
+    }
+    else {
+        output = 'invalid';
+    }
+    return output;
+}
+/**
+ * Replace first occurence of string with new string after specified index
+ * @param {string} search 
+ * @param {string} replace 
+ * @param {int} from 
+ * @returns 
+ */
+String.prototype.replaceFromIndex = function(search, replace, from) {
+    if (this.length > from) {
+      return this.slice(0, from) + this.slice(from).replace(search, replace);
+    }
+    return this;
+  }

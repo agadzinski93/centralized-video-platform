@@ -1,5 +1,6 @@
 const registerValidator = require("../registerValidator");
 const topicValidator = require("../topicValidator");
+const {cloudinary} = require("../../../utilities/cloudinary");
 
 module.exports = {
   /**
@@ -20,6 +21,9 @@ module.exports = {
   topicValidation: (req, res, next) => {
     let { error } = topicValidator.validate(req.body);
     if (error) {
+      if (req.file) {
+        cloudinary.uploader.destroy(req.file.filename);
+      }
       req.flash("error", error.details[0].message);
       res.redirect(`/user/${req.user.username}/dashboard`);
     } else {
