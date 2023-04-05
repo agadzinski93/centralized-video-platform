@@ -4,9 +4,9 @@
       <div class="mainVideoContainer">
         <div class="mainVideoPlayerContainer">
           <%if (timestamp === null) {%>
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/<%=video.videoId%>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/<%=video.videoId%>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           <%}else{%>
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/<%=video.videoId%>?start=<%=timestamp%>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/<%=video.videoId%>?start=<%=timestamp%>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           <%}%>
         </div>
         <p class="mainVideoTitle"><%=video.title%></p>
@@ -38,14 +38,18 @@
             <%}%>
           </div>
         </div>
-        <p class="mainVideoDescription"><%=video.description%></p>
+        <%if (video.description !== "" && video.description !== null){%>
+          <div class="mainVideoDescriptionContainer hover">
+            <p id="mainVideoDescription" class="mainVideoDescription overflowHidden cursorPointer"><%=video.description%></p>
+          </div>
+        <%}%>
       </div>
       <div class="videoPlaylistLeft">
-        <div class="topicTitleContainer"><a href="/lib/<%=video.topic%>">&larr; <%=video.topic%></a></div>
+        <div class="topicTitleContainer"><a href="/lib/<%=video.topicUrl%>">&larr; <%=video.topic%></a></div>
         <div class="videoPlaylistContainer">
           <%if (videos.length > 0) {%>
             <%for (let i = 0;i < videos.length; i++) {%>
-              <a href="/lib/<%=videos[i].topic%>/<%=videos[i].url.substring(20)%>">
+              <a href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
                 <% if (video.id === videos[i].id) {%>
                   <div class="playlistVideoContainer playlistVideoContainerSelected" id="selectedVideo">
                     <div class="playlistVideoImageContainer" style="background-image: url('<%=videos[i].thumbnail%>');">
@@ -56,11 +60,7 @@
                       <% } else { %>
                         <p><%=videos[i].title%></p>
                       <%}%>
-                      <% if (videos[i].description.length > 50) {%>
-                        <p><%=videos[i].description.substring(0,50)%>...</p>
-                      <% } else { %>
                         <p><%=videos[i].description%></p>
-                      <%}%>
                     </div>
                   </div>
                 <%} else {%>
@@ -73,11 +73,7 @@
                       <% } else { %>
                         <p><%=videos[i].title%></p>
                       <%}%>
-                      <% if (videos[i].description.length > 50) {%>
-                        <p><%=videos[i].description.substring(0,50)%>...</p>
-                      <% } else { %>
                         <p><%=videos[i].description%></p>
-                      <%}%>
                     </div>
                   </div>
                 <%}%>

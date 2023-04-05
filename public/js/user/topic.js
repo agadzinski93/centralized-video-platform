@@ -1,4 +1,4 @@
-//Globals Required: Username and Topic Name
+//Globals Required: Username and Topic Url
 const toggleNewTopicForm = () => {
     document.querySelector('.backdrop').classList.toggle('displayNone');
     document.querySelector('.newVideoFormContainer').classList.toggle('displayNone');
@@ -84,8 +84,11 @@ const toggleNewTopicForm = () => {
     document.getElementById(`thumbnail${swap}`).style.backgroundImage = currentThumbnail;
     //Swap Edit Forms
     const currentEditTitle = document.getElementById(`editTitle${current}`).getAttribute('placeholder');
-    document.getElementById(`editTitle${current}`).setAttribute('placeholder', document.getElementById(`editTitle${swap}`).getAttribute('placeholder'));
+    const swapEditTitle = document.getElementById(`editTitle${swap}`).getAttribute('placeholder');
+    document.getElementById(`editTitle${current}`).setAttribute('placeholder', swapEditTitle);
     document.getElementById(`editTitle${swap}`).setAttribute('placeholder', currentEditTitle);
+    document.getElementById(`editTitle${current}`).setAttribute('value', swapEditTitle);
+    document.getElementById(`editTitle${swap}`).setAttribute('value', currentEditTitle);
 
     const currentEditDescription = document.getElementById(`editDescription${current}`).textContent;
     document.getElementById(`editDescription${current}`).textContent = document.getElementById(`editDescription${swap}`).textContent;
@@ -359,7 +362,8 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
   const addRemoveSelectedVideos = () => {
     document.getElementById('btnDeleteSelected').addEventListener('click', async (e) => {
       const selectedVideos = document.getElementsByClassName('btnSelectVideoSelected');
-      const totalVideos = document.querySelectorAll('dashboardTopicVideoContainer').length;
+      const selectedVideosLength = selectedVideos.length;
+      const totalVideos = document.querySelectorAll('.dashboardTopicVideoContainer').length;
       if (selectedVideos.length > 0) {
         toggleBackdrop(true, '#fff', '10%');
         toggleModal(true, 'Deleting videos. Please be patient.');
@@ -395,7 +399,7 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
             } else {
               flashBanner('success', `Sucessfully deleted ${videoList.length} videos`, REFERENCE_NODE);
             }
-            if (selectedVideos.length === totalVideos) {
+            if (selectedVideosLength === totalVideos) {
               document.getElementById('btnSelectAllTopics').classList.remove('selectedAll');
               let text = document.createElement('h2');
               text.textContent = 'No Videos in Topic';
@@ -435,16 +439,15 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
           const data = await result.json();
           
           if (data.status !== 'error') {
-            let currentElement;
             for (let i = 0; i < videoList.length; i++) {
               if (data.finalResult[i].title !== null) {
-                document.getElementById(`vidTitle${videoList[i]}`).textContent = data.finalResult[i].title;
+                document.querySelector(`#vidTitle${videoList[i]} > a`).textContent = data.finalResult[i].title;
                 document.getElementById(`editTitle${videoList[i]}`).setAttribute('placeholder', data.finalResult[i].title);
+                document.getElementById(`editTitle${videoList[i]}`).setAttribute('value', data.finalResult[i].title);
               }
               if (data.finalResult[i].description !== null) {
                 document.getElementById(`vidDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,100);
-                document.getElementById(`vidDescription${videoList[i]}Short`).textContent = data.finalResult[i].description.substring(0,50);
-                document.getElementById(`editDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,1023);
+                document.getElementById(`editDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,2047);
               }
               if (data.finalResult[i].thumbnail !== null) {
                 document.getElementById(`thumbnail${videoList[i]}`).style.backgroundImage = `url('${data.finalResult[i].thumbnail}')`;
@@ -484,7 +487,7 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
       toggleModal(true, 'Updating image...');
       const form = document.getElementById('editTopicImgForm');
       const formData = new FormData(form);
-      let result = await fetch(`/topics/${USERNAME}/editImage/${TOPIC_NAME}`, {
+      let result = await fetch(`/topics/${USERNAME}/editImage/${TOPIC_URL}`, {
         method:'POST',
         body: formData,
       });

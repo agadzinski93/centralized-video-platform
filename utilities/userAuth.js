@@ -10,7 +10,7 @@ module.exports = {
 
     res.cookie("requestUrl", req.originalUrl);
     req.flash("error", "You need to be logged in");
-    res.redirect(`/login`);
+    res.redirect(`/auth/login`);
   },
   isAuthor: async (req, res, next) => {
     const loggedUsername = escapeHTML(req.user.username);

@@ -8,6 +8,7 @@ const {
   removeTopic,
   deleteTopicImage,
   removeSelectedTopics,
+  enableHyphens,
 } = require("../utilities/helpers/topicHelpers");
 
 module.exports = {
@@ -46,7 +47,7 @@ module.exports = {
     }
   },
   editTopic: async (req, res, next) => {
-    const originalTopicName = escapeHTML(req.params.topic);
+    const originalTopicName = enableHyphens(escapeHTML(req.params.topic),false);
     const topicName = escapeHTML(req.body.topic.name);
     const topicDifficulty = req.body.topic.difficulty;
     const topicDescription = escapeHTML(req.body.topic.description);
@@ -65,7 +66,7 @@ module.exports = {
     }
   },
   editTopicImage: async (req,res) => {
-    const topicName = escapeHTML(req.params.topic);
+    const topicName = enableHyphens(escapeHTML(req.params.topic),false);
     let newImgUrl = null;
 
     let topicImage,
@@ -100,7 +101,7 @@ module.exports = {
     res.json(newImgUrl);
   },
   deleteTopic: async (req, res, next) => {
-    const topicName = escapeHTML(req.params.topic);
+    const topicName = enableHyphens(escapeHTML(req.params.topic),false);
     const result = await removeTopic(topicName);
     if (result instanceof AppError) return next(result);
     else {
@@ -110,6 +111,7 @@ module.exports = {
   },
   deleteSelectedTopics: async (req,res,next) => {
     let {topics} = req.body;
+    
     const result = await removeSelectedTopics(topics);
     if (result instanceof AppError) return next(result);
     res.json(5);

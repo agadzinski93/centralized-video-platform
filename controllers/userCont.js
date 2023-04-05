@@ -1,7 +1,7 @@
 const AppError = require("../utilities/AppError");
 const {pathCSS} = require('../utilities/config');
 const {cloudinary} = require("../utilities/cloudinary");
-const { escapeHTML,escapeSQL } = require("../utilities/helpers/sanitizers");
+const { escapeHTML,escapeSQL,unescapeSQL } = require("../utilities/helpers/sanitizers");
 const { getUser } = require("../utilities/helpers/authHelpers");
 const {
   getUserInfo,
@@ -12,6 +12,7 @@ const {
   updateAboutMeSetting,
   deleteImage,
   deleteUser} = require("../utilities/helpers/userHelpers");
+const {enableHyphens} = require("../utilities/helpers/topicHelpers");
 const {
   USER_ID,
   PIC_FILENAME,
@@ -75,7 +76,6 @@ module.exports = {
     
     let {setting} = req.body;
     let {value} = req.body;
-    console.log(user);
     setting = escapeHTML(setting);
     value = escapeHTML(value);
     
@@ -176,13 +176,13 @@ module.exports = {
     let data = null;
     let {txtAboutMe} = req.body;
     let aboutMe = escapeSQL(txtAboutMe.toString());
-
-    let error = await updateAboutMeSetting(user.user_id,txtAboutMe);
+  
+    let error = await updateAboutMeSetting(user.user_id,aboutMe);
     if (error instanceof AppError) {
       data = {response:'error',message:'Error Updating \'About Me\''};
     }
     else {
-      data = {response:'success',message:'Successfully updated your \'About Me\'',aboutMe};
+      data = {response:'success',message:'Successfully updated your \'About Me\'',aboutMe:unescapeSQL(aboutMe)};
     }
     res.json(data);
   },
@@ -236,6 +236,9 @@ module.exports = {
 
     const topics = await getUserTopics(username);
     if (topics instanceof AppError) return next(topics);
+    for (let topic of topics) {
+      topic.topicUrl = enableHyphens(topic.name,true);
+    }
 
     res.render("user/dashboard", {
       title: `${user.username}'s Dashboard`,
@@ -253,12 +256,19 @@ module.exports = {
     const user = await getUser(username);
     if (user instanceof AppError) return next(user);
 
-    const topicName = escapeHTML(req.params.topic);
+    const topicName = enableHyphens(escapeHTML(req.params.topic),false);
     const topicTitle = 'Topic | ' + topicName;
     const topic = await getTopic(topicName);
+    if(!topic[0]) {
+      return next(new AppError(400,"Topic Does Not Exist"));
+    }
+    //topic[0].topicUrl = enableHyphens(topic[0].name,true);
 
     const videos = await getTopicVideos(topicName);
     if (videos instanceof AppError) return next(videos);
+    for (let video of videos) {
+      video.topicUrl = enableHyphens(video.topic,true);
+    }
 
     res.render('user/topic', {
       title: topicTitle, 

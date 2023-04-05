@@ -2,7 +2,7 @@ const AppError = require('../utilities/AppError');
 const {pathCSS} = require('../utilities/config');
 const { escapeHTML, escapeSQL } = require("../utilities/helpers/sanitizers");
 const {getRecentVideos, searchVideos, getMoreVideos} = require('../utilities/helpers/videoHelpers');
-const {getRecentTopic} = require('../utilities/helpers/topicHelpers');
+const {enableHyphens, getRecentTopic} = require('../utilities/helpers/topicHelpers');
 const {testGeneration} = require("../utilities/email/Email");
 
 module.exports = {
@@ -11,9 +11,17 @@ module.exports = {
             req.session.prevUrl = "/";
             const pageStyles = `${pathCSS}home.css`;
             const videos = await getRecentVideos();
+            for (let video of videos) {
+              video.topicUrl = enableHyphens(video.topic,true);
+            }
             const topics = await getRecentTopic();
+            for (let topic of topics) {
+              topic.topicUrl = enableHyphens(topic.name,true);
+            }
 
-            res.render("index", { title: "Home Page", pageStyles, pathCSS, user: req.user, videos, topics});
+            const title = `Programming Help | Your Source For Programming Tutorials`;
+
+            res.render("index", { title, pageStyles, pathCSS, user: req.user, videos, topics});
           } catch (err) {
             next(new AppError(500, err.message));
           }
@@ -29,6 +37,9 @@ module.exports = {
           if (req.query.q !== '') {
             searchQuery = escapeSQL(escapeHTML(req.query.q));
             videos = await searchVideos(searchQuery);
+            for (let video of videos) {
+              video.topicUrl = enableHyphens(video.topic,true);
+            }
           }
         } 
         
@@ -43,6 +54,9 @@ module.exports = {
       let videos;
       try {
         videos = await getMoreVideos(searchQuery, pageNumber);
+        for (let video of videos) {
+          video.topicUrl = enableHyphens(video.topic,true);
+        }
       } catch(err) {
         videos = new AppError(500, "Trouble getting more videos");
       }

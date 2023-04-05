@@ -1,6 +1,7 @@
 const AppError = require('../utilities/AppError');
 const {pathCSS} = require('../utilities/config');
 const { escapeHTML, removeParams } = require("../utilities/helpers/sanitizers");
+const {enableHyphens} = require("../utilities/helpers/topicHelpers");
 
 module.exports = {
   renderLibaryTopic: async (req, res, next) => {
@@ -9,13 +10,16 @@ module.exports = {
 
     const pageStyles = `${pathCSS}lib/topicPage.css`;
 
-    let topicName = escapeHTML(req.params.topic);
+    let topicName = enableHyphens(escapeHTML(req.params.topic),false);
     req.session.prevUrl = `/lib/${topicName}`;
     let topic = await getTopic(topicName);
     if (topic instanceof AppError) return next(topic);
 
     const videos = await getTopicVideos(topicName);
     if (videos instanceof AppError) return next(videos);
+    for (let video of videos) {
+      video.topicUrl = enableHyphens(video.topic,true);
+    }
 
     res.render("lib/topicPage", {title: `${topicName} | Playlist`, pageStyles, pathCSS, user: req.user , topic: topic[0], videos});
   },
@@ -27,13 +31,16 @@ module.exports = {
 
     const pageStyles = `${pathCSS}lib/videoPage.css`;
 
-    let topicName = escapeHTML(req.params.topic);
+    let topicName = enableHyphens(escapeHTML(req.params.topic),false);
     let userId = null;
     let topic = await getTopic(topicName);
     if (topic instanceof AppError) return next(topic);
 
     const videos = await getTopicVideos(topicName);
     if (videos instanceof AppError) return next(videos);
+    for (let video of videos) {
+      video.topicUrl = enableHyphens(video.topic,true);
+    }
     
     let videoId = escapeHTML(req.params.video);
     req.session.prevUrl = `/lib/${topicName}/${videoId}`;
@@ -49,6 +56,7 @@ module.exports = {
     if (video instanceof AppError) return next(video);
 
     video[0].videoId = videoId;
+    video[0].topicUrl = enableHyphens(video[0].topic,true)
     let subscribed = null;
     if (req.user) {
       userId = req.user.user_id;
@@ -56,7 +64,6 @@ module.exports = {
         subscribed = await isSubscribed(userId,video[0].user_id);
       }
     }
-
     res.render("lib/videoPage", {
       title: `${topicName} | ${video[0].title.substring(0,50)}`, 
       pageStyles, 

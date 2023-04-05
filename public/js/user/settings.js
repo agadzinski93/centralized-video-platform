@@ -198,6 +198,7 @@ const addBasicInfoEvents = () => {
         document.getElementById('displayNameContainer').classList.add('displayNone');
         document.getElementById('editDisplayNameContainer').classList.remove('displayNone');
         document.getElementById('txtDisplayName').addEventListener('input',validateDisplayName);
+        document.getElementById('btnEditDisplayName').classList.add('displayNone');
     });
     //Confirm Display Name Button
     document.getElementById('btnConfirmEditDisplayName').addEventListener('click',async () => {
@@ -235,6 +236,7 @@ const addBasicInfoEvents = () => {
         document.getElementById('editDisplayNameContainer').classList.add('displayNone');
         document.getElementById('displayNameContainer').classList.remove('displayNone');
         document.getElementById('txtDisplayName').removeEventListener('input',validateDisplayName);
+        document.getElementById('btnEditDisplayName').classList.remove('displayNone');
     });
     //Email Validator
     const validateEmail = (e) => {
@@ -253,6 +255,7 @@ const addBasicInfoEvents = () => {
         document.getElementById('displayEmailContainer').classList.add('displayNone');
         document.getElementById('editDisplayEmailContainer').classList.remove('displayNone');
         document.getElementById('txtEmail').addEventListener('input',validateEmail);
+        document.getElementById('btnEditEmail').classList.add('displayNone');
     });
     //Confirm Email Button
     document.getElementById('btnConfirmEditEmail').addEventListener('click',async() => {
@@ -287,11 +290,13 @@ const addBasicInfoEvents = () => {
         document.getElementById('editDisplayEmailContainer').classList.add('displayNone');
         document.getElementById('displayEmailContainer').classList.remove('displayNone');
         document.getElementById('txtEmail').removeEventListener('input',validateEmail);
+        document.getElementById('btnEditEmail').classList.remove('displayNone');
     });
     //About Me
     document.getElementById('btnEditAboutMe').addEventListener("click",()=>{
         document.getElementById('aboutMeContainer').classList.add('displayNone');
         document.getElementById('editAboutMeContainer').classList.remove('displayNone');
+        document.getElementById('btnEditAboutMe').classList.add('displayNone');
     });
     //Confirm About Me
     document.getElementById('btnConfirmEditAboutMe').addEventListener('click',async (e) => {
@@ -336,6 +341,7 @@ const addBasicInfoEvents = () => {
     document.getElementById('btnCancelEditAboutMe').addEventListener('click',()=>{
         document.getElementById('aboutMeContainer').classList.remove('displayNone');
         document.getElementById('editAboutMeContainer').classList.add('displayNone');
+        document.getElementById('btnEditAboutMe').classList.remove('displayNone');
     });
     //Banner Code
     document.getElementById('btnEditBanner').addEventListener('click',()=>{

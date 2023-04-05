@@ -45,7 +45,7 @@ app.use(
       saveUninitialized: false,
       secret: COOKIE_SECRET,
       store: sessionStore,
-      maxAge: 60*60*1000,
+      maxAge: 24*60*60*1000,
       sameSite:"Lax"
     },
   })

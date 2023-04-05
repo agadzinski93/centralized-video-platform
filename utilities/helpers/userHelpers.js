@@ -1,6 +1,7 @@
 const { getDatabase } = require("../mysql-connect");
 const AppError = require("../AppError");
 const {cloudinary} = require("../../utilities/cloudinary");
+const {enableHyphens} = require("../helpers/topicHelpers");
 const {setPaginationData,endOfResults} = require("./pagination");
 
 module.exports = {
@@ -32,6 +33,16 @@ module.exports = {
                 result = await db.execute(`SELECT count(*) AS count FROM ${choice} WHERE username = '${username}'`);
                 let count = Object.assign({},result[0][0]).count;
                 const moreResults = (getAll) ? endOfResults(resultsPerPage,page,count) : false;
+                if (choice === 'topics') {
+                    for (let object of data) {
+                        object.topicUrl = enableHyphens(object.name,true);
+                    }
+                }
+                else if (choice === 'videos') {
+                    for (let object of data) {
+                        object.topicUrl = enableHyphens(object.topic,true);
+                    }
+                }
                 data = {response:'success',data,moreResults};
             } catch(err) {
                 data = {response:'error',message:`Error: ${err.message}`};
@@ -43,7 +54,7 @@ module.exports = {
                 data = {response:'error',message:'Couldn\'t connet to database.'};
             }
             let result = await db.execute(`SELECT dateJoined,about_me,subscriptions FROM users WHERE username = '${username}'`);
-            data = {response:'success',data:result[0]};
+            data = {response:'success',data:result[0][0]};
         }
         else {
             data = {response:'error',message:'Invalid query.'};

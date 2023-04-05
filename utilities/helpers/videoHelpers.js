@@ -87,7 +87,7 @@ module.exports = {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      let videos = await db.execute(`SELECT * FROM videos ORDER BY id DESC LIMIT 14`);
+      let videos = await db.execute(`SELECT * FROM recent_videos LIMIT 14`);
 
       return videos[0].map((v) => Object.assign({}, v));
     } catch(err) {
@@ -99,8 +99,7 @@ module.exports = {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      let videos = await db.execute(`SELECT * FROM videos WHERE title LIKE '%${q}%' LIMIT 20`);
-
+      let videos = await db.execute(`SELECT * FROM search_videos WHERE title LIKE '%${q}%' LIMIT 20`);
       return videos[0].map((v) => Object.assign({}, v));
     } catch(err) {
       return new AppError(500, "Error Retrieving Videos");
@@ -113,8 +112,7 @@ module.exports = {
 
       const skip = pageNumber * 20;
 
-      let videos = await db.execute(`SELECT * FROM videos WHERE title LIKE '%${q}%' LIMIT 20 OFFSET ${skip}`);
-
+      let videos = await db.execute(`SELECT * FROM search_videos WHERE title LIKE '%${q}%' LIMIT 20 OFFSET ${skip}`);
       return videos[0].map((v) => Object.assign({}, v));
     } catch(err) {
       return new AppError(500, "Error Retrieving Videos");
@@ -266,8 +264,8 @@ module.exports = {
       if (db instanceof AppError) return db;
       video.title = escapeSQL(video.title);
       video.description = escapeSQL(video.description);
-      if (video.description.length > 1023) {
-        video.description = video.description.substring(0,1023).toString();
+      if (video.description.length > 2047) {
+        video.description = video.description.substring(0,2047).toString();
       }
       await db.execute(`INSERT INTO videos (title, url, description, views, thumbnail, topic, username) 
             VALUES('${video.title}', '${video.url}', '${video.description}', '${video.views}', '${video.thumbnail}', '${topicName}', '${username}')`);
@@ -287,8 +285,8 @@ module.exports = {
       for (let i = 0; i < videos.length; i++) {
         videos[i].title = escapeSQL(videos[i].title);
         videos[i].description = escapeSQL(videos[i].description);
-        if (videos[i].description.length > 1023) {
-          videos[i].description = videos[i].description.substring(0,1023);
+        if (videos[i].description.length > 2047) {
+          videos[i].description = videos[i].description.substring(0,2047);
         }
         if (i === videos.length - 1) {
           values += `('${videos[i].title}', 'youtube.com/watch?v=${videos[i].resourceId.videoId}', '${videos[i].description}', '5', '${videos[i].thumbnails.medium.url}', '${topicName}', '${username}')`;

@@ -5,12 +5,15 @@ const appendNewResults = (videos,pageNumber) => {
         newVid,
         thumbnail,
         vidInfo,
-        pTag;
+        pTag,
+        divAvatarUsername,
+        avatar,
+        username;
     for (let i = 0; i < videos.length; i++) {
         //Create New Link Block Element
         newVidLink = document.createElement('a');
         newVidLink.setAttribute('id', 'result' + (pageNumber * 20 + i + 1));
-        newVidLink.setAttribute('href', `/lib/${videos[0].topic}/${videos[i].url.substring(20)}`);
+        newVidLink.setAttribute('href', `/lib/${videos[0].topicUrl}/${videos[i].url.substring(20)}`);
 
         //Create DIV For Vid Link
         newVid = document.createElement('div');
@@ -35,10 +38,18 @@ const appendNewResults = (videos,pageNumber) => {
             pTag.textContent = videos[i].title;
         }
         vidInfo.append(pTag);
-        //Author
-        pTag = document.createElement('p');
-        pTag.textContent = videos[i].username;
-        vidInfo.append(pTag);
+        //Avatar and Author
+        divAvatarUsername = document.createElement('div');
+        divAvatarUsername.classList.add('userAvatarUsername');
+        avatar = document.createElement('div');
+        avatar.classList.add('avatar');
+        avatar.style.backgroundImage = `url('${videos[i].pic_url}')`;
+        username = document.createElement('p');
+        username.classList.add('username');
+        username.textContent = videos[i].username
+        divAvatarUsername.append(avatar);
+        divAvatarUsername.append(username);
+        vidInfo.append(divAvatarUsername);
         //Description
         pTag = document.createElement('p');
         if (videos[i].description.length > 320) {
@@ -60,7 +71,7 @@ const addPullMoreResultsEvent = () => {
     let wait = false;
     const resultsPerPage = 20;
     if (lastResult !== undefined) {
-        document.getElementById('searchListContainer').addEventListener('scroll', async () => {
+        document.addEventListener('scroll', async () => {
             if (lastResult !== undefined && lastResult !== null && !wait) {
                 wait = true;
                 if (window.innerHeight - lastResult.getBoundingClientRect().top > 0) {

@@ -1,18 +1,44 @@
+body {
+  background: rgb(45,28,51);
+  background: linear-gradient(0deg, rgba(45,28,51,1) 0%, rgba(60,50,66,1) 100%); 
+  background-repeat: no-repeat;
+  background-attachment:fixed;
+  min-width:15rem;
+}
+@media all and (max-width:35rem) {
+  body {
+      background-attachment:initial;
+  }
+  body:after {
+      content:'';
+      width:100%;
+      height:100%;
+      background: inherit;
+      background-repeat: inherit;
+      background-attachment:inherit;
+      position:fixed;
+      top:0;
+      z-index:-1;
+  }
+}
 .removeDisplay {
   display: none;
 }
 .backdrop {
-  position:absolute;
+  position:fixed;
   background-color: #000;
   opacity:50%;
   width:100%;
   height:100vh;
 }
 .displayNone {
-  display:none;
+  display:none !important;
 }
 .displayFlex {
   display:flex;
+}
+.flexWrap {
+  flex-wrap: wrap;
 }
 .displayBlock {
   display:block;
@@ -22,6 +48,15 @@
 }
 .textRight {
   text-align:right;
+}
+.hover:hover {
+  background-color:#583762;
+}
+.cursorPointer {
+  cursor:pointer;
+}
+.heightInitial {
+  height:initial;
 }
 .errorText {
   color:#FF0000;
@@ -130,16 +165,25 @@
   background-color:#1B1321;
   display:flex;
   width:100%;
+  min-width:15rem;
   height:50px;
 }
 .navbar > .homeButton,
 .loginRegisterContainer > div,
 .userDropDownLinks {
   min-width:8rem;
-  max-width:8rem;
+  width:8rem;
   text-align:center;
-  text-transform: uppercase;
+  text-transform: capitalize;
+  font-weight:bold;
+  font-family: sans-serif;
   color:#FFF;
+}
+.desktopMenu {
+  display:initial;
+}
+.mobileMenu {
+  display:none;
 }
 .homeButton > a,
 .loginRegisterContainer > div > a,
@@ -164,10 +208,9 @@
   background-color:#333;
   color:#FFF;
   font-size:1rem;
-  outline-color:red;
 }
 .searchContainer > .searchContainerForm > input:focus {
-  outline-color:red;
+  outline:solid 2px red;
 }
 .navbarProfilePic{
   margin:8px auto;
@@ -181,6 +224,19 @@
 .loginRegisterContainer {
   display:flex;
   width:16rem;
+}
+.txtRegisterButton {
+  background: rgb(111,2,2);
+  background: linear-gradient(0deg, rgba(111,2,2,1) 0%, rgba(192,0,0,1) 100%); 
+  padding:0.5rem 0.75rem;
+  border-radius:0.5rem;
+}
+.hamburger {
+  height:50px;
+  background-image:url('/assets/svg/hamburger.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size:contain;
 }
 .userDropDownLinks .userSubmenu {
   position: absolute;
@@ -204,11 +260,7 @@
   list-style-type: none;
 }
 .userSubmenu a:hover {
-  background-color: #444;
-}
-.topicContainer {
-  background-color:#242424;
-  height: 100vh;
+  background-color:#503D55;
 }
 .topicVideo {
   background-color: #fff;
@@ -224,15 +276,69 @@
 }
 .errorPageContainer {
   width:100%;
-  height:calc(100vh - 50px);
-  background-color:#242424;
+  height:100vh;
   color:#FFF;
+  overflow:hidden;
 }
 p.errorMessage {
   width:90%;
-  margin:0 auto;
+  margin:50px auto 0;
   padding-top:1rem;
   text-align:center;
   text-transform: uppercase;
   font-size:1.25rem;
+}
+@media (max-width:1100px) {
+  .mobileMenu {
+    display:initial;
+  }
+  .desktopMenu {
+    display:none;
+  }
+  .userDropDownLinks .userSubmenu li:first-child > .profileLink {
+    height:50px;
+    padding:0;
+    overflow:hidden;
+  }
+  .navbarProfilePic{
+    margin:8px auto 0;
+    padding:0;
+    width:34px;
+    height:34px;
+  }
+}
+@media (max-width:25rem) {
+  .navbar {
+    flex-wrap:wrap;
+    height:100px;
+  }
+  .searchContainer {
+    width:calc(100vw - 10rem);
+  }
+  #inputSearch {
+    width:calc(100vw - 12rem);
+  }
+  .userDropDownLinks {
+    min-width:initial;
+  }
+  .loginRegisterContainer {
+    width:100vw;
+  }
+  div.loginButton {
+    width:50vw;
+    min-width:initial;
+  }
+  div.registerButton {
+    width:50vw;
+    min-width:initial;
+  }
+  .userDropDownLinks {
+    width:100vw;
+  }
+  .userDropDownLinks .userSubmenu {
+    width: 100vw;
+  }
+  p.errorMessage {
+    margin:100px auto 0;
+  }
 }

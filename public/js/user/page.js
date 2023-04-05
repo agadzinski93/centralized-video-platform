@@ -2,7 +2,7 @@ let seeMore; //Global variable for controlling click event for 'See More' button
 const appendTopics = (topics) => {
     const container = document.getElementById('userContent');
         for (let i = 0; i < topics.length;i++) {
-            const topic = createVideo(`/lib/${topics[i].name}`,topics[i].imageUrl,topics[i].name);
+            const topic = createTopic(`/lib/${topics[i].topicUrl}`,topics[i].imageUrl,topics[i].name);
             container.append(topic);
         }
 }
@@ -13,12 +13,32 @@ const appendVideos = (videos) => {
             if (videos[i].url.includes('youtube.com')) {
                 urlIndex = 20;
             }
-            const video = createVideo(`/lib/${videos[i].topic}/${videos[i].url.substring(urlIndex)}`,videos[i].thumbnail,videos[i].title);
+            const video = createVideo(`/lib/${videos[i].topicUrl}/${videos[i].url.substring(urlIndex)}`,videos[i].thumbnail,videos[i].title);
             container.append(video);
         }
 }
+const appendAboutMe = (subscriptions,dateJoined,aboutMe) => {
+    let infoContainer = document.createElement('div');
+    infoContainer.classList.add('infoContainer');
+    let lblSubscriptions = document.createElement('p');
+    lblSubscriptions.textContent = "Subscriptions: ";
+    let p_subscriptions = document.createElement('p');
+    p_subscriptions.textContent = subscriptions;
+
+    let lblDateJoined = document.createElement('p');
+    lblDateJoined.textContent = "Joined: "
+    let p_dateJoined = document.createElement('p');
+    p_dateJoined.textContent = convertSQLDate(dateJoined);
+
+    let lblAboutMe = document.createElement('p');
+    lblAboutMe.textContent = 'About Me'
+    let p_aboutMe = document.createElement('p');
+    p_aboutMe.textContent = (aboutMe == '' || aboutMe == null) ? 'Nothing here!' : aboutMe;
+
+    infoContainer.append(lblSubscriptions,p_subscriptions,lblDateJoined,p_dateJoined,lblAboutMe,p_aboutMe);
+    document.getElementById('userContent').append(infoContainer);
+}
 /**
- * 
  * @param {string} choice - select from 'topics' or 'videos'
  * @param {int} page - page number 
  */
@@ -40,7 +60,6 @@ const getMoreResults = async (choice,page) => {
  } catch(err) {
     output = {response:'error',message:'Problem retrieving results.'}
  }
- //console.log(output);
  if (output.response === 'success') {
     let btnSeeMore = document.getElementById('btnSeeMore');
     if (seeMore) {
@@ -69,16 +88,15 @@ const btnViewAll = async () => {
     let selected = document.querySelector('.contentSelected');
     switch(selected.getAttribute('id').substring(6)) {
         case 'Topics':
-            await getAuthorTopics(null,true);
+            await getAuthorTopics(null,true,true);
             break;
         case 'Videos':
-            await getAuthorVideos(null,true);
+            await getAuthorVideos(null,true,true);
             break;
         default:
     }
 }
 const createTopic = (link,thumbnail,title) => {
-    //EDIT
     let topicLink = document.createElement('a');
     topicLink.classList.add('displayBlock', 'contentLink');
     topicLink.setAttribute('href',link);
@@ -123,6 +141,34 @@ const txtNoContent = (text) => {
     document.getElementById('userContent').append(element);
 }
 /**
+ * @param {object} element 
+ * @param {boolean} enable 
+ * @param {boolean} wrap 
+ */
+const toggleDisplayFlex = (element,enable = false,wrap = false) => {
+    if (enable) {
+        if (wrap) {
+            element.classList.add('displayFlex','flexWrap');
+        }
+        else {
+            element.classList.add('displayFlex');
+        }
+    }
+    else {
+        element.classList.remove('displayFlex','flexWrap');
+    }
+}
+/**
+ * Check to prevent refetching info if tab is already selected
+ * @param {object} button - button to see if it's already selected (topic,video,about)
+ * @returns 
+ */
+const isAlreadySelected = (button) => {
+    let isSelected = false;
+    isSelected = (document.querySelector('.contentSelected') === button) ? true : false;
+    return isSelected;
+}
+/**
  * Underline a button signifying selection
  * @param {string} id - id of button to give underline
  */
@@ -134,94 +180,140 @@ const deleteUserContent = () => {
     document.getElementById('userContent').replaceChildren();
 }
 /**
- * 
  * @param {event} e - event object if called via event handler, pass null otherwise
  * @param {boolean} viewAll - enable or disable
+ * @param {boolean} ovverride - Run code even if tab is selected, helpful for preloading
  */
-const getAuthorTopics = async (e, viewAll = false) => {
-    replaceContentUnderline('btnGetTopics');
-    deleteUserContent();
-    let result = await fetch(`/user/${AUTHOR}/getUserContent`,{
-        method:'GET'
-    });
-    let data = await result.json();
-    if (data.response === 'success') {
-        if (data.data.length > 0) {
-            const topics = data.data;
-            appendTopics(topics);
-            if (data.data.length === 12) {
-                toggleViewAllButton(true);
+const getAuthorTopics = async (e, viewAll = false, override = false) => {
+    if (override || !isAlreadySelected(document.getElementById('btnGetTopics'))) {
+        replaceContentUnderline('btnGetTopics');
+        deleteUserContent();
+        let result = await fetch(`/user/${AUTHOR}/getUserContent`,{
+            method:'GET'
+        });
+        let data = await result.json();
+        if (data.response === 'success') {
+            if (data.data.length > 0) {
+                const topics = data.data;
+                appendTopics(topics);
+                if (data.data.length === 12) {
+                    toggleViewAllButton(true);
+                }
+                else {
+                    toggleViewAllButton();
+                }
+                let btnSeeMore = document.getElementById('btnSeeMore');
+                if (data.moreResults){
+                    if (seeMore) {
+                        btnSeeMore.removeEventListener("click",seeMore);
+                    }
+                    seeMore = getMoreResults.bind(null,'videos',2);
+                    btnSeeMore.addEventListener("click",seeMore);
+                    document.querySelector('.moreResultsContainer').classList.remove('displayNone');
+                }
+                else {
+                    if (seeMore) {
+                        btnSeeMore.removeEventListener("click",seeMore);
+                    }
+                    document.querySelector('.moreResultsContainer').classList.add('displayNone');
+                }
+                toggleDisplayFlex(document.getElementById('userContent'),true,true);
             }
             else {
-                toggleViewAllButton();
+                toggleDisplayFlex(document.getElementById('userContent'),false);
+                txtNoContent(`${AUTHOR} has no topics`);
             }
-        }
+        } 
         else {
-            txtNoContent(`${AUTHOR} has no topics`);
+            flashBanner('error', `${data.message}`, FLASH_REFERENCE);
         }
-    } 
-    else {
-        flashBanner('error', `${data.message}`, FLASH_REFERENCE);
     }
 }
 /**
- * 
  * @param {event} e - event object if called via event handler, pass null otherwise
  * @param {boolean} viewAll - enable or disable
+ * @param {boolean} ovverride - Run code even if tab is selected, helpful for preloading
  */
-const getAuthorVideos = async (e, viewAll = false) => {
-    replaceContentUnderline('btnGetVideos');
-    deleteUserContent();
-    let result = null;
-    if (viewAll) {
-        result = await fetch(`/user/${AUTHOR}/getUserContent?content=videos&viewAll=true`,{
-            method:'GET'
-        });
-    }
-    else {
-        result = await fetch(`/user/${AUTHOR}/getUserContent?content=videos`,{
-            method:'GET'
-        });
-    }
-    let data = await result.json();
-    if (data.response === 'success') {
-        if (data.data.length > 0) {
-            const videos = data.data;
-            appendVideos(videos);
-            if (data.data.length === 12) {
-                toggleViewAllButton(true);
-            }
-            else {
-                toggleViewAllButton();
-            }
-            let btnSeeMore = document.getElementById('btnSeeMore');
-            if (data.moreResults){
-                if (seeMore) {
-                    btnSeeMore.removeEventListener("click",seeMore);
-                }
-                seeMore = getMoreResults.bind(null,'videos',2);
-                btnSeeMore.addEventListener("click",seeMore);
-                document.querySelector('.moreResultsContainer').classList.remove('displayNone');
-            }
-            else {
-                if (seeMore) {
-                    btnSeeMore.removeEventListener("click",seeMore);
-                }
-                document.querySelector('.moreResultsContainer').classList.add('displayNone');
-            }
+const getAuthorVideos = async (e, viewAll = false, override = false) => {
+    if (override || !isAlreadySelected(document.getElementById('btnGetVideos'))) {
+        replaceContentUnderline('btnGetVideos');
+        deleteUserContent();
+        let result = null;
+        if (viewAll) {
+            result = await fetch(`/user/${AUTHOR}/getUserContent?content=videos&viewAll=true`,{
+                method:'GET'
+            });
         }
         else {
-            txtNoContent(`${AUTHOR} has no videos`);
+            result = await fetch(`/user/${AUTHOR}/getUserContent?content=videos`,{
+                method:'GET'
+            });
         }
-    } 
-    else {
-        flashBanner('error', `${data.message}`, FLASH_REFERENCE);
+        let data = await result.json();
+        if (data.response === 'success') {
+            if (data.data.length > 0) {
+                const videos = data.data;
+                appendVideos(videos);
+                if (data.data.length === 12) {
+                    toggleViewAllButton(true);
+                }
+                else {
+                    toggleViewAllButton();
+                }
+                let btnSeeMore = document.getElementById('btnSeeMore');
+                if (data.moreResults){
+                    if (seeMore) {
+                        btnSeeMore.removeEventListener("click",seeMore);
+                    }
+                    seeMore = getMoreResults.bind(null,'videos',2);
+                    btnSeeMore.addEventListener("click",seeMore);
+                    document.querySelector('.moreResultsContainer').classList.remove('displayNone');
+                }
+                else {
+                    if (seeMore) {
+                        btnSeeMore.removeEventListener("click",seeMore);
+                    }
+                    document.querySelector('.moreResultsContainer').classList.add('displayNone');
+                }
+                toggleDisplayFlex(document.getElementById('userContent'),true,true);
+            }
+            else {
+                toggleDisplayFlex(document.getElementById('userContent'),false);
+                txtNoContent(`${AUTHOR} has no videos`);
+            }
+        } 
+        else {
+            flashBanner('error', `${data.message}`, FLASH_REFERENCE);
+        }
     }
 }
-const getAuthorAbout = async () => {
-    replaceContentUnderline('btnGetAbout');
-    deleteUserContent();
-    toggleViewAllButton();
+/**
+ * @param {event} e - event object if called via event handler, pass null otherwise
+ * @param {boolean} override - Run code even if tab is selected, helpful for preloading
+ */
+const getAuthorAbout = async (e,override = false) => {
+    if (override || !isAlreadySelected(document.getElementById('btnGetAbout'))) {
+        replaceContentUnderline('btnGetAbout');
+        deleteUserContent();
+        toggleViewAllButton();
+        if (seeMore) {
+            document.getElementById('btnSeeMore').removeEventListener('click',seeMore);
+            document.querySelector('.moreResultsContainer').classList.add('displayNone');
+        }
+        let data = null;
+        try{
+            let result = await fetch(`/user/${AUTHOR}/getUserContent?content=about-me`);
+            data = await result.json();
+            if (data.response === 'success') {
+                appendAboutMe(data.data.subscriptions,data.data.dateJoined,data.data.about_me);
+            }
+            else {
+                flashBanner('error',data.message,FLASH_REFERENCE);
+            }
+        } catch(err) {
+            flashBanner('error','Failed fetching \'About Me\' section.',FLASH_REFERENCE);
+        }
+    }
 }
 const addGetContentEvents = () => {
     document.getElementById('btnGetTopics').addEventListener("click",getAuthorTopics);
@@ -231,5 +323,5 @@ const addGetContentEvents = () => {
 }
 (function init(){
     addGetContentEvents();
-    getAuthorTopics();
+    getAuthorTopics(null,false,true);
 })();
