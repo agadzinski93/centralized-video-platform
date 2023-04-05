@@ -188,15 +188,18 @@ const getAuthorTopics = async (e, viewAll = false, override = false) => {
     if (override || !isAlreadySelected(document.getElementById('btnGetTopics'))) {
         replaceContentUnderline('btnGetTopics');
         deleteUserContent();
+        toggleViewAllButton();
+        toggleBackgroundLoading(true,document.getElementById('userContent'),false,null,'2rem','2rem');
         let result = await fetch(`/user/${AUTHOR}/getUserContent`,{
             method:'GET'
         });
         let data = await result.json();
+        toggleBackgroundLoading(false,document.getElementById('userContent'),false,null);
         if (data.response === 'success') {
             if (data.data.length > 0) {
                 const topics = data.data;
                 appendTopics(topics);
-                if (data.data.length === 12) {
+                if (data.data.length === 12 && !viewAll) {
                     toggleViewAllButton(true);
                 }
                 else {
@@ -238,6 +241,8 @@ const getAuthorVideos = async (e, viewAll = false, override = false) => {
     if (override || !isAlreadySelected(document.getElementById('btnGetVideos'))) {
         replaceContentUnderline('btnGetVideos');
         deleteUserContent();
+        toggleViewAllButton();
+        toggleBackgroundLoading(true,document.getElementById('userContent'),false,null,'2rem','2rem');
         let result = null;
         if (viewAll) {
             result = await fetch(`/user/${AUTHOR}/getUserContent?content=videos&viewAll=true`,{
@@ -250,11 +255,12 @@ const getAuthorVideos = async (e, viewAll = false, override = false) => {
             });
         }
         let data = await result.json();
+        toggleBackgroundLoading(false,document.getElementById('userContent'),false,null);
         if (data.response === 'success') {
             if (data.data.length > 0) {
                 const videos = data.data;
                 appendVideos(videos);
-                if (data.data.length === 12) {
+                if (data.data.length === 12 && !viewAll) {
                     toggleViewAllButton(true);
                 }
                 else {
@@ -296,6 +302,7 @@ const getAuthorAbout = async (e,override = false) => {
         replaceContentUnderline('btnGetAbout');
         deleteUserContent();
         toggleViewAllButton();
+        toggleBackgroundLoading(true,document.getElementById('userContent'),false,null,'2rem','2rem');
         if (seeMore) {
             document.getElementById('btnSeeMore').removeEventListener('click',seeMore);
             document.querySelector('.moreResultsContainer').classList.add('displayNone');
@@ -304,6 +311,7 @@ const getAuthorAbout = async (e,override = false) => {
         try{
             let result = await fetch(`/user/${AUTHOR}/getUserContent?content=about-me`);
             data = await result.json();
+            toggleBackgroundLoading(false,document.getElementById('userContent'),false,null);
             if (data.response === 'success') {
                 appendAboutMe(data.data.subscriptions,data.data.dateJoined,data.data.about_me);
             }

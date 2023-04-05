@@ -482,31 +482,34 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
   const addUpdateImageEvent = async () => {
     const btnUpdateImage = document.getElementById('btnUpdateImage');
     btnUpdateImage.addEventListener('click',async () => {
-      toggleEditTopicImageForm();
-      toggleBackdrop(true, '#fff', '10%');
-      toggleModal(true, 'Updating image...');
       const form = document.getElementById('editTopicImgForm');
       const formData = new FormData(form);
-      let result = await fetch(`/topics/${USERNAME}/editImage/${TOPIC_URL}`, {
-        method:'POST',
-        body: formData,
-      });
-      let data = await result.json();
-      
-      toggleBackdrop(false);
-      toggleModal(false);
-      if (Object.keys(data).includes('error')) {
-        flashBanner('error', `${data.error}`, REFERENCE_NODE);
-      }
-      else {
-        flashBanner('success', 'Successfully updated image', REFERENCE_NODE);
-        document.querySelector('.topicPageImageContainer').style.backgroundImage = `url('${data}')`;
-        document.querySelector('.editTopicImageImageContainer').style.backgroundImage = `url('${data}')`;
-        document.getElementById('btnFileUpload').value = null;
-        document.querySelector('.streamedTopicImg').classList.add('displayNone');
-        document.querySelector('.file-upload div').classList.remove('displayNone');
-        document.getElementById('fileSelected').textContent = 'No file selected.';
-        document.getElementById('no-image').remove();
+      if (formData.get("topic[file]").name) {
+        toggleEditTopicImageForm();
+        toggleBackdrop(true, '#fff', '10%');
+        toggleModal(true, 'Updating image...');
+        let result = await fetch(`/topics/${USERNAME}/editImage/${TOPIC_URL}`, {
+          method:'POST',
+          body: formData,
+        });
+        let data = await result.json();
+        
+        toggleBackdrop(false);
+        toggleModal(false);
+        if (Object.keys(data).includes('error')) {
+          flashBanner('error', `${data.error}`, REFERENCE_NODE);
+        }
+        else {
+          flashBanner('success', 'Successfully updated image', REFERENCE_NODE);
+          document.querySelector('.topicPageImageContainer').style.backgroundImage = `url('${data}')`;
+          document.querySelector('.editTopicImageImageContainer').style.backgroundImage = `url('${data}')`;
+          document.getElementById('btnFileUpload').value = null;
+          document.querySelector('.streamedTopicImg').classList.add('displayNone');
+          document.querySelector('.file-upload div').classList.remove('displayNone');
+          document.getElementById('fileSelected').textContent = 'No file selected.';
+          document.getElementById('no-image').remove();
+          document.querySelector('.txtNoTopicImage').classList.add('displayNone');
+        }
       }
     });
   }

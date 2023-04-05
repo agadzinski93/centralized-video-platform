@@ -29,6 +29,7 @@
 }
 .libraryTopicDescription {
     margin:1rem;
+    white-space: pre-line;
 }
 .topicVideoList {
     display:flex;
