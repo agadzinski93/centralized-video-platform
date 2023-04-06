@@ -191,7 +191,8 @@ div.recentVideo {
     .homeRecentTopics > p:first-child {
         text-align:center;
     }
-    .recentVideosContainer {
+    .recentVideosContainer,
+    .recentTopicsContainer {
         justify-content: space-around;
     }
     div.long1,
