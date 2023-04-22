@@ -446,7 +446,7 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
                 document.getElementById(`editTitle${videoList[i]}`).setAttribute('value', data.finalResult[i].title);
               }
               if (data.finalResult[i].description !== null) {
-                document.getElementById(`vidDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,100);
+                document.getElementById(`vidDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,2047);
                 document.getElementById(`editDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,2047);
               }
               if (data.finalResult[i].thumbnail !== null) {
