@@ -1,7 +1,7 @@
 let pathCSS;
 
 if (process.env.HOSTED_ONLINE === 'true') {
-    pathCSS = '/'
+    pathCSS = '/public/css/'
 }
 else
 {
