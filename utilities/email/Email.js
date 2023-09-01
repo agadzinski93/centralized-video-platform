@@ -12,10 +12,10 @@ module.exports = {
     createEmail:(recipientEmail,subject,txtMessage,htmlMessage)=>{
         const email = {
             from:process.env.EMAIL_USER,
-            to:recipientEmail,
+            bcc:recipientEmail,
             subject:subject,
             text:txtMessage,
-            html:htmlMessage
+            html:htmlMessage,
         }
         return email;
     },
