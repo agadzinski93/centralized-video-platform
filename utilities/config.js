@@ -5,7 +5,7 @@ if (process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'Developmen
 }
 else
 {
-    pathCSS = '/public/css/'
+    pathCSS = '/css/'
 }
 
 module.exports = {

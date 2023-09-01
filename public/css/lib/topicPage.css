@@ -34,7 +34,7 @@
 .topicVideoList {
     display:flex;
     flex-direction: column;
-    width:50%;
+    width:50vw;
     margin-top:calc(50px + 1rem);
     margin-left:50%;
     overflow: auto;
@@ -48,7 +48,6 @@
 }
 .topicVideo {
     display:flex;
-    width:100%;
     background-color:initial;
     color:#FFF;
 }
@@ -59,11 +58,11 @@
     width:15rem;
     height:calc(15rem / 1.78);
     background-repeat:no-repeat;
-    background-size: cover;
+    background-size: contain;
     background-position: center;
 }
 .topicVideoInfoContainer {
-    width:100%;
+    width: calc(50vw - 15rem - 2rem);
 }
 .topicVideoTitle {
     margin:0.5rem 1rem;
@@ -99,7 +98,7 @@
         height:calc(12rem / 1.78);
     }
     .topicVideoInfoContainer {
-        width:calc(100vw - 12rem);
+        width:calc(100vw - 12rem - 2rem);
     }
 }
 @media (max-width:600px) {
@@ -108,7 +107,7 @@
         height:calc(9rem / 1.78);
     }
     .topicVideoInfoContainer {
-        width:calc(100vw - 9rem);
+        width:calc(100vw - 9rem - 2rem);
     }
     .topicVideoDescription {
         height:2.4rem;
