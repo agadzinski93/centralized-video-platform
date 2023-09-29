@@ -4,9 +4,9 @@
       <div class="mainVideoContainer">
         <div class="mainVideoPlayerContainer">
           <%if (timestamp === null) {%>
-            <iframe src="https://www.youtube.com/embed/<%=video.videoId%>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/<%=video.videoId%>" title="YouTube video player" style="border:0px" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           <%}else{%>
-            <iframe src="https://www.youtube.com/embed/<%=video.videoId%>?start=<%=timestamp%>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/<%=video.videoId%>?start=<%=timestamp%>" title="YouTube video player" style="border:0px" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           <%}%>
         </div>
         <p class="mainVideoTitle"><%=video.title%></p>
@@ -93,5 +93,5 @@
   <%}%>
   const AUTHOR_ID = '<%=video.user_id%>';
 </script>
-<script type="application/javascript" src="/js/global.js"></script>
-<script type="application/javascript" src="/js/lib/videoPage.js"></script>
+<script src="/js/global.js"></script>
+<script src="/js/lib/videoPage.js"></script>
