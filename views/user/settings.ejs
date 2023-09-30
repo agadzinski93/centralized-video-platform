@@ -21,8 +21,7 @@
     <div class="newTopicFileContainer">
       <form id="editProfilePicForm" enctype="multipart/form-data">
         <label for="btnProfilePicUpload" class="file-upload" id="lblProfilePicUpload">
-          <div>Click or Drag Image to Upload</div>
-          <img id="streamedProfilePic" class="streamedTopicImg displayNone" src="" alt="">
+          <span>Click or Drag Image to Upload</span>
         </label>
         <input type="file" id="btnProfilePicUpload" name="profileImage" hidden>
       </form>
@@ -40,8 +39,7 @@
     <div class="newTopicFileContainer">
       <form id="editBannerForm" enctype="multipart/form-data">
         <label for="btnBannerUpload" class="file-upload" id="lblBannerUpload">
-          <div>Click or Drag Image to Upload</div>
-          <img id="streamedBanner" class="streamedTopicImg displayNone" src="" alt="">
+          <span>Click or Drag Image to Upload</span>
         </label>
         <input type="file" id="btnBannerUpload" name="bannerImage" hidden>
       </form>
@@ -68,17 +66,17 @@
                 <div class="profilePicButtons">
                     <%if (usingDefaultProfilePic){%>
                         <button class="clearButtonStyles basicInfoEditButtons displayNone" id="btnDeleteProfilePic">
-                            <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit" />
+                            <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit">
                             <span>Delete Profile Picture</span>
                         </button>
                     <%}else{%>
                         <button class="clearButtonStyles basicInfoEditButtons" id="btnDeleteProfilePic">
-                            <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit" />
+                            <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit">
                             <span>Delete Profile Picture</span>
                         </button>
                     <%}%>
                     <button class="clearButtonStyles basicInfoEditButtons" id="btnEditProfilePic">
-                        <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                        <img class="icon" src="/assets/svg/edit-dark.png" alt="edit">
                         <span>Change Profile Picture</span>
                     </button>
                 </div>
@@ -94,7 +92,7 @@
                 <%}%>
                 <div>
                     <button id="btnEditDisplayName" class="basicInfoEditButtons">
-                        <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                        <img class="icon" src="/assets/svg/edit-dark.png" alt="edit">
                         <span>Edit Display Name</span>
                     </button>
                 </div>
@@ -105,11 +103,11 @@
                 </div>
                 <div>
                     <button id="btnConfirmEditDisplayName" class="basicInfoEditButtons">
-                        <img class="icon" src="/assets/svg/accept.png" alt="edit" />
+                        <img class="icon" src="/assets/svg/accept.png" alt="edit">
                         <span>Confirm</span>
                     </button>
                     <button id="btnCancelEditDisplayName" class="basicInfoEditButtons">
-                        <img class="icon" src="/assets/svg/cancel.png" alt="edit" />
+                        <img class="icon" src="/assets/svg/cancel.png" alt="edit">
                         <span>Cancel</span>
                     </button>
                     <p id="errorDisplayName" class="errorText displayNone">Username must be 3 to 24 characters</p>
@@ -122,7 +120,7 @@
                 <p id="email"><%=user.email%></p>
                 <div>
                     <button id="btnEditEmail" class="basicInfoEditButtons">
-                        <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                        <img class="icon" src="/assets/svg/edit-dark.png" alt="edit">
                         <span>Edit Email</span>
                     </button>
                 </div>
@@ -133,11 +131,11 @@
                 </div>
                 <div>
                     <button id="btnConfirmEditEmail" class="basicInfoEditButtons">
-                        <img class="icon" src="/assets/svg/accept.png" alt="edit" />
+                        <img class="icon" src="/assets/svg/accept.png" alt="edit">
                         <span>Confirm</span>
                     </button>
                     <button id="btnCancelEditEmail" class="basicInfoEditButtons">
-                        <img class="icon" src="/assets/svg/cancel.png" alt="edit" />
+                        <img class="icon" src="/assets/svg/cancel.png" alt="edit">
                         <span>Cancel</span>
                     </button>
                     <p id="errorEmail" class="errorText displayNone">Please enter a valid email</p>
@@ -154,7 +152,7 @@
                 <%}%>
                 <div>
                     <button id="btnEditAboutMe" class="basicInfoEditButtons">
-                        <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                        <img class="icon" src="/assets/svg/edit-dark.png" alt="edit">
                         <span>Edit Your Bio</span>
                     </button>
                 </div>
@@ -166,11 +164,11 @@
                     <textarea name="aboutMe" id="aboutMe" cols="30" rows="10" maxlength="1024"><%=user.about_me%></textarea>
                 <%}%>
                 <button id="btnConfirmEditAboutMe" class="basicInfoEditButtons">
-                    <img class="icon" src="/assets/svg/accept.png" alt="edit" />
+                    <img class="icon" src="/assets/svg/accept.png" alt="edit">
                     <span>Confirm</span>
                 </button>
                 <button id="btnCancelEditAboutMe" class="basicInfoEditButtons">
-                    <img class="icon" src="/assets/svg/cancel.png" alt="edit" />
+                    <img class="icon" src="/assets/svg/cancel.png" alt="edit">
                     <span>Cancel</span>
                 </button>
             </div>
@@ -181,17 +179,17 @@
         <div class="channelBannerPreview" style="background-image:url('<%=user.banner_url%>');"></div>
         <div class="editDeleteBannerButtons">
             <button id="btnEditBanner" class="basicInfoEditButtons">
-                <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+                <img class="icon" src="/assets/svg/edit-dark.png" alt="edit">
                 <span>Change Channel Banner</span>
             </button>
             <%if (user.banner_url == null){%>
                 <button id="btnDeleteBanner" class="basicInfoEditButtons displayNone">
-                    <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit" />
+                    <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit">
                     <span>Delete Banner</span>
                 </button>
             <%}else{%>
                 <button id="btnDeleteBanner" class="basicInfoEditButtons">
-                    <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit" />
+                    <img class="icon" src="/assets/svg/trashBlack.svg" alt="edit">
                     <span>Delete Banner</span>
                 </button>
             <%}%>
@@ -236,8 +234,8 @@
         </div>
     </div>
 </div>
-<script type="application/javascript" src="/js/global.js"></script>
-<script type="application/javascript" src="/js/user/settings.js"></script>
+<script src="/js/global.js"></script>
+<script src="/js/user/settings.js"></script>
 <script>
     const FLASH_REFERENCE = document.querySelector('#flashReference');
     const USERNAME = '<%=user.username%>';

@@ -49,7 +49,7 @@ const toggleNewTopicForm = () => {
       try {
         let topicsToDelete = new Array();
         for (let i = 0;i < selectedTopics.length; i++) {
-          topicsToDelete.push(selectedTopics[i].getAttribute('id'));
+          topicsToDelete.push(selectedTopics[i].getAttribute('id').replaceAll(' ','-'));
         }
         await fetch(`/topics/${USERNAME}/deleteSelected`, {
           method: 'DELETE',
@@ -73,7 +73,7 @@ const toggleNewTopicForm = () => {
   };
   const addTopicSelectEvents = () => {
     for (let i = 0;i < topics.length; i++) {
-      document.getElementById(`btnSelect${topics[i].textContent}`).addEventListener("click", (e) => {
+      document.getElementById(`btnSelect${topics[i].textContent.replaceAll(' ','-')}`).addEventListener("click", (e) => {
         let numOfSelected = document.getElementsByClassName('btnSelectTopicSelected').length;
         let allTopics = document.getElementsByClassName('btnSelectTopic');
         let totalTopics = allTopics.length;
@@ -86,7 +86,7 @@ const toggleNewTopicForm = () => {
           let j = 0;
           let found = false;
           do {
-            if (topicButtons[j].getAttribute('id') === e.target.getAttribute('id')) {
+            if (topicButtons[j].getAttribute('id').replaceAll(' ','-') === e.target.getAttribute('id').replaceAll(' ','-')) {
               found = true;
               currentItem = j;
               j--;
@@ -101,7 +101,6 @@ const toggleNewTopicForm = () => {
           //Shift+Click On Selected Item
           if (e.target.getAttribute('class').includes('btnSelectTopicSelected')) {
             do {
-              //alert(!topicList[j].getAttribute('class').includes('btnSelectTopicSelected'));
               if (!topicList[j].getAttribute('class').includes('btnSelectTopicSelected')) {
                 found = true;
                 firstPreviousItem = j;
@@ -111,8 +110,8 @@ const toggleNewTopicForm = () => {
             } while (!found && j >= firstPreviousItem);
  
             for (let k = firstPreviousItem; k <= currentItem; k++) {
-              document.getElementById(`btnSelect${topics[k].textContent}`).classList.remove('btnSelectTopicSelected');
-              document.getElementById(`${topics[k].textContent}`).classList.remove('dashboardTopicWrapperSelected');
+              document.getElementById(`btnSelect${topics[k].textContent.replaceAll(' ','-')}`).classList.remove('btnSelectTopicSelected');
+              document.getElementById(`${topics[k].textContent.replaceAll(' ','-')}`).classList.remove('dashboardTopicWrapperSelected');
             }
           } 
           //Shift+Click On Unselected Item
@@ -127,14 +126,14 @@ const toggleNewTopicForm = () => {
             } while (!found && j >= 0);
 
             for (let k = firstPreviousItem; k <= i; k++) {
-              document.getElementById(`btnSelect${topics[k].textContent}`).classList.add('btnSelectTopicSelected');
-              document.getElementById(`${topics[k].textContent}`).classList.add('dashboardTopicWrapperSelected');
+              document.getElementById(`btnSelect${topics[k].textContent.replaceAll(' ','-')}`).classList.add('btnSelectTopicSelected');
+              document.getElementById(`${topics[k].textContent.replaceAll(' ','-')}`).classList.add('dashboardTopicWrapperSelected');
             }
           }
         }
         else {
-          document.getElementById(`btnSelect${topics[i].textContent}`).classList.toggle('btnSelectTopicSelected');
-          document.getElementById(`${topics[i].textContent}`).classList.toggle('dashboardTopicWrapperSelected');
+          document.getElementById(`btnSelect${topics[i].textContent.replaceAll(' ','-')}`).classList.toggle('btnSelectTopicSelected');
+          document.getElementById(`${topics[i].textContent.replaceAll(' ','-')}`).classList.toggle('dashboardTopicWrapperSelected');
         }
         
         numOfSelected = document.getElementsByClassName('btnSelectTopicSelected').length;
@@ -169,10 +168,10 @@ const toggleNewTopicForm = () => {
         document.getElementById('fileSelected').textContent = this.files[0].name;
       let reader = new FileReader();
       reader.onload = (e) => {
-        let img = document.querySelector('.file-upload img');
+        let img = document.createElement('img');
         img.src = e.target.result;
-        img.classList.remove('displayNone');
-        document.querySelector('.file-upload div').classList.add('displayNone');
+        document.getElementById('lblFileUpload').append(img);
+        document.querySelector('.file-upload span').classList.add('displayNone');
       }
       reader.readAsDataURL(this.files[0]);
       }
@@ -198,10 +197,10 @@ const toggleNewTopicForm = () => {
           if (files[i].type.includes('image')) {
             reader = new FileReader();
             reader.onload = (e2) => {
-              let img = document.querySelector('.file-upload img');
+              let img = document.createElement('img');
               img.src = e2.target.result;
-              img.classList.remove('displayNone');
-              document.querySelector('.file-upload div').classList.add('displayNone');
+              document.getElementById('lblFileUpload').append(img);
+              document.querySelector('.file-upload span').classList.add('displayNone');
               document.getElementById('fileSelected').textContent = files[i].name;
               document.getElementById('btnFileUpload').files = files;
             }
@@ -214,16 +213,16 @@ const toggleNewTopicForm = () => {
   const addTopicAddAndEditEvents = () => {
     const addEditEvent = (btn, topicName) => {
         btn.addEventListener("click", () => {
-          let topicInfo = document.getElementById(`${topicName}`);
-          let form = document.getElementById(`edit${topicName}`);
+          let topicInfo = document.getElementById(`${topicName.replaceAll(' ','-')}`);
+          let form = document.getElementById(`edit${topicName.replaceAll(' ','-')}`);
           topicInfo.classList.add("removeDisplay");
           form.classList.remove("removeDisplay");
         });
       };
       const addCancelEditEvent = (btn, topicName) => {
         btn.addEventListener("click", () => {
-          let topicInfo = document.getElementById(`${topicName}`);
-          let form = document.getElementById(`edit${topicName}`);
+          let topicInfo = document.getElementById(`${topicName.replaceAll(' ','-')}`);
+          let form = document.getElementById(`edit${topicName.replaceAll(' ','-')}`);
           topicInfo.classList.remove("removeDisplay");
           form.classList.add("removeDisplay");
         });
@@ -234,18 +233,18 @@ const toggleNewTopicForm = () => {
     
       for (let i = 0; i < topics.length; i++) {
         addEditEvent(
-          document.getElementById(`btnEdit${topics[i].textContent}`),
+          document.getElementById(`btnEdit${topics[i].textContent.replaceAll(' ','-')}`),
           topics[i].textContent,
           i
         );
         addCancelEditEvent(
-          document.getElementById(`btnCancelEdit${topics[i].textContent}`),
+          document.getElementById(`btnCancelEdit${topics[i].textContent.replaceAll(' ','-')}`),
           topics[i].textContent,
           i
         );
         setDescriptionOnEditForm(
-          document.getElementById(`${topics[i].textContent}DescriptionInput`),
-          document.getElementById(`${topics[i].textContent}Description`).textContent
+          document.getElementById(`${topics[i].textContent.replaceAll(' ','-')}DescriptionInput`),
+          document.getElementById(`${topics[i].textContent.replaceAll(' ','-')}Description`).textContent
         );
       }
   }

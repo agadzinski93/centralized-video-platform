@@ -208,7 +208,8 @@
     display:block;
     text-align: center;
   }
-  .file-upload > div {
+  .file-upload > span {
+    display:block;
     padding-top:3.75rem;
   }
   .file-upload img {

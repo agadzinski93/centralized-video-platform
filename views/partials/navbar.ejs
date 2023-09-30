@@ -12,7 +12,7 @@
         </div>
     <%}else{%>
         <div class="userDropDownLinks desktopMenu">
-            <div><a href="/user/<%= user.username %>"><div id="avatar" class="navbarProfilePic" style="background-image:url('<%=user.pic_url%>')"></div></a></div>
+            <div><a href="/user/<%= user.username %>"><div class="avatar navbarProfilePic" style="background-image:url('<%=user.pic_url%>')"></div></a></div>
             <ul class="userSubmenu">
                 <li><a href="/user/<%= user.username %>/dashboard">Dashboard</a></li>
                 <li><a href="/user/<%= user.username %>/settings">Settings</a></li>
@@ -22,7 +22,7 @@
         <div class="userDropDownLinks mobileMenu">
             <div class="hamburger"></div>
             <ul class="userSubmenu">
-                <li><a class="profileLink" href="/user/<%= user.username %>"><div id="avatar" class="navbarProfilePic" style="background-image:url('<%=user.pic_url%>')"></div></a></li>
+                <li><a class="profileLink" href="/user/<%= user.username %>"><div class="avatar navbarProfilePic" style="background-image:url('<%=user.pic_url%>')"></div></a></li>
                 <li><a href="/user/<%= user.username %>/dashboard">Dashboard</a></li>
                 <li><a href="/user/<%= user.username %>/settings">Settings</a></li>
                 <li><a href="/auth/logout">Logout</a></li>
