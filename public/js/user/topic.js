@@ -392,8 +392,6 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
             toggleItemsSelected();
 
             //Update 'video select' buttons
-            //let updatedVideoButtons = document.getElementsByClassName('btnSelectVideo');
-            //addSelectVideoEvents(updatedVideoButtons);
             if (videoList.length === 1) {
               flashBanner('success', `Sucessfully deleted ${videoList.length} video`, REFERENCE_NODE);
             } else {
@@ -469,10 +467,11 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
         document.getElementById('fileSelected').textContent = this.files[0].name;
       let reader = new FileReader();
       reader.onload = (e) => {
-        let img = document.querySelector('.file-upload img');
+        let img = document.createElement('img');
         img.src = e.target.result;
-        img.classList.remove('displayNone');
-        document.querySelector('.file-upload div').classList.add('displayNone');
+        img.classList.add('streamedTopicImg');
+        document.getElementById('lblFileUpload').append(img);
+        document.querySelector('.file-upload span').classList.add('displayNone');
       }
       reader.readAsDataURL(this.files[0]);
       }
@@ -501,7 +500,7 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
               let img = document.querySelector('.file-upload img');
               img.src = e2.target.result;
               img.classList.remove('displayNone');
-              document.querySelector('.file-upload div').classList.add('displayNone');
+              document.querySelector('.file-upload span').classList.add('displayNone');
               document.getElementById('fileSelected').textContent = files[i].name;
               document.getElementById('btnFileUpload').files = files;
             }

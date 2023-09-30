@@ -20,7 +20,7 @@
                                         <p><%=videos[i].title%></p>
                                     <%}%>
                                     <div class="userAvatarUsername">
-                                        <div class="avatar" style="background-image: url('<%=videos[i].pic_url%>');"></div>
+                                        <div class="videoAvatar" style="background-image: url('<%=videos[i].pic_url%>');"></div>
                                         <p class="username"><%=videos[i].username%></p>
                                     </div>   
                                     <p><%=videos[i].description%></p>
@@ -33,7 +33,7 @@
         <%}%>
     </div>
 </div>
-<script type="application/javascript" src="/js/search.js"></script>
+<script src="/js/search.js"></script>
 <script>
     const searchQuery = "<%=searchQuery%>";
 </script>

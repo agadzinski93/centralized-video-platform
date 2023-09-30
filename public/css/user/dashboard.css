@@ -162,7 +162,8 @@
     display:block;
     text-align: center;
   }
-  .file-upload > div {
+  .file-upload > span {
+    display:block;
     padding-top:3.75rem;
   }
   .file-upload img {
@@ -308,7 +309,7 @@
     display: none;
     width:32px;
     height:32px;
-    background-color:#222;
+    background-color:inherit;
   }
   .btnTopicEdit img {
     width: 1rem;
@@ -318,7 +319,7 @@
     width:32px;
     height:32px;
     display: none;
-    background-color:#222;
+    background-color:inherit;
   }
   .btnTopicDelete img {
     width: 1rem;
@@ -334,7 +335,7 @@
     margin-left: 1rem;
   }
   .lblTopicName + input {
-    background-color:#242424;
+    background-color:#4F3D57;
     color:#FFF;
     border:none;
     padding:0.25rem;
@@ -348,7 +349,7 @@
     margin-left: 1rem;
   }
   .lblTopicDifficulty + select {
-    background-color:#242424;
+    background-color:#4F3D57;
     color:#FFF;
     margin-left:1rem;
     padding:0.25rem;
@@ -361,7 +362,7 @@
   }
   .lblTopicDescription + textarea {
     margin:1rem 0 1rem 1rem;
-    background-color:#242424;
+    background-color:#4F3D57;
     color:#FFF;
     border:none;
     width:90%;

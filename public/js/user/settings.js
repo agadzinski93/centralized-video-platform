@@ -109,10 +109,12 @@ const addBasicInfoEvents = () => {
             document.getElementById('profilePicSelected').textContent = this.files[0].name;
         let reader = new FileReader();
         reader.onload = (e) => {
-            let img = document.querySelector('#lblProfilePicUpload img');
+            let img = document.createElement('img');
+            img.classList.add('streamedTopicImg');
+            img.setAttribute('id','streamedProfilePic');
             img.src = e.target.result;
-            img.classList.remove('displayNone');
-            document.querySelector('#lblProfilePicUpload div').classList.add('displayNone');
+            document.getElementById('lblProfilePicUpload').append(img);
+            document.querySelector('#lblProfilePicUpload span').classList.add('displayNone');
         }
         reader.readAsDataURL(this.files[0]);
         }
@@ -143,10 +145,10 @@ const addBasicInfoEvents = () => {
                 flashBanner('success', 'Successfully updated profile picture.', FLASH_REFERENCE);
                 document.querySelector('.settingsProfilePic').style.backgroundImage = `url('${data.path}')`;
                 document.getElementById('editProfilePicImage').style.backgroundImage = `url('${data.path}')`;
-                document.getElementById('avatar').style.backgroundImage = `url('${data.path}')`;
+                document.querySelector('.avatar').style.backgroundImage = `url('${data.path}')`;
                 document.getElementById('btnProfilePicUpload').value = null;
                 document.getElementById('streamedProfilePic').classList.add('displayNone');
-                document.querySelector('#lblProfilePicUpload div').classList.remove('displayNone');
+                document.querySelector('#lblProfilePicUpload span').classList.remove('displayNone');
                 document.getElementById('profilePicSelected').textContent = 'No file selected.';
                 document.getElementById('btnDeleteProfilePic').classList.remove('displayNone');
             }
@@ -173,7 +175,7 @@ const addBasicInfoEvents = () => {
                 flashBanner('success', 'Successfully deleted profile picture.', FLASH_REFERENCE);
                 document.querySelector('.settingsProfilePic').style.backgroundImage = `url('${data.image.path}')`;
                 document.getElementById('editProfilePicImage').style.backgroundImage = `url('${data.image.path}')`;
-                document.getElementById('avatar').style.backgroundImage = `url('${data.image.path}')`;
+                document.querySelector('.avatar').style.backgroundImage = `url('${data.image.path}')`;
                 document.getElementById('btnProfilePicUpload').value = null;
                 document.getElementById('profilePicSelected').textContent = 'No file selected.';
                 document.getElementById('btnDeleteProfilePic').classList.add('displayNone');
@@ -362,10 +364,12 @@ const addBasicInfoEvents = () => {
             document.getElementById('bannerSelected').textContent = this.files[0].name;
         let reader = new FileReader();
         reader.onload = (e) => {
-            let img = document.querySelector('#lblBannerUpload img');
+            let img = document.createElement('img');
+            img.classList.add('streamedTopicImg');
+            img.setAttribute('id','streamedBanner');
             img.src = e.target.result;
-            img.classList.remove('displayNone');
-            document.querySelector('#lblBannerUpload div').classList.add('displayNone');
+            document.getElementById('lblBannerUpload').append(img);
+            document.querySelector('#lblBannerUpload span').classList.add('displayNone');
         }
         reader.readAsDataURL(this.files[0]);
         }
@@ -397,7 +401,7 @@ const addBasicInfoEvents = () => {
                 document.querySelector('.channelBannerPreview').style.backgroundImage = `url('${data.path}')`;
                 document.getElementById('btnBannerUpload').value = null;
                 document.getElementById('streamedBanner').classList.add('displayNone');
-                document.querySelector('#lblBannerUpload div').classList.remove('displayNone');
+                document.querySelector('#lblBannerUpload span').classList.remove('displayNone');
                 document.getElementById('bannerSelected').textContent = 'No file selected.';
                 document.getElementById('btnDeleteBanner').classList.remove('displayNone');
             }

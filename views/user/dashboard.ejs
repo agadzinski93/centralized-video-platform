@@ -29,13 +29,13 @@
             id="name"
             name="topic[name]"
             placeholder="Enter Topic Title Here"
-          />
+          >
         </div>
         <div>
-          <label for="difficulty">Difficulty</label>
+          <label for="selectDifficulty">Difficulty</label>
         </div>
         <div>
-          <select name="topic[difficulty]" id="difficulty">
+          <select name="topic[difficulty]" id="selectDifficulty">
             <option value="Beginner">Beginner</option>
             <option value="Intermediate">Intermediate</option>
             <option value="Advanced">Advanced</option>
@@ -54,8 +54,7 @@
       </div>
       <div class="newTopicFileContainer">
         <label for="btnFileUpload" class="file-upload" id="lblFileUpload">
-          <div>Click or Drag Image to Upload</div>
-          <img class="displayNone" src="" alt="">
+          <span>Click or Drag Image to Upload</span>
         </label>
         <input type="file" id="btnFileUpload" name="topic[file]" hidden>
       </div>
@@ -74,12 +73,12 @@
   include("../partials/flashSuccess.ejs") %>
   <div class="dashboardTopicList">
     <% if (topics.length > 0) { %> <% for (topic of topics) { %>
-    <div class="dashboardTopicWrapper" id="<%=topic.name%>">
+    <div class="dashboardTopicWrapper" id="<%=topic.name.replaceAll(' ','-')%>">
       <div class="topicButtonsContainer">
-        <button id="btnSelect<%=topic.name%>" class="btnSelectTopic"></button>
-        <section class="topicButtons">
-          <button class="btnTopicEdit" id="btnEdit<%=topic.name%>">
-            <img class="icon" src="/assets/svg/edit-dark.png" alt="edit" />
+        <button id="btnSelect<%=topic.name.replaceAll(' ','-')%>" class="btnSelectTopic"></button>
+        <div class="topicButtons">
+          <button class="btnTopicEdit" id="btnEdit<%=topic.name.replaceAll(' ','-')%>">
+            <img class="icon" src="/assets/svg/edit-dark.png" alt="edit">
             <span>Edit Topic</span>
           </button>
           <form
@@ -87,11 +86,11 @@
             method="POST"
           >
             <button class="btnTopicDelete">
-              <img class="icon" src="/assets/svg/trashBlack.svg" alt="delete" />
+              <img class="icon" src="/assets/svg/trashBlack.svg" alt="delete">
               <span>Delete Topic</span>
             </button>
           </form>
-        </section>
+        </div>
       </div>
       <a href="/user/<%= user.username %>/dashboard/<%=topic.topicUrl%>"
         ><div class="dashboardTopicContainer">
@@ -100,45 +99,45 @@
           <%}else{%>
             <div class="topicImageContainer" style="background-image:url('');"></div>
           <%}%>
-          <section id="topicInfo" class="topicInfo">
+          <div id="topicInfo" class="topicInfo">
             <div class="dashboardTopicFirstRow">
               <p class="topicName"><%= topic.name %></p>
             </div>
             <p class="topicDifficulty"><%= topic.difficulty %></p>
-            <p class="topicDescription" id="<%= topic.name %>Description">
+            <p class="topicDescription" id="<%= topic.name.replaceAll(' ','-') %>Description">
               <%= topic.description %>
             </p>
-          </section>
+          </div>
         </div>
       </a>
     </div>
-    <div class="dashboardTopicWrapperEdit removeDisplay" id="edit<%=topic.name%>">
+    <div class="dashboardTopicWrapperEdit removeDisplay" id="edit<%=topic.name.replaceAll(' ','-')%>">
       <form
         action="/topics/<%= user.username %>/edit/<%=topic.topicUrl%>"
         method="POST"
       >
-        <section class="topicButtons">
+        <div class="topicButtons">
           <button class="btnTopicDelete">
-            <img class="icon" src="/assets/svg/accept.png" alt="save changes" />
+            <img class="icon" src="/assets/svg/accept.png" alt="save changes">
             <span>Save Changes</span>
           </button>
 
           <button
             type="button"
             class="btnTopicEdit"
-            id="btnCancelEdit<%=topic.name%>"
+            id="btnCancelEdit<%=topic.name.replaceAll(' ','-')%>"
           >
-            <img class="icon" src="/assets/svg/cancel.png" alt="cancel" />
+            <img class="icon" src="/assets/svg/cancel.png" alt="cancel">
             <span>Cancel</span>
           </button>
-        </section>
+        </div>
         <label for="topicName" class="lblTopicName">Topic Name</label>
         <input
           type="text"
           name="topic[name]"
           id="topicName"
           placeholder="<%= topic.name %>"
-        />
+        >
         <div class="editDifficultyContainer">
           <label for="difficulty" class="lblTopicDifficulty">Difficulty</label>
           <select name="topic[difficulty]" id="difficulty">
@@ -147,12 +146,12 @@
             <option value="Advanced">Advanced</option>
           </select>
         </div>
-        <label for="topicDescription" class="lblTopicDescription"
+        <label for="<%= topic.name.replaceAll(' ','-') %>DescriptionInput" class="lblTopicDescription"
           >Description</label
         >
         <textarea
           name="topic[description]"
-          id="<%= topic.name %>DescriptionInput"
+          id="<%= topic.name.replaceAll(' ','-') %>DescriptionInput"
           cols="50"
           rows="5"
           maxlength="255"
@@ -163,7 +162,7 @@
     <% } %> <% } %>
   </div>
 </div>
-<script type="application/javascript" src="/js/user/dashboard.js"></script>
+<script src="/js/user/dashboard.js"></script>
 <script>
   const USERNAME = '<%=user.username%>';
 </script>
