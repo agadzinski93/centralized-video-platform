@@ -63,6 +63,10 @@
 .userLinksContainer > button:hover {
     cursor:pointer;
 }
+.userLinksContainer > button:focus-visible,
+button:focus-visible {
+    outline:solid 2px rgb(242,220,83);
+}
 .contentOptions {
     margin-top:2rem;
     padding-left:1rem;
@@ -93,6 +97,9 @@
     margin-bottom:2rem;
     text-decoration: none;
     overflow:hidden;
+}
+.contentLink:focus-visible {
+    outline:solid 2px red;
 }
 .videoContainer {
     overflow:hidden;

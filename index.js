@@ -19,6 +19,21 @@ app.set("layout", "./layouts/layout.ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+//Web Content Policy and CORS
+const helmet = require('helmet');
+const whitelist = ['test.programminghelp.org','i.ytimg.com','res.cloudinary.com'];
+
+app.use(helmet({
+    contentSecurityPolicy:{
+      useDefaults:true,
+      directives:{
+        imgSrc:["'self'","https://res.cloudinary.com","https://i.ytimg.com"],
+        scriptSrc:["'self'"],
+        frameSrc:["'self'","https://www.youtube.com"],
+      }
+    }
+}));
+
 //Flash
 const session = require("express-session");
 const flash = require("connect-flash"); //Dependent on express-session
