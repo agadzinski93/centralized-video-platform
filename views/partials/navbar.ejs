@@ -11,9 +11,10 @@
             <div class="registerButton"><a href="/auth/register"><span class="txtRegisterButton">Sign Up</span></a></div>
         </div>
     <%}else{%>
-        <div class="userDropDownLinks desktopMenu">
-            <div><a href="/user/<%= user.username %>"><div class="avatar navbarProfilePic" style="background-image:url('<%=user.pic_url%>')"></div></a></div>
+        <div class="userDropDownLinks desktopMenu" tabindex="0" >
+            <div class="avatar navbarProfilePic" style="background-image:url('<%=user.pic_url%>')"></div>
             <ul class="userSubmenu">
+                <li><a class="profileLink" href="/user/<%= user.username %>">Profile</a></li>
                 <li><a href="/user/<%= user.username %>/dashboard">Dashboard</a></li>
                 <li><a href="/user/<%= user.username %>/settings">Settings</a></li>
                 <li><a href="/auth/logout">Logout</a></li>

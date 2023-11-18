@@ -160,6 +160,26 @@ body {
   background-size:contain;
   background-image:url("/assets/svg/spinner.gif");
 }
+.skip-to-main-content {
+  z-index:-10;
+  position:absolute;
+  top:3.5rem;
+  left:-999px;
+  display:block;
+  width:14rem;
+  background-color:#1B1321;
+  color:#fff;
+  padding:1rem 2rem;
+  border:solid 2px red;
+  text-decoration:none;
+  text-align:center;
+  font-weight:bold;
+}
+.skip-to-main-content:focus-visible {
+  z-index:10;
+  left:calc(50vw - 9rem);
+  outline:none;
+}
 .navbar {
   position:fixed;
   background-color:#1B1321;
@@ -177,6 +197,32 @@ body {
   text-transform: capitalize;
   font-weight:bold;
   font-family: sans-serif;
+  color:#FFF;
+}
+.userDropDownLinks:focus-visible {
+  outline:none;
+  border:solid 2px red;
+}
+.userDropDownLinks:focus-within > ul.userSubmenu {
+  display:block;
+}
+.userDropDownLinks:focus-within > ul.userSubmenu a:focus-visible {
+  outline:none;
+  border:solid 2px red;
+}
+.homeButton a:focus-visible,
+.loginButton a:focus-visible,
+.registerButton a:focus-visible,
+a.recentVideoLink:focus-visible,
+.recentVideo > a:nth-child(2):focus-visible,
+a.recentTopicLink:focus-visible,
+.recentTopic > a:nth-child(2):focus-visible {
+  outline:none;
+  border:solid 2px red;
+}
+
+.recentVideo > a:nth-child(2):focus-visible p.authorUsername,
+.recentTopic > a:nth-child(2):focus-visible p.authorUsername {
   color:#FFF;
 }
 .desktopMenu {

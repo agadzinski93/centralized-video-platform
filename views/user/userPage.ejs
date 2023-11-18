@@ -1,9 +1,9 @@
 <div class="userPageContainer">
     <%- include("../partials/navbar.ejs") %>
-    <div class="userProfileContainer">
-        <div class="userBanner" style="background-image:url('<%=author.banner_url%>');">
+    <div id="main" class="userProfileContainer">
+        <div class="userBanner" title="Channel Background Image" style="background-image:url('<%=author.banner_url%>');">
             <div class="userInfoContainer">
-                <div class="userAvatar" style="background-image:url('<%=author.pic_url%>');"></div>
+                <div class="userAvatar" title="Profile Picture" style="background-image:url('<%=author.pic_url%>');"></div>
                 <div class="userInfo">
                     <h1 class="authorUsername"><%=author.username%></h1>
                     <p class="authorSubscribers"><%=author.subscribers%> subscribers</p>

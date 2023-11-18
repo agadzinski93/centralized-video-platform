@@ -2,7 +2,6 @@ const { getDatabase } = require("../mysql-connect");
 const {escapeSQL} = require("./sanitizers");
 const AppError = require("../AppError");
 const e = require("connect-flash");
-const axios = require("axios").default;
 
 module.exports = {
   getTopicVideos: async (topic) => {
@@ -121,50 +120,51 @@ module.exports = {
   getVideoInfo: async (vidId) => {
     let result;
 
-    await axios
-      .get(
-        `https://www.googleapis.com/youtube/v3/videos?id=${vidId}&key=${process.env.YOUTUBE_KEY}
-            &part=snippet,statistics&fields=items(id,snippet,statistics)`
-      )
-      .then((yt) => {
-        let snippet = yt.data.items[0].snippet;
-        let stats = yt.data.items[0].statistics;
+    try {
+      const data = await fetch(`https://www.googleapis.com/youtube/v3/videos?id=${vidId}&key=${process.env.YOUTUBE_KEY}
+        &part=snippet,statistics&fields=items(id,snippet,statistics)`,
+        {
+          method:'GET'
+        });
 
-        result = {
-          title: snippet.title,
-          url: `youtube.com/watch?v=${vidId}`,
-          description: snippet.description,
-          views: stats.viewCount,
-          thumbnail: snippet.thumbnails.medium.url,
-        };
-      })
-      .catch((err) => {
-        result = new AppError(500, "Invalid YT Video");
-      });
+      const yt = await data.json();
+      let snippet = yt.items[0].snippet;
+      let stats = yt.items[0].statistics;
+
+      result = {
+        title: snippet.title,
+        url: `youtube.com/watch?v=${vidId}`,
+        description: snippet.description,
+        views: stats.viewCount,
+        thumbnail: snippet.thumbnails.medium.url,
+      };
+    } catch(err) {
+      result = new AppError(500, "Invalid YT Video");
+    }
     return result;
   },
   getPlaylistInfo: async (playlistId) => {
     let result;
     const resultsPerPage = 50; //Max allowed by YouTube API
-    
-    await axios
-      .get(
-        `https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=${process.env.YOUTUBE_KEY}
-        &part=snippet`
-      )
-      .then((yt) => {
-        const videos = yt.data.items;
-        const numOfVideos = yt.data.pageInfo.totalResults;
 
-        result = {
-          playlistId,
-          numOfVideos,
-          resultsPerPage,
-        }
-      })
-      .catch((err) => {
-        result = new AppError(500, "Invalid Playlist");
-      });
+    try {
+      const data = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=${process.env.YOUTUBE_KEY}
+        &part=snippet`,
+        {
+          method:'GET'
+        });
+      const yt = await data.json();
+      const videos = yt.items;
+      const numOfVideos = yt.pageInfo.totalResults;
+
+      result = {
+        playlistId,
+        numOfVideos,
+        resultsPerPage,
+      }
+    }catch(err) {
+      result = new AppError(500, "Invalid Playlist");
+    }
     return result;
   },
   getPlaylistVideos: async (playlist) => {
@@ -176,51 +176,48 @@ module.exports = {
 
     for (let i = 0;i < numOfPages;i++) {
       if (i === 0) {
-        await axios
-        .get(
-          `https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=${process.env.YOUTUBE_KEY}
-          &part=snippet&maxResults=${resultsPerPage}`
-        )
-        .then((yt) => {
-          nextPageToken = yt.data.nextPageToken;
+
+        try {
+          const data = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=${process.env.YOUTUBE_KEY}
+            &part=snippet&maxResults=${resultsPerPage}`);
+          const yt = await data.json();
+          nextPageToken = yt.nextPageToken;
           if (i === numOfPages - 1) {
             for (let j = 0; j < numOfVideosOnLastPage; j++) {
-              result.push(yt.data.items[j].snippet);
+              result.push(yt.items[j].snippet);
             }
           }
           else {
             for (let j = 0; j < resultsPerPage; j++) {
-              result.push(yt.data.items[j].snippet);
+              result.push(yt.items[j].snippet);
             }
           }
-        })
-        .catch((err) => {
+        }catch(err){
           result = new AppError(500, "Error adding first set of videos from playlist");
-        });
+        }
+
       } else {
-        await axios
-        .get(
-          `https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=${process.env.YOUTUBE_KEY}
-          &part=snippet&maxResults=${resultsPerPage}&pageToken=${nextPageToken}`
-        )
-        .then((yt) => {
-          nextPageToken = yt.data.nextPageToken;
-          if (i === numOfPages - 1) {
-            for (let j = 0; j < numOfVideosOnLastPage; j++) {
-              result.push(yt.data.items[j].snippet);
-            }
+      try {
+        const data = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=${process.env.YOUTUBE_KEY}
+          &part=snippet&maxResults=${resultsPerPage}&pageToken=${nextPageToken}`);
+        const yt = await data.json();
+
+        nextPageToken = yt.nextPageToken;
+        if (i === numOfPages - 1) {
+          for (let j = 0; j < numOfVideosOnLastPage; j++) {
+            result.push(yt.items[j].snippet);
           }
-          else {
-            for (let j = 0; j < resultsPerPage; j++) {
-              result.push(yt.data.items[j].snippet);
-            }
+        }
+        else {
+          for (let j = 0; j < resultsPerPage; j++) {
+            result.push(yt.items[j].snippet);
           }
-        })
-        .catch((err) => {
-          result = new AppError(500, `Error adding videos on page ${i+1}`);
-        });
+        }
+      }catch(err){
+        result = new AppError(500, `Error adding videos on page ${i+1}`);
       }
     }
+  }
     return result;
   },
   videoExists: async (id) => {

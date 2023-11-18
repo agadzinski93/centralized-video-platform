@@ -51,12 +51,17 @@ const addSubscribeEvents = () => {
 }
 const addDescriptionClickEvent = () => {
     const description = document.getElementById('mainVideoDescription');
-    const toggleDescription = () => {
-        description.classList.toggle('hidden');
-        description.classList.toggle('overflowHidden');
-        description.classList.toggle('heightInitial');
+    const toggleDescription = (e) => {
+        if (e.type === 'click' || (e.type === 'keypress' && e.key === 'Enter')) {
+            description.classList.toggle('hidden');
+            description.classList.toggle('overflowHidden');
+            description.classList.toggle('heightInitial');
+        }
     }
-    document.getElementById('mainVideoDescription').addEventListener('click',toggleDescription);
+    if (description) {
+        document.getElementById('mainVideoDescription').addEventListener('click',toggleDescription);
+        document.querySelector('.mainVideoDescriptionContainer').addEventListener('keypress',toggleDescription);
+    }
 }
 /**
  * Converts text link into functional anchor tag
@@ -127,8 +132,10 @@ const scanForLinks = (text) => {
  * @param {object} element - element with text to transform into links
  */
 const addLinksToText = (element) => {
-    const newText = scanForLinks(element.textContent);
-    element.innerHTML = newText;
+    if (element) {
+        const newText = scanForLinks(element.textContent);
+        element.innerHTML = newText;
+    }
 }
 const init = () => {
     let selectedVideo = document.getElementById('selectedVideo');

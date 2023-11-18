@@ -46,6 +46,10 @@
 .topicVideoList a {
     text-decoration: none;
 }
+.topicVideoLink:focus-visible {
+    border:solid 2px red;
+    outline:none;
+}
 .topicVideo {
     display:flex;
     background-color:initial;

@@ -1,7 +1,7 @@
 
 <div class="homeContainer">
   <%- include("./partials/navbar.ejs") %>
-  <div class="homeRecentVideos">
+  <div id="main" class="homeRecentVideos">
     <%- include("./partials/flashError.ejs") %>
     <%- include("./partials/flashSuccess.ejs") %>
     <p class="recentVideosHeader">Recent Videos</p>
@@ -16,7 +16,7 @@
               </a>
               <a href="/user/<%=videos[i].username%>">
                 <div>
-                  <div class="authorProfilePic" style="background-image:url('<%=videos[i].pic_url%>')"></div>
+                  <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=videos[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
                 </div>
               </a>
@@ -29,7 +29,7 @@
               </a>
               <a href="/user/<%=videos[i].username%>">
                 <div>
-                  <div class="authorProfilePic" style="background-image:url('<%=videos[i].pic_url%>')"></div>
+                  <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=videos[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
                 </div>
               </a>
@@ -42,7 +42,7 @@
               </a>
               <a href="/user/<%=videos[i].username%>">
                 <div>
-                  <div class="authorProfilePic" style="background-image:url('<%=videos[i].pic_url%>')"></div>
+                  <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=videos[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
                 </div>
               </a>
@@ -55,7 +55,7 @@
               </a>
               <a href="/user/<%=videos[i].username%>">
                 <div>
-                  <div class="authorProfilePic" style="background-image:url('<%=videos[i].pic_url%>')"></div>
+                  <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=videos[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
                 </div>
               </a>
@@ -68,7 +68,7 @@
               </a>
               <a href="/user/<%=videos[i].username%>">
                 <div>
-                  <div class="authorProfilePic" style="background-image:url('<%=videos[i].pic_url%>')"></div>
+                  <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=videos[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
                 </div>
               </a>
@@ -95,7 +95,7 @@
               </a>
               <a href="/user/<%=topics[i].username%>">
                 <div>
-                  <div class="authorProfilePic" style="background-image:url('<%=topics[i].pic_url%>')"></div>
+                  <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=topics[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
                 </div>
               </a>
@@ -112,7 +112,7 @@
               </a>
               <a href="/user/<%=topics[i].username%>">
                 <div>
-                  <div class="authorProfilePic" style="background-image:url('<%=topics[i].pic_url%>')"></div>
+                  <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=topics[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
                 </div>
               </a>
@@ -129,7 +129,7 @@
               </a>
               <a href="/user/<%=topics[i].username%>">
                 <div>
-                  <div class="authorProfilePic" style="background-image:url('<%=topics[i].pic_url%>')"></div>
+                  <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=topics[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
                 </div>
               </a>
@@ -146,7 +146,7 @@
               </a>
               <a href="/user/<%=topics[i].username%>">
                 <div>
-                  <div class="authorProfilePic" style="background-image:url('<%=topics[i].pic_url%>')"></div>
+                  <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=topics[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
                 </div>
               </a>
@@ -163,7 +163,7 @@
               </a>
               <a href="/user/<%=topics[i].username%>">
                 <div>
-                  <div class="authorProfilePic" style="background-image:url('<%=topics[i].pic_url%>')"></div>
+                  <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=topics[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
                 </div>
               </a>

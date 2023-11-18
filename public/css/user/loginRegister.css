@@ -1,3 +1,10 @@
+a:focus-visible, 
+button:focus-visible {
+  outline:solid 2px red;
+}
+input:focus-visible{
+  outline:solid 2px rgb(242,220,83);
+}
 .loggingContainer {
     width:100%; 
     min-height: 100vh;
@@ -6,7 +13,7 @@
   .loggingFormContainer {
     background-color:#1B1321;
     width: 40rem;
-    margin: 5rem auto 0;
+    margin: 7.5rem auto 0;
     padding: 2rem 2rem;
     border-radius:1rem;
   }

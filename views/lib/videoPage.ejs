@@ -1,11 +1,11 @@
 <div class="topicContainer">
     <%- include("../partials/navbar.ejs") %>
     <div id="flashReference" class="videoPageContainer">
-      <div class="mainVideoContainer">
+      <div id="main" class="mainVideoContainer">
         <div class="mainVideoPlayerContainer">
           <%if (timestamp === null) {%>
             <iframe src="https://www.youtube.com/embed/<%=video.videoId%>" title="YouTube video player" style="border:0px" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          <%}else{%>
+            <%}else{%>
             <iframe src="https://www.youtube.com/embed/<%=video.videoId%>?start=<%=timestamp%>" title="YouTube video player" style="border:0px" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           <%}%>
         </div>
@@ -39,7 +39,7 @@
           </div>
         </div>
         <%if (video.description !== "" && video.description !== null){%>
-          <div class="mainVideoDescriptionContainer hover">
+          <div class="mainVideoDescriptionContainer hover" tabindex="0">
             <p id="mainVideoDescription" class="mainVideoDescription overflowHidden cursorPointer"><%=video.description%></p>
           </div>
         <%}%>
@@ -49,7 +49,7 @@
         <div class="videoPlaylistContainer">
           <%if (videos.length > 0) {%>
             <%for (let i = 0;i < videos.length; i++) {%>
-              <a href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
+              <a class="playlistVideoLink" href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
                 <% if (video.id === videos[i].id) {%>
                   <div class="playlistVideoContainer playlistVideoContainerSelected" id="selectedVideo">
                     <div class="playlistVideoImageContainer" style="background-image: url('<%=videos[i].thumbnail%>');">

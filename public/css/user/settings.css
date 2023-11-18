@@ -1,3 +1,7 @@
+a:focus-visible,
+button:focus-visible {
+  outline:solid 2px red;
+}
 .icon {
     height:1rem;
 }
@@ -291,6 +295,9 @@
     border:none;
     text-transform: uppercase;
     font-weight:bold;
+}
+.deleteAccountButton:focus-visible {
+  outline:solid 2px rgb(242,220,83);
 }
 .deleteAccountButton:hover,
 .deleteAccountConfirm button:hover {

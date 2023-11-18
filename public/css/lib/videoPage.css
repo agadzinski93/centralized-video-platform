@@ -63,6 +63,10 @@
     padding:1rem 1rem;
     border-radius:1rem;
 }
+.hover:focus-visible {
+    background-color:#583762;
+    outline:none;
+}
 .mainVideoDescription {
     max-height:6rem;
     white-space: pre-line;
@@ -105,6 +109,13 @@
 }
 a {
     text-decoration: none;
+}
+a:focus-visible {
+    outline:solid 2px red;
+}
+.playlistVideoLink:focus-visible {
+    outline:none;
+    border:solid 2px red;
 }
 .playlistVideoContainer {
     display:flex;

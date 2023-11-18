@@ -19,7 +19,11 @@
 }
 .searchListContainer > a {
     display:block;
-    text-decoration: none;;
+    text-decoration: none;
+}
+.searchListContainer > a:focus-visible {
+    outline:none;
+    border:solid 2px red;
 }
 .searchResultVideo {
     display:flex;
