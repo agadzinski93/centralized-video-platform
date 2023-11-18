@@ -28,10 +28,10 @@ app.use(helmet({
       useDefaults:true,
       directives:{
         imgSrc:["'self'","https://res.cloudinary.com","https://i.ytimg.com"],
-        scriptSrc:["'self'"],
+        scriptSrc:["'self'","'unsafe-inline'"],
         frameSrc:["'self'","https://www.youtube.com"],
       }
-    }
+    },
 }));
 
 //Flash
