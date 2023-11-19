@@ -1,22 +1,53 @@
 //Globals Required: Username
-const toggleDisplayDeleteModal = (enable = false) => {
-    let modalDeleteAccount = document.querySelector('.modalDeleteAccount');
-    if (enable) {
-        modalDeleteAccount.classList.remove('displayNone');
+let MODAL_TARGET = null;
+/**
+  * Close modal when clicking anywhere off the modal
+  * @param {object} e event object
+*/
+const clickOffEvent = function(target) {
+  return function(e) {
+    switch (target) {
+      case 'EDIT_PROFILE_PIC':
+        toggleEditProfilePicForm();
+        break;
+      case 'EDIT_BANNER_PIC':
+        toggleEditBannerForm();
+        break;
+      case 'DELETE_ACCOUNT':
+        toggleDisplayDeleteModal();
+        break;  
+      default:
+    }
+    document.querySelector('.backdrop').removeEventListener('click',clickOffEvent);
+  }
+}
+const addRemoveModalEvent = function(target) {
+    if (MODAL_TARGET === null) {
+        MODAL_TARGET = clickOffEvent(target);
+        document.querySelector('.backdrop').addEventListener('click',MODAL_TARGET);
     }
     else {
-        modalDeleteAccount.classList.add('displayNone');
+        document.querySelector('.backdrop').removeEventListener('click',MODAL_TARGET);
+        MODAL_TARGET = null;
     }
+}
+const toggleDisplayDeleteModal = (enable = false) => {
+    document.querySelector('.backdrop').classList.toggle('displayNone');
+    document.querySelector('.modalDeleteAccount').classList.toggle('displayNone');
+    document.querySelector('body').classList.toggle('overflowHidden');
+    addRemoveModalEvent('DELETE_ACCOUNT');
 }
 const toggleEditProfilePicForm = () => {
     document.querySelector('.backdrop').classList.toggle('displayNone');
     document.getElementById('editProfilePicContainer').classList.toggle('displayNone');
     document.querySelector('body').classList.toggle('overflowHidden');
+    addRemoveModalEvent('EDIT_PROFILE_PIC');
 }
 const toggleEditBannerForm = () => {
     document.querySelector('.backdrop').classList.toggle('displayNone');
     document.getElementById('editBannerContainer').classList.toggle('displayNone');
     document.querySelector('body').classList.toggle('overflowHidden');
+    addRemoveModalEvent('EDIT_BANNER_PIC');
 }
 const toggleSettingSelected = (btn) => {
     btn.classList.toggle('btnSettingSelected');
@@ -91,16 +122,8 @@ const setSettingsButtonEvents = () => {
 };
 const addBasicInfoEvents = () => {
     //Profile Pic Code
-    document.getElementById('btnEditProfilePic').addEventListener('click',()=>{
-        document.querySelector('body').classList.add('overflowHidden');
-        document.getElementById('editProfilePicContainer').classList.remove('displayNone');
-        toggleBackdrop(true);
-    });
-    document.getElementById('btnCancelEditProfilePic').addEventListener('click',()=>{
-        document.querySelector('body').classList.remove('overflowHidden');
-        document.getElementById('editProfilePicContainer').classList.add('displayNone');
-        toggleBackdrop();
-    });
+    document.getElementById('btnEditProfilePic').addEventListener('click',toggleEditProfilePicForm);
+    document.getElementById('btnCancelEditProfilePic').addEventListener('click',toggleEditProfilePicForm);
     //File Upload Effect for Profile Pic
     const profilePicEvent = () => {
         document.getElementById('btnProfilePicUpload').addEventListener('change', function() {
@@ -346,16 +369,8 @@ const addBasicInfoEvents = () => {
         document.getElementById('btnEditAboutMe').classList.remove('displayNone');
     });
     //Banner Code
-    document.getElementById('btnEditBanner').addEventListener('click',()=>{
-        document.querySelector('body').classList.add('overflowHidden');
-        document.getElementById('editBannerContainer').classList.remove('displayNone');
-        toggleBackdrop(true);
-    });
-    document.getElementById('btnCancelEditBanner').addEventListener('click',()=>{
-        document.querySelector('body').classList.remove('overflowHidden');
-        document.getElementById('editBannerContainer').classList.add('displayNone');
-        toggleBackdrop();
-    });
+    document.getElementById('btnEditBanner').addEventListener('click',toggleEditBannerForm);
+    document.getElementById('btnCancelEditBanner').addEventListener('click',toggleEditBannerForm);
     //File Upload Effect for Banner
     const bannerPicEvent = () => {
         document.getElementById('btnBannerUpload').addEventListener('change', function() {
@@ -435,17 +450,8 @@ const addBasicInfoEvents = () => {
     deleteBannerEvent();
 }
 const addDeleteAccountEvent = () => {
-    let btnDeleteAcct = document.getElementById('deleteAccountButton');
-    btnDeleteAcct.addEventListener('click', (e) => {
-        toggleBackdrop(true, '#000', '50%');
-        toggleDisplayDeleteModal(true);
-    });
-
-    let btnCancelDeleteAcct = document.getElementById('btnCancelDeleteAcct');
-    btnCancelDeleteAcct.addEventListener('click', (e) => {
-        toggleBackdrop(false);
-        toggleDisplayDeleteModal(false);
-    });
+    document.getElementById('deleteAccountButton').addEventListener('click', toggleDisplayDeleteModal);
+    document.getElementById('btnCancelDeleteAcct').addEventListener('click', toggleDisplayDeleteModal);
 }
 const init = () => {
     setSettingsButtonEvents();

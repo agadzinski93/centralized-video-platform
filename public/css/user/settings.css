@@ -1,3 +1,6 @@
+button:hover {
+  cursor:pointer;
+}
 a:focus-visible,
 button:focus-visible {
   outline:solid 2px red;

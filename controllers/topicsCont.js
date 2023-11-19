@@ -114,6 +114,6 @@ module.exports = {
     
     const result = await removeSelectedTopics(topics);
     if (result instanceof AppError) return next(result);
-    res.json(5);
+    res.json(result);
   },
 };
