@@ -61,7 +61,7 @@ body {
 .errorText {
   color:#FF0000;
 }
-.errorBorder {
+div .errorBorder {
   border:solid 2px #FF0000;
 }
 .modal {
