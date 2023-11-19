@@ -1,5 +1,5 @@
 const AppError = require("../utilities/AppError");
-const {pathCSS} = require('../utilities/config');
+const {pathCSS,pathAssets} = require('../utilities/config');
 const {cloudinary} = require("../utilities/cloudinary");
 const { escapeHTML,escapeSQL,unescapeSQL } = require("../utilities/helpers/sanitizers");
 const { getUser } = require("../utilities/helpers/authHelpers");
@@ -47,6 +47,7 @@ module.exports = {
       title: `${author.username}'s Channel`,
       pageStyles,
       pathCSS,
+      pathAssets,
       author,
       user
     });
@@ -66,6 +67,7 @@ module.exports = {
       title: `${user.username}'s Settings`,
       pageStyles,
       pathCSS,
+      pathAssets,
       user,
       usingDefaultProfilePic
     });
@@ -244,6 +246,7 @@ module.exports = {
       title: `${user.username}'s Dashboard`,
       pageStyles,
       pathCSS,
+      pathAssets,
       user,
       topics,
     });
@@ -274,6 +277,7 @@ module.exports = {
       title: topicTitle, 
       pageStyles,
       pathCSS,
+      pathAssets,
       topicName, 
       topic:topic[0],
       user, 

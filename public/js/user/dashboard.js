@@ -1,9 +1,36 @@
 //Globals Required: Username
 let topics;
+let MODAL_TARGET = null;
+/**
+  * Close modal when clicking anywhere off the modal
+  * @param {object} e event object
+*/
+const clickOffEvent = function(target) {
+  return function(e) {
+    switch (target) {
+      case 'NEW_TOPIC':
+        toggleNewTopicForm();
+        break;
+      default:
+    }
+    document.querySelector('.backdrop').removeEventListener('click',clickOffEvent);
+  }
+}
+const addRemoveModalEvent = function(target) {
+  if (MODAL_TARGET === null) {
+      MODAL_TARGET = clickOffEvent(target);
+      document.querySelector('.backdrop').addEventListener('click',MODAL_TARGET);
+  }
+  else {
+      document.querySelector('.backdrop').removeEventListener('click',MODAL_TARGET);
+      MODAL_TARGET = null;
+  }
+}
 const toggleNewTopicForm = () => {
     document.querySelector('.backdrop').classList.toggle('displayNone');
     document.querySelector('.newTopicFormContainer').classList.toggle('displayNone');
     document.querySelector('html').classList.toggle('overflowHidden');
+    addRemoveModalEvent('NEW_TOPIC');
   };
   const toggleTopicSelected = () => {
     document.querySelector('.btnSelectTopic').classList.toggle('btnSelectTopicSelected');

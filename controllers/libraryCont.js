@@ -1,5 +1,5 @@
 const AppError = require('../utilities/AppError');
-const {pathCSS} = require('../utilities/config');
+const {pathCSS,pathAssets} = require('../utilities/config');
 const { escapeHTML, removeParams } = require("../utilities/helpers/sanitizers");
 const {enableHyphens} = require("../utilities/helpers/topicHelpers");
 
@@ -21,7 +21,14 @@ module.exports = {
       video.topicUrl = enableHyphens(video.topic,true);
     }
 
-    res.render("lib/topicPage", {title: `${topicName} | Playlist`, pageStyles, pathCSS, user: req.user , topic: topic[0], videos});
+    res.render("lib/topicPage", {title: `${topicName} | Playlist`, 
+      pageStyles, 
+      pathCSS, 
+      pathAssets, 
+      user: req.user , 
+      topic: topic[0], 
+      videos
+    });
   },
   renderVideoPage: async (req, res, next) => {
     const {getTopic} = require('../utilities/helpers/topicHelpers');
@@ -68,6 +75,7 @@ module.exports = {
       title: `${topicName} | ${video[0].title.substring(0,50)}`, 
       pageStyles, 
       pathCSS,
+      pathAssets,
       user:req.user, 
       topic: topic[0], 
       videos, 

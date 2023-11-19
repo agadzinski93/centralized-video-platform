@@ -1,5 +1,5 @@
 const AppError = require('../utilities/AppError');
-const {pathCSS} = require('../utilities/config');
+const {pathCSS,pathAssets} = require('../utilities/config');
 const { escapeHTML, escapeSQL } = require("../utilities/helpers/sanitizers");
 const {getRecentVideos, searchVideos, getMoreVideos} = require('../utilities/helpers/videoHelpers');
 const {enableHyphens, getRecentTopic} = require('../utilities/helpers/topicHelpers');
@@ -21,7 +21,7 @@ module.exports = {
 
             const title = `Programming Help | Your Source For Programming Tutorials`;
 
-            res.render("index", { title, pageStyles, pathCSS, user: req.user, videos, topics});
+            res.render("index", { title, pageStyles, pathCSS, pathAssets, user: req.user, videos, topics});
           } catch (err) {
             next(new AppError(500, err.message));
           }
@@ -43,7 +43,7 @@ module.exports = {
           }
         } 
         
-        res.render("search", { title: "Search Page", pageStyles, pathCSS, user: req.user, searchQuery, videos, topics});
+        res.render("search", { title: "Search Page", pageStyles, pathCSS, pathAssets, user: req.user, searchQuery, videos, topics});
       } catch (err) {
         next(new AppError(500, err.message));
       }
