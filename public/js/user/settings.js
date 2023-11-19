@@ -250,6 +250,7 @@ const addBasicInfoEvents = () => {
                 document.getElementById('displayNameContainer').classList.remove('displayNone');
                 document.getElementById('txtDisplayName').removeEventListener('input',validateDisplayName);
                 txtDN.setAttribute('placeholder', txtDisplayName);
+                document.getElementById('btnEditDisplayName').classList.remove('displayNone');
             }
             else if (data.response === 'error') {
                 flashBanner('error', data.message, FLASH_REFERENCE);
@@ -263,17 +264,37 @@ const addBasicInfoEvents = () => {
         document.getElementById('txtDisplayName').removeEventListener('input',validateDisplayName);
         document.getElementById('btnEditDisplayName').classList.remove('displayNone');
     });
-    //Email Validator
-    const validateEmail = (e) => {
-    const input = e.target.value;
-    if (input.length < 3 || input.length > 45 || !input.includes('@')) {
-        e.target.classList.add('errorBorder');
-        document.getElementById('errorEmail').classList.remove('displayNone');
-    }
-    else {
-        e.target.classList.remove('errorBorder');
-        document.getElementById('errorEmail').classList.add('displayNone');
-    }
+    /**
+     * Validate Email
+     * @param {object} e Event object - Set to null if not used
+     * @param {object} inputField - If event object is not a text input or null, use this arg instead
+     * @returns bool Validation success
+     */
+    const validateEmail = (e, inputField) => {
+        let output = false;
+        const input = e ? e.target.value : inputField.value;
+        const indexOfAt = input.indexOf('@');
+        const indexOfDot = input.indexOf('.',indexOfAt);
+        if (input.length < 3 || input.length > 45 || indexOfAt === -1 || indexOfDot === -1 || indexOfDot < indexOfAt + 2 || indexOfDot > input.length - 2) {
+            if (e) {
+                e.target.classList.add('errorBorder');
+            }
+            else {
+                inputField.classList.add('errorBorder');
+            }
+            document.getElementById('errorEmail').classList.remove('displayNone');
+        }
+        else {
+            if (e) {
+                e.target.classList.remove('errorBorder');
+            }
+            else {
+                inputField.classList.remove('errorBorder');
+            }
+            output = true;
+            document.getElementById('errorEmail').classList.add('displayNone');
+        }
+        return output;
    }
     //Edit Email Button
     document.getElementById('btnEditEmail').addEventListener('click',() => {
@@ -283,10 +304,10 @@ const addBasicInfoEvents = () => {
         document.getElementById('btnEditEmail').classList.add('displayNone');
     });
     //Confirm Email Button
-    document.getElementById('btnConfirmEditEmail').addEventListener('click',async() => {
+    document.getElementById('btnConfirmEditEmail').addEventListener('click',async(e) => {
         let txtE = document.getElementById('txtEmail')
         let txtEmail = txtE.value;
-        if (txtEmail.length <= 45 && txtEmail.includes('@')) {
+        if (validateEmail(null,txtE)) {
             let result = await fetch(`/user/${USERNAME}/settings/updateEmail`,{
                 method:'PATCH',
                 headers:{
@@ -304,6 +325,7 @@ const addBasicInfoEvents = () => {
                 document.getElementById('displayEmailContainer').classList.remove('displayNone');
                 document.getElementById('txtEmail').removeEventListener('input',validateEmail);
                 txtE.setAttribute('placeholder',txtEmail);
+                document.getElementById('btnEditEmail').classList.remove('displayNone');
             }
             else if (data.response === 'error') {
                 flashBanner('error', data.message, FLASH_REFERENCE);

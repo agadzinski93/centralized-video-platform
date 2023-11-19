@@ -1,3 +1,6 @@
+input:focus-visible{
+  outline:solid 2px rgb(242,220,83);
+}
 button:hover {
   cursor:pointer;
 }
@@ -98,11 +101,12 @@ button:focus-visible {
 .editInfoContainer {
   display:flex;
   justify-content: space-between;
+  flex-wrap:wrap;
 }
 .editInfoContainer > div:first-child {
   width:calc(100% - 3rem);
 }
-.editInfoContainer > div:last-child {
+.editInfoContainer > div:nth-child(2) {
   width:3rem;
 }
 .noDisplayName {

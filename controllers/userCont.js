@@ -116,7 +116,11 @@ module.exports = {
     let result = await updateEmailSetting(user.user_id,newEmail);
 
     if (result instanceof AppError) {
-      res.json({response: 'error', message:'Something went wrong!'});
+      if (result.message.includes('Duplicate')) {
+        res.json({response: 'error', message:'Email Already Exists.'});
+      } else {
+        res.json({response: 'error', message:'Something went wrong!'});
+      }
     }
     else {
       res.json({response: 'success', message:'Email successfully updated!'});
