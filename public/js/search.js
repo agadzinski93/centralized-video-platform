@@ -42,7 +42,7 @@ const appendNewResults = (videos,pageNumber) => {
         divAvatarUsername = document.createElement('div');
         divAvatarUsername.classList.add('userAvatarUsername');
         avatar = document.createElement('div');
-        avatar.classList.add('avatar');
+        avatar.classList.add('videoAvatar');
         avatar.style.backgroundImage = `url('${videos[i].pic_url}')`;
         username = document.createElement('p');
         username.classList.add('username');
