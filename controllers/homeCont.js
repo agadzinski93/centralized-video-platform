@@ -18,7 +18,6 @@ module.exports = {
             for (let topic of topics) {
               topic.topicUrl = enableHyphens(topic.name,true);
             }
-
             const title = `Programming Help | Your Source For Programming Tutorials`;
 
             res.render("index", { title, pageStyles, pathCSS, pathAssets, user: req.user, videos, topics});

@@ -21,7 +21,6 @@ app.use(express.urlencoded({ extended: true }));
 
 //Web Content Policy and CORS
 const helmet = require('helmet');
-const whitelist = ['test.programminghelp.org','i.ytimg.com','res.cloudinary.com'];
 
 app.use(helmet({
     contentSecurityPolicy:{
@@ -84,11 +83,11 @@ app.all("*", (req, res, next) => {
 
 //Error Handler
 app.use((err, req, res, next) => {
-  const {pathCSS} = require('./utilities/config');
+  const {pathCSS,pathAssets} = require('./utilities/config');
   res.locals.message = err.message;
   const status = err.status || 500;
   const pageStyles = null;
-  res.status(status).render("error", { title: `${status} Error`, status, message:err.message, pageStyles, pathCSS, user: req.user });
+  res.status(status).render("error", { title: `${status} Error`, status, message:err.message, pageStyles, pathCSS, pathAssets, user: req.user });
 });
 
 //Port
