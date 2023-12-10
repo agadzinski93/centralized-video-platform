@@ -5,9 +5,12 @@ const app = express();
 const path = require("path");
 const PORT = process.env.PORT || 3000;
 const expressLayouts = require("express-ejs-layouts");
-const helmet = require('helmet');
-const {addRoutes,initializePassport} = require('./utilities/init');
-const closeApp = require('./utilities/closeApp');
+const {
+  addCloseProcessHandlers, 
+  addRoutes, 
+  addSecurityPolicy, 
+  initializePassport} 
+  = require('./utilities/init');
 
 //EJS and Templates
 app.set("view engine", "ejs");
@@ -21,17 +24,7 @@ app.set("layout", "./layouts/layout.ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//Web Content Policy and CORS
-app.use(helmet({
-    contentSecurityPolicy:{
-      useDefaults:true,
-      directives:{
-        imgSrc:["'self'","https://res.cloudinary.com","https://i.ytimg.com"],
-        scriptSrc:["'self'","'unsafe-inline'"],
-        frameSrc:["'self'","https://www.youtube.com"],
-      }
-    },
-}));
+addSecurityPolicy(app);
 
 ;(async () => {
   try {
@@ -45,13 +38,4 @@ app.use(helmet({
 
 //Port
 const server = app.listen(PORT);
-
-const exitHandler = closeApp(server, {
-  coredump:false,
-  timeout:500
-});
-
-process.on('uncaughtException', exitHandler(1, 'Unexpected Error'));
-process.on('unhandledRejection', exitHandler(1, 'Unhandled Promise'));
-process.on('SIGTERM', exitHandler(0, 'SIGTERM'));
-process.on('SIGINT', exitHandler(0, 'SIGINT'));
+addCloseProcessHandlers(server);

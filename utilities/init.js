@@ -1,4 +1,18 @@
-const Routes = {
+const helmet = require('helmet');
+const closeApp = require('./closeApp');
+
+const Init = {
+    addCloseProcessHandlers: (server) => {
+        const exitHandler = closeApp(server, {
+            coredump:false,
+            timeout:500
+          });
+          
+          process.on('uncaughtException', exitHandler(1, 'Unexpected Error'));
+          process.on('unhandledRejection', exitHandler(1, 'Unhandled Promise'));
+          process.on('SIGTERM', exitHandler(0, 'SIGTERM'));
+          process.on('SIGINT', exitHandler(0, 'SIGINT'));
+    },
     addRoutes:async(app)=>{
         try {
             //Routes
@@ -44,6 +58,18 @@ const Routes = {
         }
         return null;
     },
+    addSecurityPolicy: (app) => {
+        app.use(helmet({
+            contentSecurityPolicy:{
+              useDefaults:true,
+              directives:{
+                imgSrc:["'self'","https://res.cloudinary.com","https://i.ytimg.com"],
+                scriptSrc:["'self'","'unsafe-inline'"],
+                frameSrc:["'self'","https://www.youtube.com"],
+              }
+            },
+        }));
+    },
     initializePassport: async(app) => {
         const session = require("express-session");
         const flash = require("connect-flash"); //Dependent on express-session
@@ -83,4 +109,4 @@ const Routes = {
         app.use(flashMessage); //Flash messages
     }
 }
-module.exports = Routes;
+module.exports = Init;
