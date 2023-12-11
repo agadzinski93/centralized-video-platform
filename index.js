@@ -7,10 +7,9 @@ const PORT = process.env.PORT || 3000;
 const expressLayouts = require("express-ejs-layouts");
 const {
   addCloseProcessHandlers, 
-  addRoutes, 
-  addSecurityPolicy, 
-  initializePassport} 
-  = require('./utilities/init');
+  addRoutes,
+  initializePassport
+} = require('./utilities/init');
 
 //EJS and Templates
 app.set("view engine", "ejs");
@@ -28,7 +27,6 @@ app.use(express.urlencoded({ extended: true }));
   try {
     await initializePassport(app);
     await addRoutes(app);
-    addSecurityPolicy(app);
   } catch(err) {
     console.error(`${new Date().toString()} -> App Init Failure: ${err.stack}`);
     process.exit(1);

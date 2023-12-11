@@ -4,6 +4,19 @@ const session = require("express-session");
 const flash = require("connect-flash"); //Dependent on express-session
 const cookieParser = require("cookie-parser");
 
+const addSecurityPolicy = (app) => {
+    app.use(helmet({
+        contentSecurityPolicy:{
+          useDefaults:true,
+          directives:{
+            imgSrc:["'self'","https://res.cloudinary.com","https://i.ytimg.com"],
+            scriptSrc:["'self'","'unsafe-inline'"],
+            frameSrc:["'self'","https://www.youtube.com"],
+          }
+        },
+    }));
+}
+
 const Init = {
     addCloseProcessHandlers: (server) => {
         const exitHandler = closeApp(server, {
@@ -56,22 +69,12 @@ const Init = {
                 res.status(status).render("error", { title: `${status} Error`, status, message, pageStyles, pathCSS, pathAssets, user: req.user });
             });
 
+            addSecurityPolicy(app);
+
         } catch (err) {
             console.error(`${new Date().toString()} -> Import Routes Failed: ${err.stack}`);
         }
         return null;
-    },
-    addSecurityPolicy: (app) => {
-        app.use(helmet({
-            contentSecurityPolicy:{
-              useDefaults:true,
-              directives:{
-                imgSrc:["'self'","https://res.cloudinary.com","https://i.ytimg.com"],
-                scriptSrc:["'self'","'unsafe-inline'"],
-                frameSrc:["'self'","https://www.youtube.com"],
-              }
-            },
-        }));
     },
     initializePassport: async(app) => {
         //Flash
