@@ -54,16 +54,21 @@
     display:flex;
     background-color:initial;
     color:#FFF;
+    transition:0.125s;
 }
 .topicVideo:hover {
-    background-color:#503D55;
+    background-color:#1F0020;
 }
 .topicVideoThumbnail {
     width:15rem;
     height:calc(15rem / 1.78);
     background-repeat:no-repeat;
-    background-size: contain;
+    background-size: 100%;
     background-position: center;
+    transition:0.125s;
+}
+.topicVideo:hover > .topicVideoThumbnail {
+    background-size: 105%;
 }
 .topicVideoInfoContainer {
     width: calc(50vw - 15rem - 2rem);
