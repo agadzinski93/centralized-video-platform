@@ -69,46 +69,46 @@ CREATE TABLE subscribers(
 DROP VIEW IF EXISTS recent_topics;
 CREATE VIEW recent_topics AS
     SELECT 
-        `t`.`name` AS `name`,
-        `t`.`description` AS `description`,
-        `t`.`difficulty` AS `difficulty`,
-        `t`.`imageUrl` AS `imageUrl`,
-        `t`.`filename` AS `filename`,
-        `t`.`username` AS `username`,
-        `t`.`timeCreated` AS `timeCreated`,
-        `u`.`pic_url` AS `pic_url`
+        t.name AS name,
+        t.description AS description,
+        t.difficulty AS difficulty,
+        t.imageUrl AS imageUrl,
+        t.filename AS filename,
+        t.username AS username,
+        t.timeCreated AS timeCreated,
+        u.pic_url AS pic_url
     FROM
-        (`programminghelporg`.`topics` `t`
-        JOIN `programminghelporg`.`users` `u` ON ((`u`.`username` = `t`.`username`)))
-    ORDER BY `t`.`timeCreated` DESC;
+        topics t
+        JOIN users u ON u.username = t.username
+    ORDER BY t.timeCreated DESC;
 
 DROP VIEW IF EXISTS recent_videos;
 CREATE VIEW recent_videos AS
     SELECT 
-        `v`.`title` AS `title`,
-        `v`.`url` AS `url`,
-        `v`.`thumbnail` AS `thumbnail`,
-        `v`.`topic` AS `topic`,
-        `v`.`username` AS `username`,
-        `u`.`pic_url` AS `pic_url`
+        v.title AS title,
+        v.url AS url,
+        v.thumbnail AS thumbnail,
+        v.topic AS topic,
+        v.username AS username,
+        u.pic_url AS pic_url
     FROM
-        (`programminghelporg`.`videos` `v`
-        JOIN `programminghelporg`.`users` `u` ON ((`v`.`username` = `u`.`username`)))
-    ORDER BY `v`.`id` DESC;
+        videos v
+        JOIN users u ON v.username = u.username
+    ORDER BY v.id DESC;
 
 DROP VIEW IF EXISTS search_videos;
 CREATE VIEW search_videos AS
     SELECT 
-        `v`.`title` AS `title`,
-        `v`.`url` AS `url`,
-        `v`.`thumbnail` AS `thumbnail`,
-        `v`.`description` AS `description`,
-        `v`.`username` AS `username`,
-        `v`.`topic` AS `topic`,
-        `u`.`pic_url` AS `pic_url`
+        v.title AS title,
+        v.url AS url,
+        v.thumbnail AS thumbnail,
+        v.description AS description,
+        v.username AS username,
+        v.topic AS topic,
+        u.pic_url AS pic_url
     FROM
-        (`programminghelporg`.`videos` `v`
-        JOIN `programminghelporg`.`users` `u` ON ((`v`.`username` = `u`.`username`)));
+        videos v
+        JOIN users u ON v.username = u.username;
 
 DROP PROCEDURE IF EXISTS deleteExpiredKeys;
 DELIMITER //
