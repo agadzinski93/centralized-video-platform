@@ -66,6 +66,34 @@ CREATE TABLE subscribers(
     FOREIGN KEY (subscriber_id) REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE
 )ENGINE=InnoDB CHAR SET 'utf8mb4';
 
+DROP TRIGGER IF EXISTS on_subscribe;
+DELIMITER //
+CREATE TRIGGER on_subscribe
+AFTER INSERT ON subscribers
+FOR EACH ROW
+BEGIN
+    DECLARE msg CHAR(35);
+	IF NEW.subscriber_id != NEW.user_id THEN
+		UPDATE users SET subscribers = subscribers + 1 WHERE user_id = NEW.subscriber_id;
+		UPDATE users SET subscriptions = subscriptions + 1 WHERE user_id = NEW.user_id;
+	ELSE
+		SET msg = "You cannot subscribe to yourself!";
+        SIGNAL SQLSTATE "45000" SET MESSAGE_TEXT = msg;
+	END IF;
+END//
+DELIMITER ;
+
+DROP TRIGGER IF EXISTS on_unsubscribe;
+DELIMITER //
+CREATE TRIGGER on_unsubscribe
+BEFORE DELETE ON subscribers
+FOR EACH ROW
+BEGIN
+    UPDATE users SET subscribers = subscribers - 1 WHERE user_id = OLD.subscriber_id;
+    UPDATE users SET subscriptions = subscriptions - 1 WHERE user_id = OLD.user_id;
+END//
+DELIMITER ;
+
 DROP VIEW IF EXISTS recent_topics;
 CREATE VIEW recent_topics AS
     SELECT 
