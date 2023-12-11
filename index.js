@@ -50,7 +50,7 @@ app.use(function(req,res,next){
         res.status(200).send('<h1>App loaded. Please refresh!</h1>');
       }
       return next();
-    },1000);
+    },2500);
   }
   else {
     return next();
