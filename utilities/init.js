@@ -69,7 +69,7 @@ const Init = {
                 res.status(status).render("error", { title: `${status} Error`, status, message, pageStyles, pathCSS, pathAssets, user: req.user });
             });
 
-            addSecurityPolicy(app);
+            //addSecurityPolicy(app);
 
         } catch (err) {
             console.error(`${new Date().toString()} -> Import Routes Failed: ${err.stack}`);
