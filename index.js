@@ -11,7 +11,6 @@ const {
   addRoutes,
   initializePassport
 } = require('./utilities/init');
-const tempRoute = require('./routes/tempRoute');
 
 //EJS and Templates
 app.set("view engine", "ejs");
@@ -40,9 +39,13 @@ let routesLoaded = false;
   }
 })();
 
+/*
+  App requires a functional path at runtime. It cannot wait for the async ES6 routes to load.
+  This temporary message will be presented when the app first loads.
+*/
 app.use(function(req,res,next){
   if (!routesLoaded) {
-    res.status(200).send('App loaded. Please refresh!');
+    res.status(200).send('<h1>App loaded. Please refresh!</h1>');
   }
   next();
 });
