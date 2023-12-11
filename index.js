@@ -6,10 +6,12 @@ const path = require("path");
 const PORT = process.env.PORT || 3000;
 const expressLayouts = require("express-ejs-layouts");
 const {
+  addSecurityPolicy,
   addCloseProcessHandlers, 
   addRoutes,
   initializePassport
 } = require('./utilities/init');
+const tempRoute = require('./routes/tempRoute');
 
 //EJS and Templates
 app.set("view engine", "ejs");
@@ -23,15 +25,27 @@ app.set("layout", "./layouts/layout.ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+addSecurityPolicy(app);
+
+let routesLoaded = false;
+
 ;(async () => {
   try {
     await initializePassport(app);
-    await addRoutes(app);
+    routesLoaded = await addRoutes(app);
+
   } catch(err) {
     console.error(`${new Date().toString()} -> App Init Failure: ${err.stack}`);
     process.exit(1);
   }
 })();
+
+app.use(function(req,res,next){
+  if (!routesLoaded) {
+    app.get('*',tempRoute);
+  }
+  next();
+});
 
 //Port
 const server = app.listen(PORT);
