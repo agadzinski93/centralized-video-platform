@@ -24,12 +24,11 @@ app.set("layout", "./layouts/layout.ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-addSecurityPolicy(app);
-
 ;(async () => {
   try {
     await initializePassport(app);
     await addRoutes(app);
+    addSecurityPolicy(app);
   } catch(err) {
     console.error(`${new Date().toString()} -> App Init Failure: ${err.stack}`);
     process.exit(1);
