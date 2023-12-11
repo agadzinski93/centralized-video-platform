@@ -4,7 +4,7 @@
   <div id="main" class="homeRecentVideos">
     <%- include("./partials/flashError.ejs") %>
     <%- include("./partials/flashSuccess.ejs") %>
-    <p class="recentVideosHeader">Recent Videos</p>
+    <h1 class="recentVideosHeader">Recent Videos</h1>
     <div class="recentVideosContainer">
       <%if (videos.length >= 1) {%>
         <%for (let i = 0; i < videos.length; i++) {%>

@@ -1,5 +1,8 @@
 const helmet = require('helmet');
 const closeApp = require('./closeApp');
+const session = require("express-session");
+const flash = require("connect-flash"); //Dependent on express-session
+const cookieParser = require("cookie-parser");
 
 const Init = {
     addCloseProcessHandlers: (server) => {
@@ -71,10 +74,6 @@ const Init = {
         }));
     },
     initializePassport: async(app) => {
-        const session = require("express-session");
-        const flash = require("connect-flash"); //Dependent on express-session
-        const cookieParser = require("cookie-parser");
-
         //Flash
         app.use(flash());
 

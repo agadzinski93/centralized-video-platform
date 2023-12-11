@@ -2,9 +2,9 @@
     <%- include("./partials/navbar.ejs") %>
     <div id="main" class="searchResultsContainer">
         <%if (searchQuery === null){%>
-            <p class="resultsText">No search results</p>
+            <h1 class="resultsText">No search results</h1>
         <%}else{%>
-            <p class="resultsText">Showing results for &ldquo;<%=searchQuery%>&rdquo;</p>
+            <h1 class="resultsText">Showing results for &ldquo;<%=searchQuery%>&rdquo;</h1>
             <%if (videos.length < 1){%>
                 <p>No search results</p>
             <%}else{%>
