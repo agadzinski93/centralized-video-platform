@@ -45,9 +45,16 @@ let routesLoaded = false;
 */
 app.use(function(req,res,next){
   if (!routesLoaded) {
-    res.status(200).send('<h1>App loaded. Please refresh!</h1>');
+    setTimeout(()=>{
+      if (!routesLoaded) {
+        res.status(200).send('<h1>App loaded. Please refresh!</h1>');
+      }
+      return next();
+    },1000);
   }
-  next();
+  else {
+    return next();
+  }
 });
 
 //Port
