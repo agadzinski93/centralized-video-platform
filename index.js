@@ -42,7 +42,7 @@ let routesLoaded = false;
 
 app.use(function(req,res,next){
   if (!routesLoaded) {
-    app.get('*',tempRoute);
+    res.status(200).send('App loaded. Please refresh!');
   }
   next();
 });
