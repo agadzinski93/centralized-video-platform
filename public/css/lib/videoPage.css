@@ -131,13 +131,13 @@ a:focus-visible {
     background-color:#1F0020;
 }
 .playlistVideoContainer:hover .playlistVideoImageContainer {
-    background-size:105%;
+    background-size:110%;
 }
 .playlistVideoImageContainer {
     width:12rem;
     height:calc(12rem / 1.78);
     background-repeat: no-repeat;
-    background-size:100%;
+    background-size:105%;
     background-position: center;
     transition:0.125s;
 }
