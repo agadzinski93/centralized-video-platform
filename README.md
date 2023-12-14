@@ -1,6 +1,6 @@
 # Centralized Video Platform
 
-The main goal of this application is to allow users to import videos from other platforms as a centralized hub. The intention is to make it easier for content creators to link viewers tot ehir content regardless of origin.
+The main goal of this application is to allow users to import videos from other platforms as a centralized hub. The intention is to make it easier for content creators to link viewers to their content regardless of origin.
 
 This is a long-term project that will be ongoing.
 
