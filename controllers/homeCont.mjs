@@ -1,4 +1,5 @@
 import {AppError} from '../utilities/AppError.mjs';
+import { ApiResponse } from '../utilities/ApiResponse.mjs';
 import { pathCSS,pathAssets } from '../utilities/config.mjs';
 import { escapeHTML,escapeSQL } from '../utilities/helpers/sanitizers.mjs';
 import { getRecentVideos, searchVideos, getMoreVideos } from '../utilities/helpers/videoHelpers.mjs';
@@ -45,17 +46,25 @@ const renderSearch = async (req,res,next) => {
   }
 }
 const getMoreResults = async (req,res,next) => {
-  let searchQuery = escapeSQL(escapeHTML(req.body.searchQuery));
-  let pageNumber = req.body.pageNumber;
-  let videos;
-  try {
-    videos = await getMoreVideos(searchQuery, pageNumber);
-    for (let video of videos) {
-      video.topicUrl = enableHyphens(video.topic,true);
-    }
-  } catch(err) {
-    videos = new AppError(500, "Trouble getting more videos");
+  let output = new ApiResponse('error',500,'Something went wrong!');
+  if (!req.body.searchQuery || !req.body.pageNumber) {
+    output.setMessage = 'Trouble getting more videos';
   }
-  res.json(videos);
+  else {
+    let searchQuery = escapeSQL(escapeHTML(req.body.searchQuery));
+    let pageNumber = req.body.pageNumber;
+    let videos;
+    try {
+      videos = await getMoreVideos(searchQuery, pageNumber);
+      for (let video of videos) {
+        video.topicUrl = enableHyphens(video.topic,true);
+      }
+      output.setApiResponse('success',200,'Successfully retrieved more videos!',videos);
+    } catch(err) {
+      output.setMessage = 'Trouble getting more videos.';
+    }
+  }
+  
+  res.status(output.getStatus).json(output.getApiResponse());
 }
 export {renderHome,renderSearch,getMoreResults};

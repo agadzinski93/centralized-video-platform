@@ -1,5 +1,6 @@
 import pp from '../utilities/auth.mjs'
 import { pathCSS,pathAssets } from '../utilities/config.mjs';
+import { paramsExist } from '../utilities/validators/paramsExist.mjs';
 import bcrypt from 'bcrypt'
 import { containsHTML,escapeSQL } from '../utilities/helpers/sanitizers.mjs';
 import {v4 as uuidv4} from 'uuid';
@@ -27,6 +28,9 @@ const generatePassword = async (pw) => {
  * @param {*} res
  */
 const renderLogin = (req, res) => {
+  if (res.locals.error.length > 0) {
+    res.status(401);
+  }
   const pageStyles = `${pathCSS}user/loginRegister.css`;
   res.render("login", { title: "Login", 
     pageStyles, 
@@ -69,6 +73,11 @@ const logoutUser = (req, res, next) => {
  */
 const renderRegistration = (req, res) => {
   const pageStyles = `${pathCSS}user/loginRegister.css`;
+  if (res.locals.error.length > 0) {
+    if (res.locals?.error[0].includes('is required')) {
+      res.status(422);
+    }
+  }
   res.render("register", { title: "Register", 
     pageStyles, 
     pathCSS, 
@@ -77,151 +86,174 @@ const renderRegistration = (req, res) => {
   });
 }
 const registerUser = async (req, res, next) => {
-  if (containsHTML(req.body.reg.username))
-    return next(new AppError(400, "No HTML Allowed in username!"));
-  if (containsHTML(req.body.reg.email))
-    return next(new AppError(400, "No HTML Allowed in email!"));
-  if (containsHTML(req.body.reg.password))
-    return next(new AppError(400, "No HTML Allowed in password!"));
+  const exist = paramsExist([
+    req.body.reg,
+    req.body.reg?.username,
+    req.body.reg?.email,
+    req.body.reg?.password
+  ]);
+  if (exist) {
+    if (containsHTML(req.body.reg.username))
+      return next(new AppError(400, "No HTML Allowed in username!"));
+    if (containsHTML(req.body.reg.email))
+      return next(new AppError(400, "No HTML Allowed in email!"));
+    if (containsHTML(req.body.reg.password))
+      return next(new AppError(400, "No HTML Allowed in password!"));
 
-  const db = await getDatabase();
-  if (db instanceof AppError) return next(db);
+    const db = await getDatabase();
+    if (db instanceof AppError) return next(db);
 
-  let exists = false;
-  let results;
-  let final;
-
-  try {
-    results = await db.execute(
-      `SELECT COUNT(username) FROM users WHERE username = '${req.body.reg.username}' LIMIT 1`
-    );
-    final = results[0].map((o) => Object.assign({}, o));
-    Object.values(final[0])[0] == 1 ? (exists = true) : (exists = false);
-  } catch (err) {
-    return next(new AppError(500, `Database Error: ${err.message}`));
-  }
-
-  if (exists) {
-    req.flash("error", "Username Already Exists");
-    res.redirect("/auth/register");
-    return;
-  }
-
-  try {
-    results = await db.execute(
-      `SELECT COUNT(email) FROM users WHERE email = '${req.body.reg.email}' LIMIT 1`
-    );
-    final = results[0].map((o) => Object.assign({}, o));
-    Object.values(final[0])[0] == 1 ? (exists = true) : (exists = false);
-  } catch (err) {
-    return next(new AppError(500, `Database Error: ${err.message}`));
-  }
-
-  if (exists) {
-    req.flash("error", "Email Already Exists");
-    res.redirect("/auth/register");
-    return;
-  }
-  const pw = await generatePassword(req.body.reg.password);
-
-  /**
-   * Generated ID for new user using UUID
-   */
-  let id;
-  /**
-   * Guard for number of attempts to see if generated ID is taken
-   */
-  let maxSearch = 0;
-
-  do {
-    id = uuidv4();
-    maxSearch++;
+    let exists = false;
+    let results;
+    let final;
 
     try {
-      final = await db.execute(
-        `SELECT COUNT(user_id) FROM users WHERE user_id = '${id}' LIMIT 1`
+      results = await db.execute(
+        `SELECT COUNT(username) FROM users WHERE username = '${req.body.reg.username}' LIMIT 1`
       );
-
-      final = results.map((r) => Object.assign({}, r));
+      final = results[0].map((o) => Object.assign({}, o));
       Object.values(final[0])[0] == 1 ? (exists = true) : (exists = false);
     } catch (err) {
-      exists = false;
       return next(new AppError(500, `Database Error: ${err.message}`));
     }
-  } while (exists && maxSearch <= 5);
-  /**
-   * Key used to confirm registration via email
-   */
-  let key = uuidv4();
 
-  let newUser = {
-    user_id:id,
-    username:req.body.reg.username,
-    email:req.body.reg.email,
-    pass:pw,
-    profile_pic:process.env.DEFAULT_PROFILE_PIC,
-    pic_filename:process.env.DEFAULT_PIC_FILENAME,
-    key:key
-  }
+    if (exists) {
+      req.flash("error", "Username Already Exists");
+      res.redirect("/auth/register");
+      return;
+    }
 
-  try {
-    await db.execute(`CALL registerUser('${newUser.user_id}',
-      '${newUser.username}',
-      '${newUser.email}',
-      '${newUser.pass}',
-      '${newUser.profile_pic}',
-      '${newUser.pic_filename}',
-      '${newUser.key}')`);
-  } catch (err) {
-    return next(
-      new AppError(500, `Database Insertion Error: ${err.message}`)
-    );
-  }
-  
-  let domain = `https://${process.env.DOMAIN_PUBLIC}`;
-  if (process.env.NODE_ENV == 'development') {
-    domain = `http://${process.env.DOMAIN_PRIVATE}:${process.env.PORT}`
-  }
+    try {
+      results = await db.execute(
+        `SELECT COUNT(email) FROM users WHERE email = '${req.body.reg.email}' LIMIT 1`
+      );
+      final = results[0].map((o) => Object.assign({}, o));
+      Object.values(final[0])[0] == 1 ? (exists = true) : (exists = false);
+    } catch (err) {
+      return next(new AppError(500, `Database Error: ${err.message}`));
+    }
 
-  const subject = `Email Verification`;
-  const txtBody = `Please confirm your registration by clicking here: ${domain}/auth/${newUser.user_id}/verify/${newUser.key}`;
-  const htmlBody = `Please confirm your registration by clicking here: <a href="${domain}/auth/${newUser.user_id}/verify/${newUser.key}">${domain}/auth/${newUser.user_id}/verify/${newUser.key}</a>`;
-  
-  const email = createEmail(newUser.email,subject,txtBody,htmlBody);
-  let result = await sendEmail(email);
-  if (result instanceof AppError) {
-    return next(new AppError(500,'Error Sending Email'));
-  }
+    if (exists) {
+      req.flash("error", "Email Already Exists");
+      res.redirect("/auth/register");
+      return;
+    }
+    const pw = await generatePassword(req.body.reg.password);
 
-  req.flash("success","An email was sent with a confirmation link!");
-  res.redirect("/");
-}
-const verifyEmail = async(req,res,next)=>{
-  const userId = escapeSQL(req.params.userId.toString());
-  const key = escapeSQL(req.params.key.toString());
-  
-  try{
-    const db = await getDatabase();
-    const cols = concat_user_columns([USERNAME,EMAIL]);
-    const user = await getUserById(userId,cols);
-    
-    let result = await db.execute(`CALL verifyEmail('${userId}','${key}')`);
-    
-    const subject = `Welcome to Programming Help, ${user.username}`;
-    const txtBody = `Thanks for joining our site. We hope you have a great time!`;
-    const htmlBody = `Thanks for joining our site. We hope you have a great time!`;
+    /**
+     * Generated ID for new user using UUID
+     */
+    let id;
+    /**
+     * Guard for number of attempts to see if generated ID is taken
+     */
+    let maxSearch = 0;
 
-    const email = createEmail(user.email,subject,txtBody,htmlBody);
-    result = await sendEmail(email);
-    if (result instanceof AppError) {
-      return next(new AppError(500,`Error Sending Email`));
+    do {
+      id = uuidv4();
+      maxSearch++;
+
+      try {
+        final = await db.execute(
+          `SELECT COUNT(user_id) FROM users WHERE user_id = '${id}' LIMIT 1`
+        );
+
+        final = results.map((r) => Object.assign({}, r));
+        Object.values(final[0])[0] == 1 ? (exists = true) : (exists = false);
+      } catch (err) {
+        exists = false;
+        return next(new AppError(500, `Database Error: ${err.message}`));
+      }
+    } while (exists && maxSearch <= 5);
+    /**
+     * Key used to confirm registration via email
+     */
+    let key = uuidv4();
+
+    let newUser = {
+      user_id:id,
+      username:req.body.reg.username,
+      email:req.body.reg.email,
+      pass:pw,
+      profile_pic:process.env.DEFAULT_PROFILE_PIC,
+      pic_filename:process.env.DEFAULT_PIC_FILENAME,
+      key:key
+    }
+
+    try {
+      await db.execute(`CALL registerUser('${newUser.user_id}',
+        '${newUser.username}',
+        '${newUser.email}',
+        '${newUser.pass}',
+        '${newUser.profile_pic}',
+        '${newUser.pic_filename}',
+        '${newUser.key}')`);
+    } catch (err) {
+      return next(
+        new AppError(500, `Database Insertion Error: ${err.message}`)
+      );
     }
     
-    req.flash("success","Email successfully validated!");
+    let domain = `https://${process.env.DOMAIN_PUBLIC}`;
+    if (process.env.NODE_ENV == 'development') {
+      domain = `http://${process.env.DOMAIN_PRIVATE}:${process.env.PORT}`
+    }
+
+    const subject = `Email Verification`;
+    const txtBody = `Please confirm your registration by clicking here: ${domain}/auth/${newUser.user_id}/verify/${newUser.key}`;
+    const htmlBody = `Please confirm your registration by clicking here: <a href="${domain}/auth/${newUser.user_id}/verify/${newUser.key}">${domain}/auth/${newUser.user_id}/verify/${newUser.key}</a>`;
+    
+    const email = createEmail(newUser.email,subject,txtBody,htmlBody);
+    let result = await sendEmail(email);
+    if (result instanceof AppError) {
+      return next(new AppError(500,'Error Sending Email'));
+    }
+
+    req.flash("success","An email was sent with a confirmation link!");
     res.redirect("/");
-  }catch(err){
-    req.flash("error","Error validating email.");
+  }
+  else {
+    console.log(6);
+    req.flash("error","Please fill out the form.");
     res.redirect("/");
+  }
+  
+}
+const verifyEmail = async(req,res,next)=>{
+  const exist = paramsExist([
+    req.params.userId,
+    req.params.key
+  ]);
+  if (exist) {
+    const userId = escapeSQL(req.params.userId.toString());
+    const key = escapeSQL(req.params.key.toString());
+    
+    try{
+      const db = await getDatabase();
+      const cols = concat_user_columns([USERNAME,EMAIL]);
+      const user = await getUserById(userId,cols);
+      
+      let result = await db.execute(`CALL verifyEmail('${userId}','${key}')`);
+      
+      const subject = `Welcome to Programming Help, ${user.username}`;
+      const txtBody = `Thanks for joining our site. We hope you have a great time!`;
+      const htmlBody = `Thanks for joining our site. We hope you have a great time!`;
+
+      const email = createEmail(user.email,subject,txtBody,htmlBody);
+      result = await sendEmail(email);
+      if (result instanceof AppError) {
+        return next(new AppError(500,`Error Sending Email`));
+      }
+      
+      req.flash("success","Email successfully validated!");
+      res.redirect("/");
+    }catch(err){
+      req.flash("error","Error validating email.");
+      res.redirect("/");
+    }
+  }
+  else {
+    res.json({response:'error',message:'Arguments not provided.'});
   }
 }
 export {renderLogin,loginUser,logoutUser,renderRegistration,registerUser,verifyEmail};

@@ -1,4 +1,5 @@
 import express from 'express'
+import { verifyMethods } from '../utilities/validators/middleware/verifyMethods.mjs';
 const router = express.Router({ caseSensitive: false, strict: false });
 import { registrationValidation } from '../utilities/validators/middleware/validators.mjs';
 import { 
@@ -10,12 +11,35 @@ import {
   verifyEmail
 } from '../controllers/userAuthCont.mjs';
 
-router.route("/login").get(renderLogin).post(loginUser);
-router.get("/logout", logoutUser);
-router
-  .route("/register")
-  .get(renderRegistration)
-  .post(registrationValidation, registerUser);
-router.get("/:userId/verify/:key",verifyEmail);
+router.all('/login', verifyMethods({
+  GET:{
+    cont: renderLogin
+  },
+  POST: {
+    cont: loginUser
+  }
+}));
+
+router.all('/logout', verifyMethods({
+  GET:{
+    cont: logoutUser
+  }
+}));
+
+router.all('/register', verifyMethods({
+  GET:{
+    cont: renderRegistration
+  },
+  POST: {
+    pre: [registrationValidation],
+    cont: registerUser
+  }
+}));
+
+router.all('/:userId/verify/:key',verifyMethods({
+  GET:{
+    cont: verifyEmail
+  }
+}));
 
 export {router};

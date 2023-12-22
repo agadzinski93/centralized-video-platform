@@ -1,10 +1,16 @@
 /**
  * Reusable function to remove all <> tags including the contents inside
  * @param {string} input String input from client
- * @returns {string} String after the removal of all tags
+ * @returns {string | null} String after the removal of all tags
  */
 const escapeHTML =  (input) => {
-  return input.replace(new RegExp("<.+?>", "g"), "");
+    let output;
+  try {
+    output = input.replace(new RegExp("<.+?>", "g"), "");
+  } catch(err) {
+    output = null;
+  }
+  return output;
 }
 /**
  * Searches for the existence of HTML tags in string

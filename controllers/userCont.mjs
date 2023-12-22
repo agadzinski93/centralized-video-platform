@@ -1,7 +1,9 @@
 import {AppError} from '../utilities/AppError.mjs';
+import { ApiResponse } from '../utilities/ApiResponse.mjs';
 import { pathCSS,pathAssets } from '../utilities/config.mjs';
 import { cloudinary } from '../utilities/cloudinary.mjs';
 import { escapeHTML,escapeSQL,unescapeSQL } from '../utilities/helpers/sanitizers.mjs';
+import { paramsExist } from '../utilities/validators/paramsExist.mjs';
 import { getUser } from '../utilities/helpers/authHelpers.mjs';
 import { 
   getUserInfo,
@@ -77,58 +79,78 @@ const renderUserSettings = async (req, res) => {
   });
 }
 const updateRefreshMetadata = async (req,res) => {
+  let output = new ApiResponse('error',500,'Something went wrong!');
   const username = escapeHTML(req.params.username);
   const user = await getUser(username, USER_ID);
-  
-  let {setting} = req.body;
-  let {value} = req.body;
-  setting = escapeHTML(setting);
-  value = escapeHTML(value);
-  
-  let result = await updateRefreshSettings(user.user_id, setting, value);
-  
-  if (result instanceof AppError) {
-    res.json({test: 'error'});
+  if (user instanceof AppError) return res.json({test:'error'});
+
+  const exist = paramsExist([req.body.setting,req.body.value]);
+  if (exist) {
+    let {setting, value} = req.body;
+    setting = escapeHTML(setting);
+    value = escapeHTML(value);
+    if (value !== '0' && value !== '1') {
+      output.setApiResponse('error',422,'Invalid Arguments');
+    }
+    else {
+      let result = await updateRefreshSettings(user.user_id, setting, value);
+    
+      if (!(result instanceof AppError)) {
+        output.setApiResponse('success',200,'Updated Refresh Settings!');
+      }
+    }
   }
   else {
-    res.json({test: 'success'});
+    output.setApiResponse('error',422,'Invalid Arguments');
   }
+  res.status(output.getStatus).json(output.getApiResponse());
 }
 const updateDisplayName = async (req,res) => {
+  let output = new ApiResponse('error',500,'Something went wrong!');
   const username = escapeHTML(req.params.username);
   const user = await getUser(username, USER_ID);
 
   let {displayName} = req.body;
-  let newDisplayName = escapeHTML(escapeSQL(displayName.toString()));
+  const exist = paramsExist([displayName]);
+  if (exist) {
+    let newDisplayName = escapeHTML(escapeSQL(displayName.toString()));
   
-  let result = await updateDisplayNameSetting(user.user_id, newDisplayName);
+    let result = await updateDisplayNameSetting(user.user_id, newDisplayName);
 
-  if (result instanceof AppError) {
-    res.json({response: 'error', message:'Something went wrong!'});
+    if (!(result instanceof AppError)) {
+      output.setApiResponse('success',200,'Display name successfully updated!');
+    }
   }
   else {
-    res.json({response: 'success', message:'Display name successfully updated!'});
+    output.setApiResponse('error',422,'Invalid Arguments');
   }
+  res.status(output.getStatus).json(output.getApiResponse());
 }
 const updateEmail = async (req,res) => {
+  let output = new ApiResponse('error',500,'Something went wrong!');
   const username = escapeHTML(req.params.username);
   const user = await getUser(username, USER_ID);
   
   let {email} = req.body;
-  let newEmail = escapeHTML(escapeSQL(email.toString()));
+  const exist = paramsExist([email]);
+  if (exist) {
+    let newEmail = escapeHTML(escapeSQL(email.toString()));
 
-  let result = await updateEmailSetting(user.user_id,newEmail);
+    let result = await updateEmailSetting(user.user_id,newEmail);
 
-  if (result instanceof AppError) {
-    if (result.message.includes('Duplicate')) {
-      res.json({response: 'error', message:'Email Already Exists.'});
-    } else {
-      res.json({response: 'error', message:'Something went wrong!'});
+    if (result instanceof AppError) {
+      if (result.message.includes('Duplicate')) {
+        output.setApiResponse('error',400,'Email Already Exists.');
+      }
+    }
+    else {
+      output.setApiResponse('success',200,'Email successfully updated!');
     }
   }
   else {
-    res.json({response: 'success', message:'Email successfully updated!'});
+    output.setApiResponse('error',422,'Invalid Arguments.');
   }
+  res.status(output.getStatus).json(output.getApiResponse());
 }
 const updateProfilePic = async (req,res) => {
   const username = escapeHTML(req.params.username);
@@ -184,14 +206,21 @@ const updateAboutMe = async(req,res)=>{
 
   let data = null;
   let {txtAboutMe} = req.body;
-  let aboutMe = escapeSQL(txtAboutMe.toString());
+  const exist = paramsExist([txtAboutMe]);
+  if (exist) {
+    let aboutMe = escapeSQL(txtAboutMe.toString());
 
-  let error = await updateAboutMeSetting(user.user_id,aboutMe);
-  if (error instanceof AppError) {
-    data = {response:'error',message:'Error Updating \'About Me\''};
+    let error = await updateAboutMeSetting(user.user_id,aboutMe);
+    if (error instanceof AppError) {
+      data = {response:'error',message:'Error Updating \'About Me\''};
+    }
+    else {
+      data = {response:'success',message:'Successfully updated your \'About Me\'',aboutMe:unescapeSQL(aboutMe)};
+    }
   }
   else {
-    data = {response:'success',message:'Successfully updated your \'About Me\'',aboutMe:unescapeSQL(aboutMe)};
+    res.status(422);
+    data = {response: 'error', message:'Invalid Arguments'};
   }
   res.json(data);
 }

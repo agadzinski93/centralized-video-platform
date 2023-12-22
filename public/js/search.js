@@ -86,7 +86,7 @@ const addPullMoreResultsEvent = () => {
                         })
                     });
                     const data = await videos.json();
-                    appendNewResults(data, pageNumber);
+                    appendNewResults(data.data, pageNumber);
                     pageNumber++;
                     lastResult = document.getElementById(`result${pageNumber*resultsPerPage}`);
                 }

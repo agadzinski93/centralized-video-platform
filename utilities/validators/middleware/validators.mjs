@@ -12,7 +12,7 @@ const registrationValidation = (req, res, next) => {
   let { error } = registerValidator.validate(req.body);
   if (error) {
     req.flash("error", error.details[0].message);
-    res.redirect("/register");
+    res.redirect("/auth/register");
   } else {
     next();
   }

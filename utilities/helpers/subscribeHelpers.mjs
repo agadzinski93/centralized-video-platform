@@ -29,9 +29,9 @@ const isSubscribed = async(userId,authorId)=>{
  * @returns {object} AppError or Object with Response status and Message
  */
 const subscribeUser = async(userId,authorId)=>{
-    const db = await getDatabase();
     let result = null;
     try {
+        const db = await getDatabase();
         result = await db.execute(`INSERT INTO subscribers(user_id,subscriber_id) VALUES('${userId}','${authorId}')`);
     }catch(err){
         result = new AppError(500,"Error Subscribing user");
@@ -45,12 +45,10 @@ const subscribeUser = async(userId,authorId)=>{
  * @returns {object} AppError or Object with Response status and Message
  */
 const unsubscribeUser = async(userId,authorId)=>{
-    const db = await getDatabase();
     let result = null
-
     try {
+        const db = await getDatabase();
         result = await db.execute(`DELETE FROM subscribers WHERE user_id = '${userId}' AND subscriber_id = '${authorId}'`);
-    
     }catch(err){
         result = new AppError(500,"Error Unsubscribing User");
     }

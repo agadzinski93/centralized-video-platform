@@ -130,8 +130,8 @@ const addBasicInfoEvents = () => {
         
         if (this.files[0].type.includes('image')) {
             document.getElementById('profilePicSelected').textContent = this.files[0].name;
-        let reader = new FileReader();
-        reader.onload = (e) => {
+            let reader = new FileReader();
+            reader.onload = (e) => {
             let img = document.createElement('img');
             img.classList.add('streamedTopicImg');
             img.setAttribute('id','streamedProfilePic');
@@ -271,7 +271,6 @@ const addBasicInfoEvents = () => {
      * @returns bool Validation success
      */
     const validateEmail = (e, inputField) => {
-        let output = false;
         const input = e ? e.target.value : inputField.value;
         const indexOfAt = input.indexOf('@');
         const indexOfDot = input.indexOf('.',indexOfAt);
