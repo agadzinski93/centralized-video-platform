@@ -65,16 +65,19 @@ router.all('/:username/settings/updateEmail',verifyMethods({
   }
 }));
 
-router.all('/:username/settings/updateProfilePic',verifyMethods({
+router.patch("/:username/settings/updateProfilePic", isLoggedIn, isAuthor, parserProfilePic.single('profileImage'), updateProfilePic);
+router.delete("/:username/settings/updateProfilePic", isLoggedIn, isAuthor, deleteProfilePic);
+
+/* router.all('/:username/settings/updateProfilePic',verifyMethods({
   PATCH:{
-    pre:[isLoggedIn,isAuthor,parserProfilePic.single.bind(null,'profileImage')],
+    pre:[isLoggedIn,isAuthor,parserProfilePic.single.bind(multer,'profileImage')],
     cont:updateProfilePic
   },
   DELETE:{
     pre:[isLoggedIn,isAuthor],
     cont:deleteProfilePic
   }
-}));
+})); */
 
 router.all('/:username/settings/updateAboutMe',verifyMethods({
   PATCH:{
@@ -85,7 +88,7 @@ router.all('/:username/settings/updateAboutMe',verifyMethods({
 
 router.all('/:username/settings/updateBanner',verifyMethods({
   PATCH:{
-    pre:[isLoggedIn,isAuthor, parserBanner.single.bind(null,'bannerImage')],
+    pre:[isLoggedIn,isAuthor, parserBanner.single.bind(this,'bannerImage')],
     cont:updateBanner
   }
 }));

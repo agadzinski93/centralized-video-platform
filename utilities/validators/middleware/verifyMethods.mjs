@@ -43,7 +43,7 @@ const verifyMethods = (map) => {
             };
             if (middleware) {
                 for (let i = 0; i < middleware.length; i++) {
-                    await middleware[i](req,res,next);
+                        await middleware[i](req,res,next);
                     // If headers were returned in a middleware, exit out immediately
                     if (res.headersSent) return;
                 }

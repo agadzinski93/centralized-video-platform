@@ -153,6 +153,7 @@ const updateEmail = async (req,res) => {
   res.status(output.getStatus).json(output.getApiResponse());
 }
 const updateProfilePic = async (req,res) => {
+  console.log(5);
   const username = escapeHTML(req.params.username);
   const user_cols = concat_user_columns([USER_ID,PIC_FILENAME]);
   const user = await getUser(username, user_cols);
