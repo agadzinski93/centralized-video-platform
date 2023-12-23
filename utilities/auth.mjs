@@ -57,7 +57,7 @@ passport.deserializeUser(async function (id, done) {
       FROM users WHERE user_id = '${id}'`);
 
     const userObj = Object.assign({}, Object.values(user[0])[0]);
-
+    
     done(null, userObj);
   } catch (err) {
     done(err, false);

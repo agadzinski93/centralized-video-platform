@@ -65,19 +65,9 @@ router.all('/:username/settings/updateEmail',verifyMethods({
   }
 }));
 
-router.patch("/:username/settings/updateProfilePic", isLoggedIn, isAuthor, parserProfilePic.single('profileImage'), updateProfilePic);
-router.delete("/:username/settings/updateProfilePic", isLoggedIn, isAuthor, deleteProfilePic);
-
-/* router.all('/:username/settings/updateProfilePic',verifyMethods({
-  PATCH:{
-    pre:[isLoggedIn,isAuthor,parserProfilePic.single.bind(multer,'profileImage')],
-    cont:updateProfilePic
-  },
-  DELETE:{
-    pre:[isLoggedIn,isAuthor],
-    cont:deleteProfilePic
-  }
-})); */
+router.route("/:username/settings/updateProfilePic")
+  .patch(isLoggedIn, isAuthor, parserProfilePic.single('profileImage'), updateProfilePic)
+  .delete(isLoggedIn, isAuthor, deleteProfilePic);
 
 router.all('/:username/settings/updateAboutMe',verifyMethods({
   PATCH:{
@@ -86,12 +76,7 @@ router.all('/:username/settings/updateAboutMe',verifyMethods({
   }
 }));
 
-router.all('/:username/settings/updateBanner',verifyMethods({
-  PATCH:{
-    pre:[isLoggedIn,isAuthor, parserBanner.single.bind(this,'bannerImage')],
-    cont:updateBanner
-  }
-}));
+router.patch('/:username/settings/updateBanner',isLoggedIn,isAuthor, parserBanner.single('bannerImage'), updateBanner)
 
 router.all('/:username/dashboard',verifyMethods({
   GET:{
@@ -120,13 +105,5 @@ router.all('/:username/deleteAccount',verifyMethods({
     cont:logoutUser
   }
 }));
-
-/*
-router.patch("/:username/settings/updateProfilePic", isLoggedIn, isAuthor, parserProfilePic.single('profileImage'), updateProfilePic); --Done-LoggedOut
-router.delete("/:username/settings/updateProfilePic", isLoggedIn, isAuthor, deleteProfilePic); --Done-LoggedOut
-router.patch("/:username/settings/updateBanner", isLoggedIn, isAuthor, parserBanner.single('bannerImage'), updateBanner); --Done-LoggedOut
-router.delete("/:username/settings/deleteBanner", isLoggedIn, isAuthor, deleteBanner); --Done-LoggedOut
-router.post("/:username/deleteAccount", isLoggedIn, isAuthor, deleteAccount, logoutUser); --Done-LoggedOut 
-*/
 
 export {router};

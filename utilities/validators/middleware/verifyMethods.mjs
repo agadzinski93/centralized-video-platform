@@ -1,4 +1,5 @@
 import { AppError } from "../../AppError.mjs";
+import multer from "multer";
 
 /**
  * Verify that the requested HTTP method exists for path
@@ -43,13 +44,14 @@ const verifyMethods = (map) => {
             };
             if (middleware) {
                 for (let i = 0; i < middleware.length; i++) {
-                        await middleware[i](req,res,next);
+                    await middleware[i](req,res,next);
                     // If headers were returned in a middleware, exit out immediately
                     if (res.headersSent) return;
                 }
             }
             if (typeof controller === 'function') {
                 await controller(req,res,next);
+                if (res.headersSent) return;
             }
             else {
                 return next(new AppError(500, 'Method Verification Failed.'));
