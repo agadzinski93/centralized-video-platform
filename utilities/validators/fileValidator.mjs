@@ -7,7 +7,7 @@ const filter = (req,file,cb) => {
     file.mimetype === "image/webp") {
         cb(null, true);
     } else {
-        cb(new AppError(400,"Image must be of type JPG, PNG, GIF, TIF, or WEBP"));
+        cb(new AppError(415,"Image must be of type JPG, PNG, GIF, TIF, or WEBP"));
     }
 }
 export {filter};

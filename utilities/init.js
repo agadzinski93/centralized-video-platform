@@ -50,6 +50,7 @@ const Init = {
 
             //Error Handler
             app.use((err, req, res, next) => {
+                if (res.headersSent) return;
                 res.locals.message = err.message;
                 const status = err.status || 500;
                 const pageStyles = null;

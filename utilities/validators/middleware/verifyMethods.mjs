@@ -1,5 +1,26 @@
 import { AppError } from "../../AppError.mjs";
-import multer from "multer";
+
+const substituteNext = (arg = null) => {
+    if (arg instanceof Error) {
+        throw new AppError(arg.status,arg.msg);
+    }
+    return;
+}
+
+const sendOptionsResponse = (map,res) => {
+    let output = '';
+    let methods = Object.keys(map);
+    for (let i = 0; i < methods.length; i++) {
+        if (i === methods.length - 1) {
+            output += `${methods[i]}`;
+        }
+        else {
+            output += `${methods[i]},`;
+        }
+    }
+    res.set('Allow',output);
+    return output;
+}
 
 /**
  * Verify that the requested HTTP method exists for path
@@ -8,6 +29,10 @@ import multer from "multer";
  */
 const verifyMethods = (map) => {
     return async (req,res,next) => {
+        if (req.method === 'OPTIONS') {
+            const options = sendOptionsResponse(map,res);
+            return res.status(200).send(options);
+        }
         let controller = null;
         let middleware = null;
         let post = null;
@@ -44,13 +69,23 @@ const verifyMethods = (map) => {
             };
             if (middleware) {
                 for (let i = 0; i < middleware.length; i++) {
-                    await middleware[i](req,res,next);
+                    try {
+                        await middleware[i](req,res,substituteNext);
+                    } catch(err) {
+                        return next(new AppError(err.status,err.message));
+                    }
+                    
                     // If headers were returned in a middleware, exit out immediately
                     if (res.headersSent) return;
                 }
             }
             if (typeof controller === 'function') {
-                await controller(req,res,next);
+                try {
+                    await controller(req,res,substituteNext);
+                } catch(err) {
+                    return next(new AppError(err.status,err.message));
+                }
+                
                 if (res.headersSent) return;
             }
             else {
@@ -58,13 +93,18 @@ const verifyMethods = (map) => {
             }
             if (post) {
                 for (let i = 0; i < post.length; i++) {
-                    await post[i](req,res,next);
+                    try {
+                        await post[i](req,res,substituteNext);
+                    } catch(err) {
+                        return next(new AppError(err.status,err.message));
+                    }
                     // If headers were returned in a middleware, exit out immediately
                     if (res.headersSent) return;
                 }
             }
         }
         else {
+            sendOptionsResponse(map,res);
             return next(new AppError(405,`${req.method} method not allowed`));
         }
     }
