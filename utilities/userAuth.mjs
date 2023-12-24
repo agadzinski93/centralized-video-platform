@@ -9,12 +9,7 @@ const PATHS = [
 ];
 
 const isLoggedIn = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    if (PATHS.includes(req.route.path)) {
-      return next();
-    }
-    return;
-  }
+  if (req.isAuthenticated()) return next();
 
   res.cookie("requestUrl", req.originalUrl);
   req.flash("error", "You need to be logged in");
@@ -30,10 +25,7 @@ const isAuthor = async (req, res, next) => {
       const match = await usernameMatch(loggedUsername, urlUsername);
       if (match instanceof AppError) return next(match);
 
-      if (PATHS.includes(req.route.path)) {
-        return next();
-      }
-      return;
+      return next();
     }
   }
   else {

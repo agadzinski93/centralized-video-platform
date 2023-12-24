@@ -11,35 +11,22 @@ import {
   verifyEmail
 } from '../controllers/userAuthCont.mjs';
 
-router.all('/login', verifyMethods({
-  GET:{
-    cont: renderLogin
-  },
-  POST: {
-    cont: loginUser
-  }
-}));
+router.route('/login')
+  .get(renderLogin)
+  .post(loginUser)
+  .all(verifyMethods(['GET','POST']));
 
-router.all('/logout', verifyMethods({
-  GET:{
-    cont: logoutUser
-  }
-}));
+router.route('/logout')
+  .get(logoutUser)
+  .all(verifyMethods(['GET']));
 
-router.all('/register', verifyMethods({
-  GET:{
-    cont: renderRegistration
-  },
-  POST: {
-    pre: [registrationValidation],
-    cont: registerUser
-  }
-}));
+router.route('/register')
+  .get(renderRegistration)
+  .post(registrationValidation,registerUser)
+  .all(verifyMethods(['GET','POST']));
 
-router.all('/:userId/verify/:key',verifyMethods({
-  GET:{
-    cont: verifyEmail
-  }
-}));
+router.route('/:userId/verify/:key')
+  .get(verifyEmail)
+  .all(verifyMethods(['GET']));
 
 export {router};

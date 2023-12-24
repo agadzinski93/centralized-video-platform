@@ -6,16 +6,12 @@ import {
   renderVideoPage 
 } from '../controllers/libraryCont.mjs';
 
-router.all("/:topic", verifyMethods({
-  GET:{
-    cont: renderLibaryTopic
-  }
-}))
+router.route('/:topic')
+  .get(renderLibaryTopic)
+  .all(verifyMethods(['GET']));
 
-router.all("/:topic/:video", verifyMethods({
-  GET:{
-    cont: renderVideoPage
-  }
-}));
+router.route('/:topic/:video')
+  .get(renderVideoPage)
+  .all(verifyMethods(['GET']))
 
 export {router};

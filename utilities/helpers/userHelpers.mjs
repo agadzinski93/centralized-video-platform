@@ -87,7 +87,6 @@ const modifyImage = async (userId, path, filename, target) => {
                 break;
             default:
         }
-        await db.end();
         return {
             path,
             filename

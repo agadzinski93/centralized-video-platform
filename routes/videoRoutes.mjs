@@ -1,4 +1,5 @@
 import express from 'express'
+import { verifyMethods } from '../utilities/validators/middleware/verifyMethods.mjs';
 const router = express.Router();
 import { isLoggedIn,isAuthor } from '../utilities/userAuth.mjs';
 import { 
@@ -10,16 +11,28 @@ import {
     deleteSelectedVideos
 } from '../controllers/videosCont.mjs';
 
-router.post('/:username/:topic/create', isLoggedIn, isAuthor, createVideo);
+router.route('/:username/:topic/create')
+    .post(isLoggedIn,isAuthor,createVideo)
+    .all(verifyMethods(['POST']));
 
-router.post('/:username/:topic/:video/edit', isLoggedIn, isAuthor, editVideo);
+router.route('/:username/:topic/:video/edit')
+    .post(isLoggedIn,isAuthor,editVideo)
+    .all(verifyMethods(['POST']));
 
-router.post('/:username/swapVideos', isLoggedIn, isAuthor, swapVideos);
+router.route('/:username/swapVideos')
+    .post(isLoggedIn,isAuthor,swapVideos)
+    .all(verifyMethods(['POST']));
 
-router.put('/:username/refreshMetadata', isLoggedIn, isAuthor, refreshMetadata);
+router.route('/:username/refreshMetadata')
+    .put(isLoggedIn,isAuthor,refreshMetadata)
+    .all(verifyMethods(['PUT']));
 
-router.post("/:username/:topic/:video/delete", isLoggedIn, isAuthor, deleteVideo);
+router.route('/:username/:topic/:video/delete')
+    .post(isLoggedIn,isAuthor,deleteVideo)
+    .all(verifyMethods(['POST']));
 
-router.delete("/:username/deleteSelected", isLoggedIn, isAuthor, deleteSelectedVideos);
+router.route('/:username/deleteSelected')
+    .delete(isLoggedIn,isAuthor,deleteSelectedVideos)
+    .all(verifyMethods(['DELETE']));
 
 export {router};

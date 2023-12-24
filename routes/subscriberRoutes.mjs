@@ -7,15 +7,9 @@ import {
     unsubscribe 
 } from '../controllers/subscriberCont.mjs';
 
-router.all('/',verifyMethods({
-    POST:{
-        pre: [isLoggedIn],
-        cont: subscribe
-    },
-    DELETE: {
-        pre: [isLoggedIn],
-        cont: unsubscribe
-    }
-}));
+router.route('/')
+    .post(isLoggedIn,subscribe)
+    .delete(isLoggedIn,unsubscribe)
+    .all(verifyMethods(['POST','DELETE']));
 
 export {router};

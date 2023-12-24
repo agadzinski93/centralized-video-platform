@@ -7,19 +7,14 @@ import {
     getMoreResults
 } from '../controllers/homeCont.mjs';
 
-router.all('/', verifyMethods({
-    GET:{
-        cont: renderHome
-    }
-}));
+router.route('/')
+    .get(renderHome)
+    .all(verifyMethods(['GET']));
 
-router.all('/search',verifyMethods({
-    GET:{
-        cont: renderSearch
-    },
-    POST:{
-        cont: getMoreResults
-    }
-}));
+router.route('/search')
+    .get(renderSearch)
+    .post(getMoreResults)
+    .all(verifyMethods(['GET','POST']));
+
 
 export {router};

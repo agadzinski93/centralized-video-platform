@@ -1,4 +1,5 @@
 import express from 'express';
+import { verifyMethods } from '../utilities/validators/middleware/verifyMethods.mjs';
 import multer from 'multer';
 import { storage } from '../utilities/cloudinary.mjs';
 import {filter} from '../utilities/validators/fileValidator.mjs';
@@ -18,27 +19,24 @@ import {
   isAuthor 
 } from '../utilities/userAuth.mjs';
 
-router.post(
-  "/:username/create",
-  isLoggedIn,
-  isAuthor,
-  parser.single('topic[file]'),
-  topicValidation,
-  createTopic
-);
+router.route('/:username/create')
+  .post(isLoggedIn,isAuthor,parser.single('topic[file]'),topicValidation,createTopic)
+  .all(verifyMethods(['POST']));
 
-router.post(
-  "/:username/edit/:topic",
-  isLoggedIn,
-  isAuthor,
-  topicValidation,
-  editTopic
-);
+router.route('/:username/edit/:topic')
+  .post(isLoggedIn,isAuthor,topicValidation,editTopic)
+  .all(verifyMethods(['POST']));
 
-router.post("/:username/editImage/:topic",isLoggedIn, isAuthor, parser.single('topic[file]'), editTopicImage);
+router.route('/:username/editImage/:topic')
+  .post(isLoggedIn,isAuthor,parser.single('topic[file]'), editTopicImage)
+  .all(verifyMethods(['POST']));
 
-router.post("/:username/delete/:topic", isLoggedIn, isAuthor, deleteTopic);
+router.route('/:username/delete/:topic')
+  .post(isLoggedIn, isAuthor, deleteTopic)
+  .all(verifyMethods(['DELETE']));
 
-router.delete("/:username/deleteSelected", isLoggedIn, isAuthor, deleteSelectedTopics);
+router.route('/:username/deleteSelected')
+  .delete(isLoggedIn, isAuthor, deleteSelectedTopics)
+  .all(verifyMethods(['DELETE']));
 
 export {router};

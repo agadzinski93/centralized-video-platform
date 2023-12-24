@@ -1,4 +1,5 @@
 import express from 'express';
+import { AppError } from '../utilities/AppError.mjs';
 const router = express.Router({ caseSensitive: false, strict: false });
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods.mjs';
 import multer from 'multer';
@@ -25,85 +26,57 @@ import {
   deleteAccount
 } from '../controllers/userCont.mjs';
 
-router.all('/:username',verifyMethods({
-  GET:{
-    cont:renderUserPage
-  }
-}));
+router.route('/:username')
+  .get(renderUserPage)
+  .all(verifyMethods(['GET']));
 
-router.all('/:username/getUserContent',verifyMethods({
-  GET:{
-    cont:getUserContent
-  }
-}));
+router.route('/:username/getUserContent')
+  .get(getUserContent)
+  .all(verifyMethods(['GET']));
 
-router.all('/:username/settings',verifyMethods({
-  GET:{
-    pre:[isLoggedIn,isAuthor],
-    cont: renderUserSettings
-  }
-}));
+router.route('/:username/settings')
+  .get(isLoggedIn,isAuthor,renderUserSettings)
+  .all(verifyMethods(['GET']));
 
-router.all('/:username/settings/updateRefreshMetadata',verifyMethods({
-  PATCH:{
-    pre:[isLoggedIn,isAuthor],
-    cont: updateRefreshMetadata
-  }
-}));
+router.route('/:username/settings/updateRefreshMetadata')
+  .patch(isLoggedIn,isAuthor,updateRefreshMetadata)
+  .all(verifyMethods(['PATCH']));
 
-router.all('/:username/settings/updateDisplayName',verifyMethods({
-  PATCH:{
-    pre:[isLoggedIn,isAuthor],
-    cont:updateDisplayName
-  }
-}));
+router.route('/:username/settings/updateDisplayName')
+  .patch(isLoggedIn,isAuthor,updateDisplayName)
+  .all(verifyMethods(['PATCH']));
 
-router.all('/:username/settings/updateEmail',verifyMethods({
-  PATCH:{
-    pre:[isLoggedIn,isAuthor],
-    cont:updateEmail
-  }
-}));
+router.route('/:username/settings/updateEmail')
+  .patch(isLoggedIn,isAuthor,updateEmail)
+  .all(verifyMethods(['PATCH']));
 
-router.route("/:username/settings/updateProfilePic")
+router.route('/:username/settings/updateProfilePic')
   .patch(isLoggedIn, isAuthor, parserProfilePic.single('profileImage'), updateProfilePic)
-  .delete(isLoggedIn, isAuthor, deleteProfilePic);
+  .delete(isLoggedIn,isAuthor,deleteProfilePic)
+  .all(verifyMethods(['PATCH','DELETE']));
 
-router.all('/:username/settings/updateAboutMe',verifyMethods({
-  PATCH:{
-    pre:[isLoggedIn,isAuthor],
-    cont:updateAboutMe
-  }
-}));
+router.route('/:username/settings/updateAboutMe')
+  .patch(isLoggedIn,isAuthor,updateAboutMe)
+  .all(verifyMethods(['PATCH']));
 
-router.patch('/:username/settings/updateBanner',isLoggedIn,isAuthor, parserBanner.single('bannerImage'), updateBanner)
+router.route('/:username/settings/updateBanner')
+  .patch(isLoggedIn,isAuthor, parserBanner.single('bannerImage'), updateBanner)
+  .all(verifyMethods(['PATCH']));
 
-router.all('/:username/dashboard',verifyMethods({
-  GET:{
-    pre:[isLoggedIn,isAuthor],
-    cont:renderUserDashboard
-  }
-}));
+router.route('/:username/dashboard')
+  .get(isLoggedIn,isAuthor,renderUserDashboard)
+  .all(verifyMethods(['GET']));
 
-router.all('/:username/dashboard/:topic',verifyMethods({
-  GET:{
-    pre:[isLoggedIn,isAuthor],
-    cont:renderUserTopic
-  }
-}));
+router.route('/:username/dashboard/:topic')
+  .get(isLoggedIn,isAuthor,renderUserTopic)
+  .all(verifyMethods(['GET']));
 
-router.all('/:username/settings/deleteBanner',verifyMethods({
-  DELETE:{
-    pre:[isLoggedIn,isAuthor],
-    cont:deleteBanner
-  }
-}));
+router.route('/:username/settings/deleteBanner')
+  .delete(isLoggedIn,isAuthor,deleteBanner)
+  .all(verifyMethods(['DELETE']));
 
-router.all('/:username/deleteAccount',verifyMethods({
-  POST:{
-    pre:[isLoggedIn,isAuthor, deleteAccount],
-    cont:logoutUser
-  }
-}));
+router.route('/:username/deleteAccount')
+  .post(isLoggedIn,isAuthor,deleteAccount,logoutUser)
+  .all(verifyMethods(['POST']));
 
 export {router};
