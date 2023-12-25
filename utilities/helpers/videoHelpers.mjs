@@ -265,7 +265,9 @@ import {AppError} from "../AppError.mjs";
       await db.execute(`INSERT INTO videos (title, url, description, views, thumbnail, topic, username) 
             VALUES('${video.title}', '${video.url}', '${video.description}', '${video.views}', '${video.thumbnail}', '${topicName}', '${username}')`);
 
-      return null;
+      const id = await db.execute(`SELECT id FROM videos WHERE url = '${video.url}' AND topic = '${topicName}' LIMIT 1`);
+      
+      return id[0][0].id;
     } catch (err) {
       return new AppError(500, `Error Adding Video: ${err.message}`);
     }

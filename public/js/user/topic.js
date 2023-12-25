@@ -130,139 +130,153 @@ const toggleNewTopicForm = () => {
     const swapLink = document.querySelector(`#vidTitle${swap} > a`);
     currentLink.textContent = document.getElementById(`vidTitle${swap}`).textContent;
     swapLink.textContent = currentTitle;
-
+    console.log(5);
     const currentVidDescription = document.getElementById(`vidDescription${current}`).textContent;
     document.getElementById(`vidDescription${current}`).textContent = document.getElementById(`vidDescription${swap}`).textContent;
     document.getElementById(`vidDescription${swap}`).textContent = currentVidDescription;
-    
+    console.log(6);
     const linkHolder = currentLink.getAttribute('href');
     currentLink.setAttribute('href',swapLink.getAttribute('href'));
     swapLink.setAttribute('href',linkHolder);
 };
-const addSwapVideoEvents = async (upButtons, downButtons) => {
-    if (upButtons.length > 1) {
-      for (let i = 0; i < upButtons.length; i++) {
-        if (i === 0) {
-          downButtons[i].addEventListener('click', async (e) => {
-            toggleBackdrop(true, '#FFF', '10%');
-            toggleModal(true, 'Swapping videos...');
-            try {
-              const currentVidId = downButtons[i].getAttribute('id').substring(8);
-              const swapVidId = upButtons[i+1].getAttribute('id').substring(6);
-              swapHighlight(currentVidId,swapVidId);
+const addSwapVideoEvents = async () => {
+    const upButtons = document.getElementsByClassName('moveUp');
+    const downButtons = document.getElementsByClassName('moveDown');
 
-              const result = await fetch(`/video/${USERNAME}/swapVideos`, {
-                method:'POST',
-                headers: {
-                  'Content-Type':'application/json'
-                },
-                body: JSON.stringify({
-                  currentVidId,
-                  swapVidId,
-                })
-              });
-              const data = await result.json();
-              if (data == null) {
-                swapVideoInfo(currentVidId, swapVidId);
-              }
-            }
-            catch (err) {
-              flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
-            }
-            toggleBackdrop(false);
-            toggleModal(false);
-          });
+    const downClickOne = async (i,e) => {
+      toggleBackdrop(true, '#FFF', '10%');
+      toggleModal(true, 'Swapping videos...');
+      try {
+        const currentVidId = downButtons[i].getAttribute('id').substring(8);
+        const swapVidId = upButtons[i+1].getAttribute('id').substring(6);
+        swapHighlight(currentVidId,swapVidId);
+
+        const result = await fetch(`/video/${USERNAME}/swapVideos`, {
+          method:'POST',
+          headers: {
+            'Content-Type':'application/json'
+          },
+          body: JSON.stringify({
+            currentVidId,
+            swapVidId,
+          })
+        });
+        const data = await result.json();
+        if (data == null) {
+          swapVideoInfo(currentVidId, swapVidId);
         }
-        else if (i === upButtons.length - 1) {
-          upButtons[i].addEventListener('click', async (e) => {
-            toggleBackdrop(true, '#FFF', '10%');
-            toggleModal(true, 'Swapping videos...');
-            try {
-              const currentVidId = upButtons[i].getAttribute('id').substring(6);
-              const swapVidId = downButtons[i-1].getAttribute('id').substring(8);
-              swapHighlight(currentVidId,swapVidId);
+      }
+      catch (err) {
+        console.log(err.message);
+        flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
+      }
+      toggleBackdrop(false);
+      toggleModal(false);
+    }
+    const upClickOne = async (i,e) => {
+      toggleBackdrop(true, '#FFF', '10%');
+      toggleModal(true, 'Swapping videos...');
+      try {
+        const currentVidId = upButtons[i].getAttribute('id').substring(6);
+        const swapVidId = downButtons[i-1].getAttribute('id').substring(8);
+        swapHighlight(currentVidId,swapVidId);
 
-              const result = await fetch(`/video/${USERNAME}/swapVideos`, {
-                method:'POST',
-                headers: {
-                  'Content-Type':'application/json'
-                },
-                body: JSON.stringify({
-                    currentVidId,
-                    swapVidId,
-                })
-                
-              });
-              const data = await result.json();
-              if (data == null) {
-                swapVideoInfo(currentVidId, swapVidId);
-              }
-              else {
-                flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
-              }
-            } catch(err) {
-            }
-            toggleBackdrop(false);
-            toggleModal(false);
-          });
+        const result = await fetch(`/video/${USERNAME}/swapVideos`, {
+          method:'POST',
+          headers: {
+            'Content-Type':'application/json'
+          },
+          body: JSON.stringify({
+              currentVidId,
+              swapVidId,
+          })
+          
+        });
+        const data = await result.json();
+        if (data == null) {
+          swapVideoInfo(currentVidId, swapVidId);
         }
         else {
-          upButtons[i].addEventListener('click', async (e) => {
-            toggleBackdrop(true, '#FFF', '10%');
-            toggleModal(true, 'Swapping videos...');
-            try {
-              const currentVidId = upButtons[i].getAttribute('id').substring(6);
-              const swapVidId = downButtons[i-1].getAttribute('id').substring(8);
-              swapHighlight(currentVidId,swapVidId);
+          flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
+        }
+      } catch(err) {
+      }
+      toggleBackdrop(false);
+      toggleModal(false);
+    }
+    const upClickMany = async (i,e) => {
+      toggleBackdrop(true, '#FFF', '10%');
+      toggleModal(true, 'Swapping videos...');
+      try {
+        const currentVidId = upButtons[i].getAttribute('id').substring(6);
+        const swapVidId = downButtons[i-1].getAttribute('id').substring(8);
+        swapHighlight(currentVidId,swapVidId);
 
-              const result = await fetch(`/video/${USERNAME}/swapVideos`, {
-                method:'POST',
-                headers: {
-                  'Content-Type':'application/json'
-                },
-                body: JSON.stringify({
-                  currentVidId,
-                  swapVidId,
-                })
-              });
-              const data = await result.json();
-              if (data == null) {
-                swapVideoInfo(currentVidId, swapVidId);
-              }
-            } catch(err) {
-              flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
-            }
-            toggleBackdrop(false);
-            toggleModal(false);
-          });
-          downButtons[i].addEventListener('click', async (e) => {
-            toggleBackdrop(true, '#FFF', '10%');
-            toggleModal(true, 'Swapping videos...');
-            try {
-              const currentVidId = downButtons[i].getAttribute('id').substring(8);
-              const swapVidId = upButtons[i+1].getAttribute('id').substring(6);
-              swapHighlight(currentVidId,swapVidId);
+        const result = await fetch(`/video/${USERNAME}/swapVideos`, {
+          method:'POST',
+          headers: {
+            'Content-Type':'application/json'
+          },
+          body: JSON.stringify({
+            currentVidId,
+            swapVidId,
+          })
+        });
+        const data = await result.json();
+        if (data == null) {
+          swapVideoInfo(currentVidId, swapVidId);
+        }
+      } catch(err) {
+        flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
+      }
+      toggleBackdrop(false);
+      toggleModal(false);
+    }
+    const downClickMany = async (i,e) => {
+      toggleBackdrop(true, '#FFF', '10%');
+      toggleModal(true, 'Swapping videos...');
+      try {
+        const currentVidId = downButtons[i].getAttribute('id').substring(8);
+        const swapVidId = upButtons[i+1].getAttribute('id').substring(6);
+        swapHighlight(currentVidId,swapVidId);
 
-              const result = await fetch(`/video/${USERNAME}/swapVideos`, {
-                method:'POST',
-                headers: {
-                  'Content-Type':'application/json'
-                },
-                body: JSON.stringify({
-                  currentVidId,
-                  swapVidId,
-                })
-              });
-              const data = await result.json();
-              if (data == null) {
-                swapVideoInfo(currentVidId, swapVidId);
-              }
-            } catch(err) {
-              flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
-            }
-            toggleBackdrop(false);
-            toggleModal(false);
-          });
+        const result = await fetch(`/video/${USERNAME}/swapVideos`, {
+          method:'POST',
+          headers: {
+            'Content-Type':'application/json'
+          },
+          body: JSON.stringify({
+            currentVidId,
+            swapVidId,
+          })
+        });
+        const data = await result.json();
+        if (data == null) {
+          swapVideoInfo(currentVidId, swapVidId);
+        }
+      } catch(err) {
+        flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
+      }
+      toggleBackdrop(false);
+      toggleModal(false);
+    }
+    if (upButtons.length > 1) {
+      let foo;
+      let bar;
+      for (let i = 0; i < upButtons.length; i++) {
+        if (i === 0) {
+          foo = downClickOne.bind(null,i);
+          downButtons[i].addEventListener('click', foo);
+        }
+        else if (i === upButtons.length - 1) {
+          foo = upClickOne.bind(null,i)
+          upButtons[i].addEventListener('click', foo);
+        }
+        else {
+          foo = upClickMany.bind(null,i);
+          bar = downClickMany.bind(null,i);
+          upButtons[i].addEventListener('click', foo);
+          downButtons[i].addEventListener('click', bar);
         }
       }
     }
@@ -282,83 +296,83 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
       itemsSelectedContainer.textContent = ``;
     }
   }
-  const addSelectVideoEvents = (selectedVideos) => {
-    const panels = document.getElementsByClassName('videoOptionsPanel');
-    for (let i = 0; i < selectedVideos.length; i++) {
-      selectedVideos[i].addEventListener('click', (e) => {
-        let btnSelectVideoList = document.getElementsByClassName('btnSelectVideo');
-        if (e.shiftKey) {
-          let done = false;
-          let j = 0;
+  const selectVideoEvent = (panels,selectedVideos) => {
+    return function(e) {
+      let btnSelectVideoList = document.getElementsByClassName('btnSelectVideo');
+      if (e.shiftKey) {
+        let done = false;
+        let j = 0;
+        do {
+          if (btnSelectVideoList[j] === e.target) {
+            done = true;
+            j--;
+          }
+          j++;
+        } while (!done && j < btnSelectVideoList.length);
+        done = false;
+
+        if (!e.target.classList.contains('btnSelectVideoSelected')) {
           do {
-            if (btnSelectVideoList[j] === e.target) {
-              done = true;
+            if (!selectedVideos[j].classList.contains('btnSelectVideoSelected')) {
+              selectedVideos[j].classList.add('btnSelectVideoSelected');
+              selectedVideos[j].parentNode.parentNode.classList.add('videoOptionsPanelSelected');
               j--;
             }
-            j++;
-          } while (!done && j < btnSelectVideoList.length);
-          done = false;
+            else {
+              done = true;
+            }
+          } while(!done && j >= 0);
+        }
+        else {
+          do {
+            if (selectedVideos[j].classList.contains('btnSelectVideoSelected')) {
+              selectedVideos[j].classList.remove('btnSelectVideoSelected');
+              selectedVideos[j].parentNode.parentNode.classList.remove('videoOptionsPanelSelected');
+              j--;
+            }
+            else {
+              done = true;
+            }
+          } while(!done && j >= 0);
+        }
+      }
+      else {
+        e.target.classList.toggle('btnSelectVideoSelected');
+        e.target.parentNode.parentNode.classList.toggle('videoOptionsPanelSelected');
+      }
+      const numSelected = document.querySelectorAll('.btnSelectVideoSelected').length;
 
-          if (!e.target.classList.contains('btnSelectVideoSelected')) {
-            do {
-              if (!selectedVideos[j].classList.contains('btnSelectVideoSelected')) {
-                selectedVideos[j].classList.add('btnSelectVideoSelected');
-                selectedVideos[j].parentNode.parentNode.classList.add('videoOptionsPanelSelected');
-                j--;
-              }
-              else {
-                done = true;
-              }
-            } while(!done && j >= 0);
-          }
-          else {
-            do {
-              if (selectedVideos[j].classList.contains('btnSelectVideoSelected')) {
-                selectedVideos[j].classList.remove('btnSelectVideoSelected');
-                selectedVideos[j].parentNode.parentNode.classList.remove('videoOptionsPanelSelected');
-                j--;
-              }
-              else {
-                done = true;
-              }
-            } while(!done && j >= 0);
-          }
-        }
-        else {
-          e.target.classList.toggle('btnSelectVideoSelected');
-          e.target.parentNode.parentNode.classList.toggle('videoOptionsPanelSelected');
-        }
-        const numSelected = document.querySelectorAll('.btnSelectVideoSelected').length;
-
-        //Highlight 'Delete Selected' button and show/hide 'items selected' panel
-        //Highlight 'Refresh Metadata' button
-        if (numSelected >= 1) {
-          document.getElementById('btnDeleteSelected').classList.add('deleteSelected');
-          toggleItemsSelected(true, numSelected);
-          document.getElementById('btnRefreshMetadata').classList.add('itemsSelected');
-        }
-        else {
-          document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
-          toggleItemsSelected(false, numSelected);
-          document.getElementById('btnRefreshMetadata').classList.remove('itemsSelected');
-        }
-        //Highlight 'Select All' button?
-        if (numSelected === panels.length) {
-          document.getElementById('btnSelectAllTopics').classList.add('selectedAll');
-        }
-        else {
-          document.getElementById('btnSelectAllTopics').classList.remove('selectedAll');
-        }
-      });
-    }
-  };
-  const removeSelectVideoEvents = () => {
-    let selectVideoButtons = document.getElementsByClassName('btnSelectVideo');
-    let btnNew;
-    for (btn of selectVideoButtons) {
-      //btnNew = btn.cl
+      //Highlight 'Delete Selected' button and show/hide 'items selected' panel
+      //Highlight 'Refresh Metadata' button
+      if (numSelected >= 1) {
+        document.getElementById('btnDeleteSelected').classList.add('deleteSelected');
+        toggleItemsSelected(true, numSelected);
+        document.getElementById('btnRefreshMetadata').classList.add('itemsSelected');
+      }
+      else {
+        document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
+        toggleItemsSelected(false, numSelected);
+        document.getElementById('btnRefreshMetadata').classList.remove('itemsSelected');
+      }
+      //Highlight 'Select All' button?
+      if (numSelected === panels.length) {
+        document.getElementById('btnSelectAllTopics').classList.add('selectedAll');
+      }
+      else {
+        document.getElementById('btnSelectAllTopics').classList.remove('selectedAll');
+      }
     }
   }
+  const addSelectVideoEvents = (selectedVideos) => {
+    const panels = document.getElementsByClassName('videoOptionsPanel');
+    const foo = selectVideoEvent(panels,selectedVideos);
+    for (let i = 0; i < selectedVideos.length; i++) {
+      selectedVideos[i].removeEventListener('click',foo);
+    }
+    for (let i = 0; i < selectedVideos.length; i++) {
+      selectedVideos[i].addEventListener('click', foo);
+    }
+  };
   const addSelectAllEvent = () => {
     document.getElementById('btnSelectAllTopics').addEventListener('click', (e) => {
       const selectVideoButtons = document.getElementsByClassName('btnSelectVideo');
@@ -575,6 +589,196 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
       }
     });
   }
+  const createVideoTile = (v) => {
+    const {id,title,url,thumbnail,description} = v;
+    const dashboardTopicVideoContainer = document.createEntireElement('div',['dashboardTopicVideoContainer'],`${id}Container`);
+
+    //Video Options Panel
+    const videoOptionsPanel = document.createEntireElement('div',['videoOptionsPanel'],null,[
+      ['p',[],null,[
+          ['button',['moveUp'],{id: `moveUp${id}`},null,'&#x25B2;'],
+        ]
+      ],
+      ['p',[],null,[
+          ['button',['btnSelectVideo'],{id:`${id}`}],
+        ]
+      ],
+      ['p',[],null,[
+          ['button',['moveDown'],{id: `moveDown${id}`},null,'&#x25BC;'],
+      ]
+      ],
+    ]);
+    dashboardTopicVideoContainer.append(videoOptionsPanel);
+
+    const videoThumbnailContainer = document.createEntireElement('div',['videoThumbnailContainer'],{id:`thumbnail${id}`,style:`background-image:url('${thumbnail}')`});
+    dashboardTopicVideoContainer.append(videoThumbnailContainer);
+
+    //Edit Form
+    const editVideoForm = document.createEntireElement('div',['editVideoForm','displayNone'],{id:`editVideoForm${id}`},[
+      ['form',['editForm'],{action:`/video/${USERNAME}/${TOPIC_URL}/${id}/edit`, method:'POST'},[
+        ['div',['firstRow'],null,[
+          ['input',null,{id:`editTitle${id}`,type:'text',name:'title',placeholder:`${title}`,value:`${title}`}],
+          ['div',['editVideoButtons'],null,[
+            ['button',['btnSaveEdit','icon'],{id:`btnSaveEdit${id}`}],
+            ['button',['btnCancelEdit','icon'],{id:`btnCancelEdit${id}`}]
+          ]]
+        ]],
+        ['textarea',null,{name:'description',id:`editDescription${id}`,maxlength:'1024'},null,description]
+      ]]
+    ]);
+    dashboardTopicVideoContainer.append(editVideoForm);
+
+    const displayVideoInfo = document.createEntireElement('div',['displayVideoInfo','displayFlex'],{id:`displayVideoInfo${id}`},[
+      ['div',['videoContentContainer'],null,[
+        ['div',['dashboardTopicVideoContainerFirstRow'],null,[
+          ['p',['dashboardVideoTitle'],{id:`vidTitle${id}`},[
+            ['a',null,{href:`/lib/${TOPIC_URL}/${url.substring(20)}`},null,`${title}`]
+          ]],
+          ['div',['btnEditDelete'],null,[
+            ['button',['btnVideoEdit'],{id:`btnVideoEdit${id}`},[
+              ['img',['icon'],{src:`/assets/svg/edit-dark.png`,alt:'edit'}],
+              ['span',null,null,null,'Edit Video']
+            ]],
+            ['form',['deleteVideoForm'],{action:`/video/${USERNAME}/${TOPIC_URL}/${id}/delete`,method:'POST'},[
+              ['button',['btnVideoDelete'],null,[
+                ['img',['icon'],{src:'/assets/svg/trashBlack.svg',alt:'delete'}]
+              ]]
+            ]]
+          ]]
+        ]],
+        ['div',['vidDescriptionContainer'],null,[
+          ['p',null,{id:`vidDescription${id}`},null,`${description}`]
+        ]]
+      ]]
+    ]);
+    dashboardTopicVideoContainer.append(displayVideoInfo);
+
+    return dashboardTopicVideoContainer;
+  }
+  const appendVideos = async (v) => {
+    const appendSwapVideoEvents = async (down,up) => {
+      const newDownEvent = async () => {
+        toggleBackdrop(true, '#FFF', '10%');
+        toggleModal(true, 'Swapping videos...');
+        try {
+          const currentVidId = up.getAttribute('id').substring(6);
+          const swapVidId = down.getAttribute('id').substring(8);
+          swapHighlight(currentVidId,swapVidId);
+
+          const result = await fetch(`/video/${USERNAME}/swapVideos`, {
+            method:'POST',
+            headers: {
+              'Content-Type':'application/json'
+            },
+            body: JSON.stringify({
+              currentVidId,
+              swapVidId,
+            })
+          });
+          const data = await result.json();
+          if (data == null) {
+            swapVideoInfo(currentVidId, swapVidId);
+          }
+        } catch(err) {
+          console.log();
+          flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
+        }
+        toggleBackdrop(false);
+        toggleModal(false);
+      }
+      const newUpEvent = async () => {
+        toggleBackdrop(true, '#FFF', '10%');
+        toggleModal(true, 'Swapping videos...');
+        try {
+          const currentVidId = down.getAttribute('id').substring(8);
+          const swapVidId = up.getAttribute('id').substring(6);
+          swapHighlight(currentVidId,swapVidId);
+
+          const result = await fetch(`/video/${USERNAME}/swapVideos`, {
+            method:'POST',
+            headers: {
+              'Content-Type':'application/json'
+            },
+            body: JSON.stringify({
+              currentVidId,
+              swapVidId,
+            })
+          });
+          const data = await result.json();
+          if (data == null) {
+            swapVideoInfo(currentVidId, swapVidId);
+          }
+        } catch(err) {
+          console.log(err.message);
+          flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
+        }
+        toggleBackdrop(false);
+        toggleModal(false);
+      }
+      down.addEventListener('click',newDownEvent);
+      up.addEventListener('click',newUpEvent);
+    }
+    const h2 = document.querySelector('#dashboardTopicVideosList > h2');
+    if (h2) {
+      document.querySelector('#dashboardTopicVideosList > h2').classList.add('displayNone');
+    }
+    const container = document.getElementById('dashboardTopicVideosList');
+    if (Array.isArray(v)) {
+      let tile;
+      for (let i = 0; i < v.length; i++) {
+        tile = createVideoTile(v[i]);
+        container.append(tile);
+      }
+    }
+    else {
+      const tile = createVideoTile(v);
+      const length = document.querySelectorAll('.dashboardTopicVideoContainer')?.length;
+      let prevLastDownButton;
+      if (length && length > 0) {
+        prevLastDownButton = document.querySelector('.dashboardVideosContainer .dashboardTopicVideoContainer:last-child .moveDown');
+        container.append(tile);
+        const newUpButton = document.querySelector('.dashboardVideosContainer .dashboardTopicVideoContainer:last-child .moveUp');
+        await appendSwapVideoEvents(prevLastDownButton,newUpButton);
+      }
+      else {
+        container.append(tile);
+      }
+    }
+    const selectVideoButtons = document.getElementsByClassName('btnSelectVideo');
+  }
+  const addVideo = async (e) => {
+    e.preventDefault();
+    document.querySelector('.newVideoFormContainer').classList.add('displayNone');
+    toggleBackdrop(true, '#fff', '10%');
+    toggleModal(true, 'Adding video(s). Please be patient.');
+    const form = new FormData(document.getElementById('newVideoForm'));
+
+    let body = {};
+    form.forEach((v,k) => {
+      body[k] = v;
+    });
+
+    const res = await fetch(`/video/${USERNAME}/${TOPIC_URL}/create`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify(body)
+    });
+    const data = await res.json();
+
+    toggleBackdrop(false);
+    toggleModal(false);
+    flashBanner(data.response,data.message,REFERENCE_NODE);
+
+    if (data.response === 'success') {
+      appendVideos(data.data);
+    }
+  }
+  const addVideoClickEvent = async () => {
+    const btnAdd = document.getElementById('btnAddVideo');
+    btnAdd.addEventListener('click',addVideo);
+  }
   const init = () => {
     document.querySelector('.backdrop').classList.toggle('displayNone');
     document.querySelector('.newVideoFormContainer').classList.add('displayNone');
@@ -594,9 +798,7 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
       addEditEvent(editVideoButtons[i], cancelEditVideoButtons[i]);
     }
 
-    const moveUpButtons = document.getElementsByClassName('moveUp');
-    const moveDownButtons = document.getElementsByClassName('moveDown');
-    addSwapVideoEvents(moveUpButtons, moveDownButtons);
+    addSwapVideoEvents();
 
     const selectVideoButtons = document.getElementsByClassName('btnSelectVideo');
     addSelectVideoEvents(selectVideoButtons);
@@ -608,6 +810,8 @@ const addSwapVideoEvents = async (upButtons, downButtons) => {
 
     topicImageEvent();
     addUpdateImageEvent();
+
+    addVideoClickEvent();
   };
   
   init();

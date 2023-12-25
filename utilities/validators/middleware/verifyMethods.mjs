@@ -1,6 +1,6 @@
 /**
  * The purpose of this file is to dynamically add 405 responses to unused methods
- * for each route. It also handles the OPTIONS method and returns usuable methods
+ * for each route. It also handles the OPTIONS method and returns usable methods
  * to the client for that route.
  * 
  * The OPTIONS method and methods that return 405 will also have the 'Allow'
@@ -30,12 +30,11 @@ const sendOptionsResponse = (methods,res) => {
  */
 const verifyMethods = (methods) => {
     return async (req,res,next) => {
+        const options = sendOptionsResponse(methods,res);
         if (req.method === 'OPTIONS') {
-            const options = sendOptionsResponse(methods,res);
             return res.status(200).send(options);
         }
         else {
-            const options = sendOptionsResponse(methods,res);
             return next(new AppError(405,`${req.method} method not allowed`));
         }
     }

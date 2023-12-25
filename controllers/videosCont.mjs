@@ -1,4 +1,6 @@
+import { ApiResponse } from "../utilities/ApiResponse.mjs";
 import {AppError} from "../utilities/AppError.mjs";
+import {paramsExist} from '../utilities/validators/paramsExist.mjs'
 import { getUser } from "../utilities/helpers/authHelpers.mjs";
 import { escapeHTML,unescapeSQL } from "../utilities/helpers/sanitizers.mjs";
 import { topicExists,enableHyphens } from "../utilities/helpers/topicHelpers.mjs";
@@ -18,74 +20,87 @@ import {
 } from "../utilities/helpers/videoHelpers.mjs";
 
 const createVideo = async (req, res, next) => {
-    const USERNAME = escapeHTML(req.params.username);
-    const videoUrl = escapeHTML(req.body.ytUrl);
-    const topicName = escapeHTML(req.params.topic);
-    const topicUrl = enableHyphens(topicName,true);
-    let isPlaylist = false;
-
-    const ytUrlTemplate = 'watch?v=';
-    const ytPlaylistTemplate = 'playlist?list=';
-    if (videoUrl.includes(ytUrlTemplate)) {
-        vidId = videoUrl.substring(videoUrl.indexOf(ytUrlTemplate) + ytUrlTemplate.length);
-    }
-    else if (videoUrl.includes(ytPlaylistTemplate)) {
-        vidId = videoUrl.substring(videoUrl.indexOf(ytPlaylistTemplate) + ytPlaylistTemplate.length);
-        isPlaylist = true;
-    }
-    else {
-        vidId = videoUrl;
-    }
+    const Response = new ApiResponse('error',500,'Something went wrong.');
+    let outputData = {};
     
-    if (!isPlaylist) {
-        let wait = await videoExistsInTopic(vidId, topicName);
-        if (wait) {
-            req.flash("error", "Video Already Exists in Topic");
-            res.redirect(`/user/${USERNAME}/dashboard/${topicUrl}`);
+    if (paramsExist([req.params.username,req.body.ytUrl,req.params.topic])) {
+        const USERNAME = escapeHTML(req.params.username);
+        const videoUrl = escapeHTML(req.body.ytUrl);
+        const topicName = escapeHTML(req.params.topic);
+        const topicNameNoDash = enableHyphens(topicName,false);
+        let vidId;
+        let isPlaylist = false;
+
+        const ytUrlTemplate = 'watch?v=';
+        const ytPlaylistTemplate = 'playlist?list=';
+        if (videoUrl.includes(ytUrlTemplate)) {
+            vidId = videoUrl.substring(videoUrl.indexOf(ytUrlTemplate) + ytUrlTemplate.length);
         }
-    }
-
-    let exists = await topicExists(topicName);
-
-    if (exists instanceof AppError) return next(exists);
-    else if (exists === 0) {
-        req.flash("error", "Topic Doesn't Exists");
-        res.redirect(`/user/${USERNAME}/dashboard`);
-    } else {
-        if (!isPlaylist) {
-            let video = await getVideoInfo(vidId);
-            if (video instanceof AppError) return next(video);
-            
-            let error = await insertVideo(video, topicName, USERNAME);
-            if (error instanceof AppError) return next(error);
-            
-            req.flash('success', "Video Added");
-            res.redirect(`/user/${USERNAME}/dashboard/${topicUrl}`);
+        else if (videoUrl.includes(ytPlaylistTemplate)) {
+            vidId = videoUrl.substring(videoUrl.indexOf(ytPlaylistTemplate) + ytPlaylistTemplate.length);
+            isPlaylist = true;
         }
         else {
-            let playlistInfo = await getPlaylistInfo(vidId);
-            if (playlistInfo instanceof AppError) return next(playlistInfo);
-
-            let result = await getPlaylistVideos(playlistInfo);
-            if (result instanceof AppError) return next(result);
-            
-            let error = await insertManyVideos(result, topicName, USERNAME);
-            if (error instanceof AppError) return next(error);
-
-            let numOfVidsRequested = error.info.substring(error.info.indexOf('Records:') + 9, error.info.indexOf('Duplicates') - 2);
-            let numOfVidsAdded = error.affectedRows;
-            let numOfDuplicates = parseInt(numOfVidsRequested) - numOfVidsAdded;
-            if (numOfVidsAdded === 1) {
-                req.flash('success', `${numOfVidsAdded} video added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`);
+            vidId = videoUrl;
+        }
+        if (!isPlaylist) {
+            let wait = await videoExistsInTopic(vidId, topicNameNoDash);
+            if (wait) {
+                Response.setApiResponse('error',422,'Video Already Exists in Topic');
             }
             else {
-                req.flash('success', `${numOfVidsAdded} videos added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`);
+                let exists = await topicExists(topicNameNoDash);
+
+                if (exists instanceof AppError) return next(exists);
+                else if (exists === 0) {
+                    Response.setApiResponse('error',400,'Topic Doesn\'t Exist');
+                } 
+                else {
+                    if (!isPlaylist) {
+                        try {
+                            let video = await getVideoInfo(vidId);
+                            if (video instanceof AppError) throw new AppError(video.status,video.message);
+                            
+                            let id = await insertVideo(video, topicNameNoDash, USERNAME);
+                            if (id instanceof AppError) throw new AppError(id.status,id.message);
+                            
+                            outputData = {...video, id};
+                            Response.setApiResponse('success',201,'Video Added','/',outputData);
+                        }
+                        catch (err) {
+                            Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error Inserting Video';
+                        }
+                    }
+                    else {
+                        let playlistInfo = await getPlaylistInfo(vidId);
+                        if (playlistInfo instanceof AppError) return next(playlistInfo);
+
+                        let result = await getPlaylistVideos(playlistInfo);
+                        if (result instanceof AppError) return next(result);
+                        
+                        let error = await insertManyVideos(result, topicName, USERNAME);
+                        if (error instanceof AppError) return next(error);
+
+                        outputData = error;
+
+                        let numOfVidsRequested = error.info.substring(error.info.indexOf('Records:') + 9, error.info.indexOf('Duplicates') - 2);
+                        let numOfVidsAdded = error.affectedRows;
+                        let numOfDuplicates = parseInt(numOfVidsRequested) - numOfVidsAdded;
+                        if (numOfVidsAdded === 1) {
+                            Response.setApiResponse('success',201,`${numOfVidsAdded} video added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`,'/',outputData);
+                        }
+                        else {
+                            Response.setApiResponse('success',201,`${numOfVidsAdded} videos added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`,'/',outputData);
+                        }
+                    }
+                }
             }
-            res.redirect(`/user/${USERNAME}/dashboard/${topicUrl}`);
         }
-        
     }
-    
+    else {
+        Response.setApiResponse('error',422,'Invalid Arguments','/');
+    }
+    res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const editVideo = async (req,res,next) => {
     const title = escapeHTML(req.body.title);

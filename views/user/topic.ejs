@@ -25,7 +25,7 @@
   </div>
   <div class="newVideoFormContainer">
     <h2 class="createTopicHeader">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add Video<button class="btnCancelNewTopic">&#10006;</button></h2>
-    <form id="newVideoForm" action="/video/<%= user.username %>/<%= topicName %>/create" method="POST">
+    <form id="newVideoForm">
       <input
         type="text"
         name="ytUrl"
@@ -35,7 +35,7 @@
         required
       >
       <div class="newTopicAddBtn">
-        <button>Add Video(s)</button>
+        <button id="btnAddVideo">Add Video(s)</button>
       </div>
     </form>
   </div>
@@ -128,7 +128,7 @@
         </div>
         <% }%> 
         <%} else {%>
-          <div class="dashboardTopicVideosList">
+          <div id="dashboardTopicVideosList" class="dashboardTopicVideosList">
             <h2>No Videos in Topic</h2>
           </div>
       <% } %>
