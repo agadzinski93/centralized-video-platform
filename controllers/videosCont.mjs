@@ -31,13 +31,13 @@ const createVideo = async (req, res, next) => {
         let vidId;
         let isPlaylist = false;
 
-        const ytUrlTemplate = 'watch?v=';
-        const ytPlaylistTemplate = 'playlist?list=';
-        if (videoUrl.includes(ytUrlTemplate)) {
-            vidId = videoUrl.substring(videoUrl.indexOf(ytUrlTemplate) + ytUrlTemplate.length);
+        const YT_URL_TEMPLATE = 'watch?v=';
+        const YT_PLAYLIST_TEMPLATE = 'playlist?list=';
+        if (videoUrl.includes(YT_URL_TEMPLATE)) {
+            vidId = videoUrl.substring(videoUrl.indexOf(YT_URL_TEMPLATE) + YT_URL_TEMPLATE.length);
         }
-        else if (videoUrl.includes(ytPlaylistTemplate)) {
-            vidId = videoUrl.substring(videoUrl.indexOf(ytPlaylistTemplate) + ytPlaylistTemplate.length);
+        else if (videoUrl.includes(YT_PLAYLIST_TEMPLATE)) {
+            vidId = videoUrl.substring(videoUrl.indexOf(YT_PLAYLIST_TEMPLATE) + YT_PLAYLIST_TEMPLATE.length);
             isPlaylist = true;
         }
         else {
@@ -82,29 +82,14 @@ const createVideo = async (req, res, next) => {
                 if (result instanceof AppError) return next(result);
 
                 let numOfVidsRequested = result.info.substring(result.info.indexOf('Records:') + 9, result.info.indexOf('Duplicates') - 2);
-                let numOfVidsAdded = result.affectedRows;
+                let {affectedRows : numOfVidsAdded, addedVideos} = result;
                 let numOfDuplicates = parseInt(numOfVidsRequested) - numOfVidsAdded;
-
-                let firstId = result.firstId;
-
-                let outputVideos = [];
-                let urlList = [];
-                for (let i = 0; i < numOfVidsRequested; i++) {
-                    if (!urlList.includes(videos[i].resourceId.videoId)) {
-                        videos[i]['id'] = firstId;
-                        firstId++;
-                        videos[i]['url'] = videos[i].resourceId.videoId;
-                        videos[i]['thumbnail'] = videos[i].thumbnails.medium.url;
-                        urlList.push(videos[i].resourceId.videoId);
-                        outputVideos.push(videos[i]);
-                    }
-                }
                 
                 if (numOfVidsAdded === 1) {
-                    Response.setApiResponse('success',201,`${numOfVidsAdded} video added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`,'/',outputVideos);
+                    Response.setApiResponse('success',201,`${numOfVidsAdded} video added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`,'/',addedVideos);
                 }
                 else {
-                    Response.setApiResponse('success',201,`${numOfVidsAdded} videos added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`,'/',outputVideos);
+                    Response.setApiResponse('success',201,`${numOfVidsAdded} videos added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`,'/',addedVideos);
                 }
             }
         }

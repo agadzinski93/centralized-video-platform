@@ -299,10 +299,12 @@ import {AppError} from "../AppError.mjs";
       firstId = firstId[0][0].firstId;
       
       let data = result.map(o => Object.assign({},o))
+      let addedVideos = await db.query(`SELECT * FROM videos WHERE id BETWEEN ${firstId} AND ${firstId + data[0].affectedRows - 1};`);
+      
       return {
         affectedRows: data[0].affectedRows,
         info: data[0].info,
-        firstId
+        addedVideos:addedVideos[0]
       };
     } catch(err) {
       console.log(err.message);
