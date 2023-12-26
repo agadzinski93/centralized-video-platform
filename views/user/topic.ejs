@@ -109,15 +109,9 @@
                     <img class="icon" src="/assets/svg/edit-dark.png" alt="edit">
                     <span>Edit Video</span>
                   </button>
-                  <form
-                    class="deleteVideoForm"
-                    action="/video/<%= user.username %>/<%=video.topicUrl%>/<%=video.id%>/delete"
-                    method="POST"
-                  >
-                    <button class="btnVideoDelete">
-                      <img class="icon" src="/assets/svg/trashBlack.svg" alt="delete">
-                    </button>
-                  </form>
+                  <button class="btnVideoDelete">
+                    <img class="icon" src="/assets/svg/trashBlack.svg" alt="delete">
+                  </button>
                 </div>
               </div>
               <div class="vidDescriptionContainer">

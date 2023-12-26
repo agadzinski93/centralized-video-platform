@@ -176,7 +176,7 @@ String.prototype.replaceFromIndex = function(search, replace, from) {
     return this;
 }
 
-document.createEntireElement = function(element,classes = [],attributes = null, children = null, text = null){
+document.createElementTree = function(element,classes = [],attributes = null, children = null, text = null){
     const el = document.createElement(element);
     if (Array.isArray(classes)) {
         for (let i = 0; i < classes.length; i++) {
@@ -193,7 +193,7 @@ document.createEntireElement = function(element,classes = [],attributes = null, 
     }
     if (Array.isArray(children) && children.length > 0) {
         for (let i = 0; i < children.length; i++) {
-            el.append(document.createEntireElement(...children[i]));
+            el.append(document.createElementTree(...children[i]));
         }
     }
     return el;

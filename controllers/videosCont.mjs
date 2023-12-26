@@ -43,56 +43,68 @@ const createVideo = async (req, res, next) => {
         else {
             vidId = videoUrl;
         }
-        if (!isPlaylist) {
-            let wait = await videoExistsInTopic(vidId, topicNameNoDash);
-            if (wait) {
-                Response.setApiResponse('error',422,'Video Already Exists in Topic');
+        let exists = await topicExists(topicNameNoDash);
+
+        if (exists instanceof AppError) return next(exists);
+        else if (exists === 0) {
+            Response.setApiResponse('error',400,'Topic Doesn\'t Exist');
+        } 
+        else {
+            if (!isPlaylist) {
+                let wait = await videoExistsInTopic(vidId, topicNameNoDash);
+                if (wait) {
+                    Response.setApiResponse('error',422,'Video Already Exists in Topic');
+                }
+                else {
+                    try {
+                        let video = await getVideoInfo(vidId);
+                        if (video instanceof AppError) throw new AppError(video.status,video.message);
+                        
+                        let id = await insertVideo(video, topicNameNoDash, USERNAME);
+                        if (id instanceof AppError) throw new AppError(id.status,id.message);
+                        
+                        outputData = {...video, id};
+                        Response.setApiResponse('success',201,'Video Added','/',outputData);
+                    }
+                    catch (err) {
+                        Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error Inserting Video';
+                    }
+                }
             }
             else {
-                let exists = await topicExists(topicNameNoDash);
+                let playlistInfo = await getPlaylistInfo(vidId);
+                if (playlistInfo instanceof AppError) return next(playlistInfo);
 
-                if (exists instanceof AppError) return next(exists);
-                else if (exists === 0) {
-                    Response.setApiResponse('error',400,'Topic Doesn\'t Exist');
-                } 
+                let videos = await getPlaylistVideos(playlistInfo);
+                if (videos instanceof AppError) return next(videos);
+                
+                let result = await insertManyVideos(videos, topicNameNoDash, USERNAME);
+                if (result instanceof AppError) return next(result);
+
+                let numOfVidsRequested = result.info.substring(result.info.indexOf('Records:') + 9, result.info.indexOf('Duplicates') - 2);
+                let numOfVidsAdded = result.affectedRows;
+                let numOfDuplicates = parseInt(numOfVidsRequested) - numOfVidsAdded;
+
+                let firstId = result.firstId;
+
+                let outputVideos = [];
+                let urlList = [];
+                for (let i = 0; i < numOfVidsRequested; i++) {
+                    if (!urlList.includes(videos[i].resourceId.videoId)) {
+                        videos[i]['id'] = firstId;
+                        firstId++;
+                        videos[i]['url'] = videos[i].resourceId.videoId;
+                        videos[i]['thumbnail'] = videos[i].thumbnails.medium.url;
+                        urlList.push(videos[i].resourceId.videoId);
+                        outputVideos.push(videos[i]);
+                    }
+                }
+                
+                if (numOfVidsAdded === 1) {
+                    Response.setApiResponse('success',201,`${numOfVidsAdded} video added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`,'/',outputVideos);
+                }
                 else {
-                    if (!isPlaylist) {
-                        try {
-                            let video = await getVideoInfo(vidId);
-                            if (video instanceof AppError) throw new AppError(video.status,video.message);
-                            
-                            let id = await insertVideo(video, topicNameNoDash, USERNAME);
-                            if (id instanceof AppError) throw new AppError(id.status,id.message);
-                            
-                            outputData = {...video, id};
-                            Response.setApiResponse('success',201,'Video Added','/',outputData);
-                        }
-                        catch (err) {
-                            Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error Inserting Video';
-                        }
-                    }
-                    else {
-                        let playlistInfo = await getPlaylistInfo(vidId);
-                        if (playlistInfo instanceof AppError) return next(playlistInfo);
-
-                        let result = await getPlaylistVideos(playlistInfo);
-                        if (result instanceof AppError) return next(result);
-                        
-                        let error = await insertManyVideos(result, topicName, USERNAME);
-                        if (error instanceof AppError) return next(error);
-
-                        outputData = error;
-
-                        let numOfVidsRequested = error.info.substring(error.info.indexOf('Records:') + 9, error.info.indexOf('Duplicates') - 2);
-                        let numOfVidsAdded = error.affectedRows;
-                        let numOfDuplicates = parseInt(numOfVidsRequested) - numOfVidsAdded;
-                        if (numOfVidsAdded === 1) {
-                            Response.setApiResponse('success',201,`${numOfVidsAdded} video added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`,'/',outputData);
-                        }
-                        else {
-                            Response.setApiResponse('success',201,`${numOfVidsAdded} videos added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`,'/',outputData);
-                        }
-                    }
+                    Response.setApiResponse('success',201,`${numOfVidsAdded} videos added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`,'/',outputVideos);
                 }
             }
         }
@@ -124,19 +136,30 @@ const editVideo = async (req,res,next) => {
     }
 }
 const swapVideos = async (req, res, next) => {
-    const currentVidId = escapeHTML(req.body.currentVidId);
-    const swapVidId = escapeHTML(req.body.swapVidId);
+    const Response = new ApiResponse('error',500,'Something went wrong.','/');
+    if (paramsExist([req.body.currentVidId,req.body.swapVidId])) {
+        const currentVidId = escapeHTML(req.body.currentVidId);
+        const swapVidId = escapeHTML(req.body.swapVidId);
 
-    if (await videoExists(currentVidId) && await videoExists(swapVidId)) {
-        let result = await swapVideoRecords(currentVidId, swapVidId);
-
-        if (result instanceof AppError) return next(result);
-        
-        res.json(result);
+        if (await videoExists(currentVidId) && await videoExists(swapVidId)) {
+            let result;
+            try {
+                result = await swapVideoRecords(currentVidId, swapVidId);
+                if (result instanceof AppError) throw new AppError(result.status,result.message);
+            } catch(err) {
+                Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error swapping videos.';
+            }
+            Response.setApiResponse('success',200,'Successfully swapped videos.','/',result);
+        }
+        else {
+            Response.setStatus = 400;
+            Response.setMessage = 'Video Doesn\'t Exist';
+        }
     }
     else {
-        res.json({body:'Video Doesn\'t Exist'});
+        Response.setApiResponse('error',422,'Invalid Arguments','/');
     }
+    res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const refreshMetadata = async (req,res,next) => {
     const {videos} = req.body;
@@ -246,30 +269,51 @@ const refreshMetadata = async (req,res,next) => {
     }
 }
 const deleteVideo = async (req, res, next) => {
-    const id = escapeHTML(req.params.video);
-    const username = escapeHTML(req.params.username);
-    const topicName = escapeHTML(req.params.topic);
+    const Response = new ApiResponse('error',500,'Something went wrong.','/');
+    if (paramsExist([req.params.video,req.params.username,req.params.topic])) {
+        const id = escapeHTML(req.params.video);
+        const username = escapeHTML(req.params.username);
+        const topicName = escapeHTML(req.params.topic);
 
-    if (await videoExists(id)) {
-        let result = await removeVideo(id);
-
-        if (result instanceof AppError) return next(result);
-
-        req.flash('success', 'Video Deleted');
-        res.redirect(`/user/${username}/dashboard/${topicName}`);
+        if (await videoExists(id)) {
+            try {
+                let result = await removeVideo(id);
+                if (result instanceof AppError) throw new AppError(result.status,result.message);
+            } catch(err) {
+                Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error Removing Video';
+            }
+            
+            Response.setApiResponse('success',200,'Video Deleted','/');
+        }
+        else {
+            Response.setStatus = 400;
+            Response.setMessage = 'Video Doesn\'t Exist';
+        }
     }
     else {
-        req.flash('error', "Video Doesn't Exist");
-        res.redirect(`/user/${username}/dashboard/${topicName}`);
+        Response.setApiResponse('error',422,'Invalid Arguments','/');
     }
+    res.status(Response.getStatus).json(Response.getApiResponse());
+    
 }
 const deleteSelectedVideos = async (req, res, next) => {
-    const {videos} = req.body;
-    const result = await removeSelectedVideos(videos);
+    const Response = new ApiResponse('error',500,'Something went wrong.','/');
+    let result;
+    if (paramsExist([req.body.videos])) {
+        try {
+            const {videos} = req.body;
+            result = await removeSelectedVideos(videos);
+            if (result instanceof AppError) throw new AppError(result.status,result.message);
 
-    if (result instanceof AppError) return next(result);
-
-    res.json(result);
+            Response.setApiResponse('success',200,'Successfully deleted videos.','/',result);
+        } catch(err) {
+            Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error Removing Videos';
+        }
+        
+    } else {
+        Response.setApiResponse('error',422,'Invalid Arguments','/');
+    }
+    res.status(Response.getStatus).json(Response.getApiResponse());
 }
 export {
     createVideo,

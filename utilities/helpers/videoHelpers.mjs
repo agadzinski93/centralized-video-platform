@@ -292,15 +292,20 @@ import {AppError} from "../AppError.mjs";
           values += `('${videos[i].title}', 'youtube.com/watch?v=${videos[i].resourceId.videoId}', '${videos[i].description}', '5', '${videos[i].thumbnails.medium.url}', '${topicName}', '${username}'), `;
         }
       }
-      let result = await db.execute(`INSERT IGNORE INTO videos (title, url, description, views, thumbnail, topic, username) 
-            VALUES ${values}`);
+      let result = await db.query(`INSERT IGNORE INTO videos (title, url, description, views, thumbnail, topic, username) 
+            VALUES ${values};`);
 
+      let firstId = await db.query('SELECT LAST_INSERT_ID() As firstId;');
+      firstId = firstId[0][0].firstId;
+      
       let data = result.map(o => Object.assign({},o))
       return {
         affectedRows: data[0].affectedRows,
-        info: data[0].info
+        info: data[0].info,
+        firstId
       };
     } catch(err) {
+      console.log(err.message);
       return new AppError(500, `Error Adding Videos: ${err.message}`);
     }
   }

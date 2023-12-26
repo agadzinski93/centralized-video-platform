@@ -25,8 +25,10 @@ This is a long-term project that will be ongoing.
 ## Database Setup
 1. Open your RDBMS software (e.g. MySQL Workbench/phpMyAdmin)
 2. Open the script found in `utilities/create-db.sql`
-3. (Optional) In the first 3 lines of the SQL script, you may rename the database as you see fit.
+3. (Optional) In the first 3 lines of the SQL script, you may rename the database as you see fit
 4. Run the script
+5. Set the system variable `innodb_autoinc_lock_mode = 1`
+6. For #5 to take effect, restart the MySQL service in `services.msc` in Windows or using `systemd` in Linux
 
 ## Additional Setup
 1. To satisfy the environemnt variables below, you will need to create a Cloudinary account and get an account name, API key, and secret.

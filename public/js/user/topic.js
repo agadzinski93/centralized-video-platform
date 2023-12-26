@@ -48,15 +48,6 @@ const toggleNewTopicForm = () => {
       toggleModal(true, 'Adding video(s). Please be patient.');
     });
   }
-  const addDeleteVideoSubmitEvents = () => {
-    let deleteVideoButtons = document.getElementsByClassName('deleteVideoForm');
-    for (let i = 0; i < deleteVideoButtons.length; i++) {
-      deleteVideoButtons[i].addEventListener('submit', () => {
-        toggleBackdrop(true, '#fff', '10%');
-        toggleModal(true, 'Deleting video. Please be patient.');
-      });
-    }
-  }
   const addEditEvent = (btn, btnCancelEdit) => {
     const vidId = btn.getAttribute('id').substring(12);
     
@@ -130,11 +121,11 @@ const toggleNewTopicForm = () => {
     const swapLink = document.querySelector(`#vidTitle${swap} > a`);
     currentLink.textContent = document.getElementById(`vidTitle${swap}`).textContent;
     swapLink.textContent = currentTitle;
-    console.log(5);
+
     const currentVidDescription = document.getElementById(`vidDescription${current}`).textContent;
     document.getElementById(`vidDescription${current}`).textContent = document.getElementById(`vidDescription${swap}`).textContent;
     document.getElementById(`vidDescription${swap}`).textContent = currentVidDescription;
-    console.log(6);
+    
     const linkHolder = currentLink.getAttribute('href');
     currentLink.setAttribute('href',swapLink.getAttribute('href'));
     swapLink.setAttribute('href',linkHolder);
@@ -162,12 +153,11 @@ const addSwapVideoEvents = async () => {
           })
         });
         const data = await result.json();
-        if (data == null) {
+        if (data.data == null) {
           swapVideoInfo(currentVidId, swapVidId);
         }
       }
       catch (err) {
-        console.log(err.message);
         flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
       }
       toggleBackdrop(false);
@@ -193,7 +183,7 @@ const addSwapVideoEvents = async () => {
           
         });
         const data = await result.json();
-        if (data == null) {
+        if (data.data == null) {
           swapVideoInfo(currentVidId, swapVidId);
         }
         else {
@@ -223,7 +213,7 @@ const addSwapVideoEvents = async () => {
           })
         });
         const data = await result.json();
-        if (data == null) {
+        if (data.data == null) {
           swapVideoInfo(currentVidId, swapVidId);
         }
       } catch(err) {
@@ -251,7 +241,7 @@ const addSwapVideoEvents = async () => {
           })
         });
         const data = await result.json();
-        if (data == null) {
+        if (data.data == null) {
           swapVideoInfo(currentVidId, swapVidId);
         }
       } catch(err) {
@@ -296,81 +286,91 @@ const addSwapVideoEvents = async () => {
       itemsSelectedContainer.textContent = ``;
     }
   }
-  const selectVideoEvent = (panels,selectedVideos) => {
-    return function(e) {
-      let btnSelectVideoList = document.getElementsByClassName('btnSelectVideo');
-      if (e.shiftKey) {
-        let done = false;
-        let j = 0;
+  const selectVideoEvent = (e) => {
+    let btnSelectVideoList = document.getElementsByClassName('btnSelectVideo');
+    if (e.shiftKey) {
+      let done = false;
+      let j = 0;
+      do {
+        if (btnSelectVideoList[j] === e.target) {
+          done = true;
+          j--;
+        }
+        j++;
+      } while (!done && j < btnSelectVideoList.length);
+      done = false;
+
+      if (!e.target.classList.contains('btnSelectVideoSelected')) {
         do {
-          if (btnSelectVideoList[j] === e.target) {
-            done = true;
+          if (!btnSelectVideoList[j].classList.contains('btnSelectVideoSelected')) {
+            btnSelectVideoList[j].classList.add('btnSelectVideoSelected');
+            btnSelectVideoList[j].parentNode.parentNode.classList.add('videoOptionsPanelSelected');
             j--;
           }
-          j++;
-        } while (!done && j < btnSelectVideoList.length);
-        done = false;
+          else {
+            done = true;
+          }
+        } while(!done && j >= 0);
+      }
+      else {
+        do {
+          if (btnSelectVideoList[j].classList.contains('btnSelectVideoSelected')) {
+            btnSelectVideoList[j].classList.remove('btnSelectVideoSelected');
+            btnSelectVideoList[j].parentNode.parentNode.classList.remove('videoOptionsPanelSelected');
+            j--;
+          }
+          else {
+            done = true;
+          }
+        } while(!done && j >= 0);
+      }
+    }
+    else {
+      e.target.classList.toggle('btnSelectVideoSelected');
+      e.target.parentNode.parentNode.classList.toggle('videoOptionsPanelSelected');
+    }
+    const numSelected = document.querySelectorAll('.btnSelectVideoSelected').length;
 
-        if (!e.target.classList.contains('btnSelectVideoSelected')) {
-          do {
-            if (!selectedVideos[j].classList.contains('btnSelectVideoSelected')) {
-              selectedVideos[j].classList.add('btnSelectVideoSelected');
-              selectedVideos[j].parentNode.parentNode.classList.add('videoOptionsPanelSelected');
-              j--;
-            }
-            else {
-              done = true;
-            }
-          } while(!done && j >= 0);
-        }
-        else {
-          do {
-            if (selectedVideos[j].classList.contains('btnSelectVideoSelected')) {
-              selectedVideos[j].classList.remove('btnSelectVideoSelected');
-              selectedVideos[j].parentNode.parentNode.classList.remove('videoOptionsPanelSelected');
-              j--;
-            }
-            else {
-              done = true;
-            }
-          } while(!done && j >= 0);
-        }
-      }
-      else {
-        e.target.classList.toggle('btnSelectVideoSelected');
-        e.target.parentNode.parentNode.classList.toggle('videoOptionsPanelSelected');
-      }
-      const numSelected = document.querySelectorAll('.btnSelectVideoSelected').length;
-
-      //Highlight 'Delete Selected' button and show/hide 'items selected' panel
-      //Highlight 'Refresh Metadata' button
-      if (numSelected >= 1) {
-        document.getElementById('btnDeleteSelected').classList.add('deleteSelected');
-        toggleItemsSelected(true, numSelected);
-        document.getElementById('btnRefreshMetadata').classList.add('itemsSelected');
-      }
-      else {
-        document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
-        toggleItemsSelected(false, numSelected);
-        document.getElementById('btnRefreshMetadata').classList.remove('itemsSelected');
-      }
-      //Highlight 'Select All' button?
-      if (numSelected === panels.length) {
-        document.getElementById('btnSelectAllTopics').classList.add('selectedAll');
-      }
-      else {
-        document.getElementById('btnSelectAllTopics').classList.remove('selectedAll');
-      }
+    //Highlight 'Delete Selected' button and show/hide 'items selected' panel
+    //Highlight 'Refresh Metadata' button
+    if (numSelected >= 1) {
+      document.getElementById('btnDeleteSelected').classList.add('deleteSelected');
+      toggleItemsSelected(true, numSelected);
+      document.getElementById('btnRefreshMetadata').classList.add('itemsSelected');
+    }
+    else {
+      document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
+      toggleItemsSelected(false, numSelected);
+      document.getElementById('btnRefreshMetadata').classList.remove('itemsSelected');
+    }
+    //Highlight 'Select All' button?
+    if (numSelected === btnSelectVideoList.length) {
+      document.getElementById('btnSelectAllTopics').classList.add('selectedAll');
+    }
+    else {
+      document.getElementById('btnSelectAllTopics').classList.remove('selectedAll');
     }
   }
-  const addSelectVideoEvents = (selectedVideos) => {
-    const panels = document.getElementsByClassName('videoOptionsPanel');
-    const foo = selectVideoEvent(panels,selectedVideos);
-    for (let i = 0; i < selectedVideos.length; i++) {
-      selectedVideos[i].removeEventListener('click',foo);
-    }
-    for (let i = 0; i < selectedVideos.length; i++) {
-      selectedVideos[i].addEventListener('click', foo);
+  /**
+   * Add 'Select Video' highlight event for new or all videos
+   * @param {*} selectedVideos 
+   * @param {string} condition 'all': all videos upon initial page render, 'new': when a new video is added
+   */
+  const addSelectVideoEvents = (selectedVideos, condition) => {
+    let panels;
+    switch(condition) {
+      case 'all':
+        panels = document.getElementsByClassName('videoOptionsPanel');
+        break;
+      case 'new':
+        panels = Array();
+        panels.push(document.querySelector(`#dashboardTopicVideosList > .dashboardTopicVideoContainer:last-child .videoOptionsPanel`));
+      default:
+    };
+    if (panels) {
+      for (let i = 0; i < selectedVideos.length; i++) {
+        selectedVideos[i].addEventListener('click', selectVideoEvent);
+      }
     }
   };
   const addSelectAllEvent = () => {
@@ -428,7 +428,7 @@ const addSwapVideoEvents = async () => {
           });
           
           const data = await result.json();
-          if (data === null) {
+          if (data.data === null) {
             for (let i = 0; i < videoList.length; i++) {
               document.getElementById(`${videoList[i]}` + `Container`).remove();
             }
@@ -591,10 +591,10 @@ const addSwapVideoEvents = async () => {
   }
   const createVideoTile = (v) => {
     const {id,title,url,thumbnail,description} = v;
-    const dashboardTopicVideoContainer = document.createEntireElement('div',['dashboardTopicVideoContainer'],`${id}Container`);
+    const dashboardTopicVideoContainer = document.createElementTree('div',['dashboardTopicVideoContainer'],{id:`${id}Container`});
 
     //Video Options Panel
-    const videoOptionsPanel = document.createEntireElement('div',['videoOptionsPanel'],null,[
+    const videoOptionsPanel = document.createElementTree('div',['videoOptionsPanel'],null,[
       ['p',[],null,[
           ['button',['moveUp'],{id: `moveUp${id}`},null,'&#x25B2;'],
         ]
@@ -610,11 +610,11 @@ const addSwapVideoEvents = async () => {
     ]);
     dashboardTopicVideoContainer.append(videoOptionsPanel);
 
-    const videoThumbnailContainer = document.createEntireElement('div',['videoThumbnailContainer'],{id:`thumbnail${id}`,style:`background-image:url('${thumbnail}')`});
+    const videoThumbnailContainer = document.createElementTree('div',['videoThumbnailContainer'],{id:`thumbnail${id}`,style:`background-image:url('${thumbnail}')`});
     dashboardTopicVideoContainer.append(videoThumbnailContainer);
 
     //Edit Form
-    const editVideoForm = document.createEntireElement('div',['editVideoForm','displayNone'],{id:`editVideoForm${id}`},[
+    const editVideoForm = document.createElementTree('div',['editVideoForm','displayNone'],{id:`editVideoForm${id}`},[
       ['form',['editForm'],{action:`/video/${USERNAME}/${TOPIC_URL}/${id}/edit`, method:'POST'},[
         ['div',['firstRow'],null,[
           ['input',null,{id:`editTitle${id}`,type:'text',name:'title',placeholder:`${title}`,value:`${title}`}],
@@ -628,7 +628,7 @@ const addSwapVideoEvents = async () => {
     ]);
     dashboardTopicVideoContainer.append(editVideoForm);
 
-    const displayVideoInfo = document.createEntireElement('div',['displayVideoInfo','displayFlex'],{id:`displayVideoInfo${id}`},[
+    const displayVideoInfo = document.createElementTree('div',['displayVideoInfo','displayFlex'],{id:`displayVideoInfo${id}`},[
       ['div',['videoContentContainer'],null,[
         ['div',['dashboardTopicVideoContainerFirstRow'],null,[
           ['p',['dashboardVideoTitle'],{id:`vidTitle${id}`},[
@@ -639,10 +639,8 @@ const addSwapVideoEvents = async () => {
               ['img',['icon'],{src:`/assets/svg/edit-dark.png`,alt:'edit'}],
               ['span',null,null,null,'Edit Video']
             ]],
-            ['form',['deleteVideoForm'],{action:`/video/${USERNAME}/${TOPIC_URL}/${id}/delete`,method:'POST'},[
-              ['button',['btnVideoDelete'],null,[
-                ['img',['icon'],{src:'/assets/svg/trashBlack.svg',alt:'delete'}]
-              ]]
+            ['button',['btnVideoDelete'],null,[
+              ['img',['icon'],{src:'/assets/svg/trashBlack.svg',alt:'delete'}]
             ]]
           ]]
         ]],
@@ -656,7 +654,7 @@ const addSwapVideoEvents = async () => {
     return dashboardTopicVideoContainer;
   }
   const appendVideos = async (v) => {
-    const appendSwapVideoEvents = async (down,up) => {
+    const appendSwapVideoEvents = (down,up) => {
       const newDownEvent = async () => {
         toggleBackdrop(true, '#FFF', '10%');
         toggleModal(true, 'Swapping videos...');
@@ -676,11 +674,10 @@ const addSwapVideoEvents = async () => {
             })
           });
           const data = await result.json();
-          if (data == null) {
+          if (data.data == null) {
             swapVideoInfo(currentVidId, swapVidId);
           }
         } catch(err) {
-          console.log();
           flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
         }
         toggleBackdrop(false);
@@ -705,11 +702,10 @@ const addSwapVideoEvents = async () => {
             })
           });
           const data = await result.json();
-          if (data == null) {
+          if (data.data == null) {
             swapVideoInfo(currentVidId, swapVidId);
           }
         } catch(err) {
-          console.log(err.message);
           flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
         }
         toggleBackdrop(false);
@@ -718,33 +714,56 @@ const addSwapVideoEvents = async () => {
       down.addEventListener('click',newDownEvent);
       up.addEventListener('click',newUpEvent);
     }
+    const addDeleteVideoEvent = (el) => {
+      el.addEventListener('click',deleteVideoHandler);
+    }
     const h2 = document.querySelector('#dashboardTopicVideosList > h2');
     if (h2) {
-      document.querySelector('#dashboardTopicVideosList > h2').classList.add('displayNone');
+      document.querySelector('#dashboardTopicVideosList > h2').remove();
     }
     const container = document.getElementById('dashboardTopicVideosList');
     if (Array.isArray(v)) {
       let tile;
+      let list;
+      let length;
+      let prevLastDownButton;
+      let newUpButton;
+      let btnSelect = Array();
       for (let i = 0; i < v.length; i++) {
         tile = createVideoTile(v[i]);
         container.append(tile);
+        list = document.querySelectorAll('.dashboardTopicVideoContainer');
+        length = list?.length;
+        if (length && length > 1) {
+          prevLastDownButton = document.querySelector('.dashboardVideosContainer .dashboardTopicVideoContainer:nth-last-child(2) .moveDown');
+          newUpButton = document.querySelector('.dashboardVideosContainer .dashboardTopicVideoContainer:last-child .moveUp');
+          appendSwapVideoEvents(prevLastDownButton,newUpButton);
+        }
+        btnSelect.push(document.querySelector(`#dashboardTopicVideosList .dashboardTopicVideoContainer:last-child .btnSelectVideo`));
+        addSelectVideoEvents(btnSelect,'new');
+        btnSelect.pop();
+        addEditEvent(document.getElementById(`btnVideoEdit${v[i].id}`),document.getElementById(`btnCancelEdit${v[i].id}`));
+        addDeleteVideoEvent(document.querySelector(`#btnVideoEdit${v[i].id} + .btnVideoDelete`));
       }
     }
     else {
       const tile = createVideoTile(v);
-      const length = document.querySelectorAll('.dashboardTopicVideoContainer')?.length;
+      container.append(tile);
+      const list = document.querySelectorAll('.dashboardTopicVideoContainer');
+      const length = list?.length;
       let prevLastDownButton;
-      if (length && length > 0) {
-        prevLastDownButton = document.querySelector('.dashboardVideosContainer .dashboardTopicVideoContainer:last-child .moveDown');
-        container.append(tile);
+
+      if (length && length > 1) {
+        prevLastDownButton = document.querySelector('.dashboardVideosContainer .dashboardTopicVideoContainer:nth-last-child(2) .moveDown');
         const newUpButton = document.querySelector('.dashboardVideosContainer .dashboardTopicVideoContainer:last-child .moveUp');
-        await appendSwapVideoEvents(prevLastDownButton,newUpButton);
+        appendSwapVideoEvents(prevLastDownButton,newUpButton);
       }
-      else {
-        container.append(tile);
-      }
+      const btnSelect = Array();
+      btnSelect.push(document.querySelector(`#dashboardTopicVideosList .dashboardTopicVideoContainer:last-child .btnSelectVideo`));
+      addSelectVideoEvents(btnSelect,'new');
+      addEditEvent(document.getElementById(`btnVideoEdit${v.id}`),document.getElementById(`btnCancelEdit${v.id}`));
+      addDeleteVideoEvent(document.querySelector(`#btnVideoEdit${v.id} + .btnVideoDelete`));
     }
-    const selectVideoButtons = document.getElementsByClassName('btnSelectVideo');
   }
   const addVideo = async (e) => {
     e.preventDefault();
@@ -769,16 +788,40 @@ const addSwapVideoEvents = async () => {
 
     toggleBackdrop(false);
     toggleModal(false);
-    flashBanner(data.response,data.message,REFERENCE_NODE);
+    flashBanner(data.response,data.message, REFERENCE_NODE);
 
     if (data.response === 'success') {
       appendVideos(data.data);
     }
   }
-  const addVideoClickEvent = async () => {
+  const addVideoClickEvent = () => {
     const btnAdd = document.getElementById('btnAddVideo');
     btnAdd.addEventListener('click',addVideo);
   }
+
+  const deleteVideoHandler = async (e) => {
+    e.preventDefault();
+    toggleBackdrop(true, '#fff', '10%');
+    toggleModal(true, 'Adding video(s). Please be patient.');
+    const el = e.target.parentElement.parentElement.parentElement.parentElement.parentElement;
+    const id = el.getAttribute('id').substring(16);
+    const result = await fetch(`/video/${USERNAME}/${TOPIC_URL}/${id}/delete`,{
+      method:'POST'
+    });
+    const data = await result.json();
+    toggleBackdrop(false);
+    toggleModal(false);
+    el.parentElement.remove();
+    flashBanner(data.response,data.message, REFERENCE_NODE);
+  }
+
+  const addDeleteVideoEvents = () => {
+    const deleteButtons = document.querySelectorAll('.btnVideoDelete');
+    for (let i = 0; i < deleteButtons.length; i++) {
+      deleteButtons[i].addEventListener('click',deleteVideoHandler)
+    }
+  }
+
   const init = () => {
     document.querySelector('.backdrop').classList.toggle('displayNone');
     document.querySelector('.newVideoFormContainer').classList.add('displayNone');
@@ -800,11 +843,9 @@ const addSwapVideoEvents = async () => {
 
     addSwapVideoEvents();
 
-    const selectVideoButtons = document.getElementsByClassName('btnSelectVideo');
-    addSelectVideoEvents(selectVideoButtons);
+    addSelectVideoEvents(document.getElementsByClassName('btnSelectVideo'),'all');
     addSelectAllEvent();
 
-    addDeleteVideoSubmitEvents();
     addRemoveSelectedVideos();
     addRefreshMetadataEvent();
 
@@ -812,6 +853,7 @@ const addSwapVideoEvents = async () => {
     addUpdateImageEvent();
 
     addVideoClickEvent();
+    addDeleteVideoEvents();
   };
   
   init();
