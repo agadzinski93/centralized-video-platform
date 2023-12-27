@@ -69,7 +69,7 @@ const usernameMatch = async (loggedUsername, urlUsername) => {
 
     if (loggedUsername === userObj.username) return true;
     else {
-      return new AppError(400, "You Are Not Authorized to View This Page");
+      return new AppError(403, "You Are Not Authorized to View This Page");
     }
   } catch (err) {
     return new AppError(500, err.message);

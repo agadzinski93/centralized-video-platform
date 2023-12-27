@@ -3,11 +3,6 @@ import { paramsExist } from "./validators/paramsExist.mjs";
 import { escapeHTML } from "./helpers/sanitizers.mjs";
 import { usernameMatch } from "./helpers/authHelpers.mjs";
 
-const PATHS = [
-  '/:username/settings/updateProfilePic',
-  '/:username/settings/updateBanner'
-];
-
 const isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) return next();
 
@@ -16,8 +11,7 @@ const isLoggedIn = (req, res, next) => {
   res.redirect(`/auth/login`);
 }
 const isAuthor = async (req, res, next) => {
-  let exist = paramsExist(req.user?.username, req.params.username);
-  if (exist) {
+  if (paramsExist([req.user?.username, req.params.username])) {
     const loggedUsername = escapeHTML(req.user.username);
     const urlUsername = escapeHTML(req.params.username);
 
