@@ -1,8 +1,10 @@
 .env
 .npmrc
+.htaccess
 /assets
 /node_modules
 /public/assets
+/tmp
 
 # Compiled source #
 ###################
