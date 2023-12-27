@@ -16,20 +16,20 @@ router.route('/:username/:topic/create')
     .all(verifyMethods(['POST']));
 
 router.route('/:username/:topic/:video/edit')
-    .post(isLoggedIn,isAuthor,editVideo)
-    .all(verifyMethods(['POST']));
+    .put(isLoggedIn,isAuthor,editVideo)
+    .all(verifyMethods(['PUT']));
 
 router.route('/:username/swapVideos')
-    .post(isLoggedIn,isAuthor,swapVideos)
-    .all(verifyMethods(['POST']));
+    .put(isLoggedIn,isAuthor,swapVideos)
+    .all(verifyMethods(['PUT']));
 
 router.route('/:username/refreshMetadata')
     .put(isLoggedIn,isAuthor,refreshMetadata)
     .all(verifyMethods(['PUT']));
 
 router.route('/:username/:topic/:video/delete')
-    .post(isLoggedIn,isAuthor,deleteVideo)
-    .all(verifyMethods(['POST']));
+    .delete(isLoggedIn,isAuthor,deleteVideo)
+    .all(verifyMethods(['DELETE']));
 
 router.route('/:username/deleteSelected')
     .delete(isLoggedIn,isAuthor,deleteSelectedVideos)

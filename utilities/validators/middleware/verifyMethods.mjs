@@ -25,7 +25,7 @@ const sendOptionsResponse = (methods,res) => {
 
 /**
  * Verify that the requested HTTP method exists for path
- * @param {object} map - example {GET: {cont: controllerFunc, pre[]: middleware to run first}} 
+ * @param {string[]} methods - array of acceptable HTTP methods (do NOT include OPTIONS as it's generated automatically) 
  * @returns 
  */
 const verifyMethods = (methods) => {

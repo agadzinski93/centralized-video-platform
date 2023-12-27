@@ -48,31 +48,58 @@ const toggleNewTopicForm = () => {
       toggleModal(true, 'Adding video(s). Please be patient.');
     });
   }
-  const addEditEvent = (btn, btnCancelEdit) => {
-    const vidId = btn.getAttribute('id').substring(12);
-    
-    btn.addEventListener('click', () => {
-      document.getElementById(`editVideoForm${vidId}`).classList.toggle('displayFlex');
-      document.getElementById(`editVideoForm${vidId}`).classList.toggle('displayNone');
-      document.getElementById(`displayVideoInfo${vidId}`).classList.toggle('displayNone');
-      document.getElementById(`displayVideoInfo${vidId}`).classList.toggle('displayFlex');
-    });
-    btnCancelEdit.addEventListener('click', (e) => {
+  const updateVideoInfoAfterEdit = (vidId) => {
+    try {
+      const title = document.getElementById(`editTitle${vidId}`).value;
+      document.querySelector(`#vidTitle${vidId} > a`).textContent = title;
+      document.getElementById(`vidDescription${vidId}`).textContent = document.getElementById(`editDescription${vidId}`).value;
+      document.getElementById(`editTitle${vidId}`).setAttribute('placeholder',title);
+    } catch(err) {
+      console.error(`Error Updating Video Info: ${err.message}`);
+    }
+  }
+  const toggleEditVideoFormHandler = (vidId) => {
+    return function (e) {
       e.preventDefault();
       document.getElementById(`editVideoForm${vidId}`).classList.toggle('displayFlex');
       document.getElementById(`editVideoForm${vidId}`).classList.toggle('displayNone');
       document.getElementById(`displayVideoInfo${vidId}`).classList.toggle('displayNone');
       document.getElementById(`displayVideoInfo${vidId}`).classList.toggle('displayFlex');
-    });
-
-    //Add backdrop and modal message when submitting an edit
-    let editForms = document.getElementsByClassName('editForm');
-    for (let i = 0; i < editForms.length; i++) {
-      editForms[i].addEventListener('submit', () => {
-        toggleBackdrop(true, '#FFF', '90%');
-        toggleModal(true, 'Editing video...');
-      });
     }
+  }
+  const saveEditVideoHandler = async (e) => {
+    e.preventDefault();
+    const id = e.target.getAttribute('id').substring(11);
+    const form = new FormData(e.target.parentElement.parentElement.parentElement);
+    let input = {};
+    form.forEach((v, k)=>{
+      input[k] = v;
+    });
+    try {
+      const result = await fetch(`/video/${USERNAME}/${TOPIC_URL}/${id}/edit`,{
+        method:'PUT',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify(input)
+      });
+      const data = await result.json();
+      if (data.response === 'success') {
+        toggleEditVideoFormHandler(id)(e);
+        updateVideoInfoAfterEdit(id);
+      }
+      flashBanner(data.response,data.message,REFERENCE_NODE);
+    } catch(err) {
+      console.error(`Error Sending Form: ${err.message}`);
+    }
+  }
+  const addEditEvent = (btn, btnCancelEdit) => {
+    const vidId = btn.getAttribute('id').substring(12);
+    const foo = toggleEditVideoFormHandler(vidId);
+    
+    btn.addEventListener('click', foo);
+    btnCancelEdit.addEventListener('click', foo);
+    document.getElementById(`btnSaveEdit${vidId}`).addEventListener('click',saveEditVideoHandler);
   };
   /**
    * If either the current video or swap video is highlighted, switch the highlight
@@ -143,7 +170,7 @@ const addSwapVideoEvents = async () => {
         swapHighlight(currentVidId,swapVidId);
 
         const result = await fetch(`/video/${USERNAME}/swapVideos`, {
-          method:'POST',
+          method:'PUT',
           headers: {
             'Content-Type':'application/json'
           },
@@ -158,7 +185,7 @@ const addSwapVideoEvents = async () => {
         }
       }
       catch (err) {
-        flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
+        flashBanner(data.response, data.message, REFERENCE_NODE);
       }
       toggleBackdrop(false);
       toggleModal(false);
@@ -172,7 +199,7 @@ const addSwapVideoEvents = async () => {
         swapHighlight(currentVidId,swapVidId);
 
         const result = await fetch(`/video/${USERNAME}/swapVideos`, {
-          method:'POST',
+          method:'PUT',
           headers: {
             'Content-Type':'application/json'
           },
@@ -187,7 +214,7 @@ const addSwapVideoEvents = async () => {
           swapVideoInfo(currentVidId, swapVidId);
         }
         else {
-          flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
+          flashBanner(data.response, data.message, REFERENCE_NODE);
         }
       } catch(err) {
       }
@@ -203,7 +230,7 @@ const addSwapVideoEvents = async () => {
         swapHighlight(currentVidId,swapVidId);
 
         const result = await fetch(`/video/${USERNAME}/swapVideos`, {
-          method:'POST',
+          method:'PUT',
           headers: {
             'Content-Type':'application/json'
           },
@@ -217,7 +244,7 @@ const addSwapVideoEvents = async () => {
           swapVideoInfo(currentVidId, swapVidId);
         }
       } catch(err) {
-        flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
+        flashBanner(data.response, data.message, REFERENCE_NODE);
       }
       toggleBackdrop(false);
       toggleModal(false);
@@ -231,7 +258,7 @@ const addSwapVideoEvents = async () => {
         swapHighlight(currentVidId,swapVidId);
 
         const result = await fetch(`/video/${USERNAME}/swapVideos`, {
-          method:'POST',
+          method:'PUT',
           headers: {
             'Content-Type':'application/json'
           },
@@ -245,7 +272,7 @@ const addSwapVideoEvents = async () => {
           swapVideoInfo(currentVidId, swapVidId);
         }
       } catch(err) {
-        flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
+        flashBanner(data.response, data.message, REFERENCE_NODE);
       }
       toggleBackdrop(false);
       toggleModal(false);
@@ -444,13 +471,12 @@ const addSwapVideoEvents = async () => {
             }
             if (selectedVideosLength === totalVideos) {
               document.getElementById('btnSelectAllTopics').classList.remove('selectedAll');
-              let text = document.createElement('h2');
-              text.textContent = 'No Videos in Topic';
-              document.getElementById('dashboardTopicVideosList').append(text);
+              document.getElementById('dashboardTopicVideosList').append(document.createElementTree('h2',null,null,null,'No Videos in Topic'));
             }
           }
         } catch(err) {
-
+          console.error(`Error Deleting Selected Videos: ${err.message}`);
+          flashBanner('error','Error Deleting Selected Videos',REFERENCE_NODE);
         }
         toggleBackdrop(false);
         toggleModal(false);
@@ -480,25 +506,27 @@ const addSwapVideoEvents = async () => {
           });
 
           const data = await result.json();
+          console.log(data);
           if (data.status !== 'error') {
             for (let i = 0; i < videoList.length; i++) {
-              if (data.finalResult[i].title !== null) {
-                document.querySelector(`#vidTitle${videoList[i]} > a`).textContent = data.finalResult[i].title;
-                document.getElementById(`editTitle${videoList[i]}`).setAttribute('placeholder', data.finalResult[i].title);
-                document.getElementById(`editTitle${videoList[i]}`).setAttribute('value', data.finalResult[i].title);
+              if (data.data[i].title !== null) {
+                document.querySelector(`#vidTitle${videoList[i]} > a`).textContent = data.data[i].title;
+                document.getElementById(`editTitle${videoList[i]}`).setAttribute('placeholder', data.data[i].title);
+                document.getElementById(`editTitle${videoList[i]}`).setAttribute('value', data.data[i].title);
               }
-              if (data.finalResult[i].description !== null) {
-                document.getElementById(`vidDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,2047);
-                document.getElementById(`editDescription${videoList[i]}`).textContent = data.finalResult[i].description.substring(0,2047);
+              if (data.data[i].description !== null) {
+                document.getElementById(`vidDescription${videoList[i]}`).textContent = data.data[i].description.substring(0,2047);
+                document.getElementById(`editDescription${videoList[i]}`).textContent = data.data[i].description.substring(0,2047);
               }
-              if (data.finalResult[i].thumbnail !== null) {
-                document.getElementById(`thumbnail${videoList[i]}`).style.backgroundImage = `url('${data.finalResult[i].thumbnail}')`;
+              if (data.data[i].thumbnail !== null) {
+                document.getElementById(`thumbnail${videoList[i]}`).style.backgroundImage = `url('${data.data[i].thumbnail}')`;
               }
             }
-            flashBanner('success', `Sucessfully refreshed ${videoList.length} videos`, REFERENCE_NODE);
+            flashBanner(data.response, `Sucessfully refreshed ${videoList.length} videos`, REFERENCE_NODE);
           }
         } catch(err) {
-          flashBanner('error', `Error refreshing video(s)`, REFERENCE_NODE);
+          console.error(`Error Refreshing Metadata: ${err.message}`);
+          flashBanner('error', 'Error refreshing metadata', REFERENCE_NODE);
         }
         toggleBackdrop(false);
         toggleModal(false);
@@ -615,7 +643,7 @@ const addSwapVideoEvents = async () => {
 
     //Edit Form
     const editVideoForm = document.createElementTree('div',['editVideoForm','displayNone'],{id:`editVideoForm${id}`},[
-      ['form',['editForm'],{action:`/video/${USERNAME}/${TOPIC_URL}/${id}/edit`, method:'POST'},[
+      ['form',['editForm'],null,[
         ['div',['firstRow'],null,[
           ['input',null,{id:`editTitle${id}`,type:'text',name:'title',placeholder:`${title}`,value:`${title}`}],
           ['div',['editVideoButtons'],null,[
@@ -664,7 +692,7 @@ const addSwapVideoEvents = async () => {
           swapHighlight(currentVidId,swapVidId);
 
           const result = await fetch(`/video/${USERNAME}/swapVideos`, {
-            method:'POST',
+            method:'PUT',
             headers: {
               'Content-Type':'application/json'
             },
@@ -678,7 +706,7 @@ const addSwapVideoEvents = async () => {
             swapVideoInfo(currentVidId, swapVidId);
           }
         } catch(err) {
-          flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
+          flashBanner(data.response, data.message, REFERENCE_NODE);
         }
         toggleBackdrop(false);
         toggleModal(false);
@@ -692,7 +720,7 @@ const addSwapVideoEvents = async () => {
           swapHighlight(currentVidId,swapVidId);
 
           const result = await fetch(`/video/${USERNAME}/swapVideos`, {
-            method:'POST',
+            method:'PUT',
             headers: {
               'Content-Type':'application/json'
             },
@@ -706,7 +734,7 @@ const addSwapVideoEvents = async () => {
             swapVideoInfo(currentVidId, swapVidId);
           }
         } catch(err) {
-          flashBanner('error', 'Error swapping videos', REFERENCE_NODE);
+          flashBanner(data.response, data.message, REFERENCE_NODE);
         }
         toggleBackdrop(false);
         toggleModal(false);
@@ -806,12 +834,16 @@ const addSwapVideoEvents = async () => {
     const el = e.target.parentElement.parentElement.parentElement.parentElement.parentElement;
     const id = el.getAttribute('id').substring(16);
     const result = await fetch(`/video/${USERNAME}/${TOPIC_URL}/${id}/delete`,{
-      method:'POST'
+      method:'DELETE'
     });
     const data = await result.json();
+
     toggleBackdrop(false);
     toggleModal(false);
     el.parentElement.remove();
+    if (document.getElementsByClassName('dashboardTopicVideoContainer').length === 0) {
+      document.getElementById('dashboardTopicVideosList').append(document.createElementTree('h2',null,null,null,'No Videos in Topic'));
+    }
     flashBanner(data.response,data.message, REFERENCE_NODE);
   }
 

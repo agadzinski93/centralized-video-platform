@@ -1,6 +1,6 @@
 <div class="topicContainer">
     <%- include("../partials/navbar.ejs") %>
-    <div id="flashReference" class="videoPageContainer">
+    <div class="videoPageContainer">
       <div id="main" class="mainVideoContainer">
         <div class="mainVideoPlayerContainer">
           <%if (timestamp === null) {%>
@@ -9,7 +9,7 @@
             <iframe src="https://www.youtube.com/embed/<%=video.videoId%>?start=<%=timestamp%>" title="YouTube video player" style="border:0px" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           <%}%>
         </div>
-        <p class="mainVideoTitle"><%=video.title%></p>
+        <p id="flashReference" class="mainVideoTitle"><%=video.title%></p>
         <div class="authorInfo">
           <div class="authorAvatar" style="background-image:url('<%=video.pic_url%>')"></div>
           <div class="authorDetails">

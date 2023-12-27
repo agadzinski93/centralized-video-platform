@@ -1,3 +1,4 @@
+import { ApiResponse } from "../utilities/ApiResponse.mjs";
 import {AppError} from "../utilities/AppError.mjs";
 import { paramsExist } from "../utilities/validators/paramsExist.mjs";
 import { escapeHTML } from "../utilities/helpers/sanitizers.mjs";
@@ -7,49 +8,53 @@ import {
 } from '../utilities/helpers/subscribeHelpers.mjs'
 
 const subscribe = async(req,res)=>{
+    const Response = new ApiResponse('error',500,'Something went wrong.','/');
+    if (paramsExist([req.body.user_id,req.body.author_id])) {
         let result;
-        let exist = paramsExist([req.body.user_id,req.body.author_id]);
-        if (exist) {
-            const userId = escapeHTML(req.body.user_id.toString());
-            const authorId = escapeHTML(req.body.author_id.toString());
-            if (userId !== authorId) {
-                result = await subscribeUser(userId,authorId, res);
-                if (result instanceof AppError) {
-                    result = {response:'error',message:'Error: Unable to Subscribe. Try again.'};
-                }
-                else {
-                    result = {response:'success',message:'Successfully subscribed!'};
-                }
+        
+        const userId = escapeHTML(req.body.user_id.toString());
+        const authorId = escapeHTML(req.body.author_id.toString());
+        if (userId !== authorId) {
+            result = await subscribeUser(userId,authorId, res);
+            if (result instanceof AppError) {
+                Response.setMessage = 'Unable to subscribe. Try again.';
             }
             else {
-                result = {response:'error',message:'Error: Cannot subscribe to yourself.'};
+                Response.setApiResponse('success',201,'Successfully subscribed','/');
             }
         }
         else {
-            result = {response:'error',message:'Error: Arguments not provided.'};
+            Response.setStatus = 400;
+            Response.setMessage = 'Cannot subscribe to yourself.';
         }
-        res.json(result);
     }
+    else {
+        Response.setApiResponse('error',422,'Invalid Arguments.','/');
+    }
+    res.status(Response.getStatus).json(Response.getApiResponse()); 
+}
 
 const unsubscribe = async(req,res)=>{
+    const Response = new ApiResponse('error',500,'Something went wrong.','/');
+    if (paramsExist([req.body.user_id,req.body.author_id])) {
         let result;
-        let exist = paramsExist([req.body.user_id,req.body.author_id]);
-        if (exist) {
-            const userId = escapeHTML(req.body.user_id.toString());
-            const authorId = escapeHTML(req.body.author_id.toString());
-            result = await unsubscribeUser(userId,authorId);
-            if (result instanceof AppError) {
-                result = {response:'error',message:'Error: Unable to Unsubscribe. Try again.'};
-            }
-            else {
-                result = {response:'success',message:'Successfully unsubscribed!'};
-            }
+       
+        const userId = escapeHTML(req.body.user_id.toString());
+        const authorId = escapeHTML(req.body.author_id.toString());
+        result = await unsubscribeUser(userId,authorId);
+        if (result instanceof AppError) {
+            Response.setMessage = 'Unable to unsubscribe. Try again.';
         }
         else {
-            result = {response:'error',message:'Error: Arguments not provided.'};
+            Response.setApiResponse('success',200,'Successfully unsubscribed','/');
         }
-        res.json(result);
     }
+    else {
+        Response.setApiResponse('error',422,'Invalid Arguments.','/');
+    }
+    res.status(Response.getStatus).json(Response.getApiResponse()); 
+        
+}
     
 
 export {subscribe,unsubscribe};

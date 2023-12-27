@@ -53,7 +53,7 @@ const createVideo = async (req, res, next) => {
             if (!isPlaylist) {
                 let wait = await videoExistsInTopic(vidId, topicNameNoDash);
                 if (wait) {
-                    Response.setApiResponse('error',422,'Video Already Exists in Topic');
+                    Response.setApiResponse('error',409,'Video Already Exists in Topic');
                 }
                 else {
                     try {
@@ -100,25 +100,33 @@ const createVideo = async (req, res, next) => {
     res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const editVideo = async (req,res,next) => {
-    const title = escapeHTML(req.body.title);
-    let description = escapeHTML(req.body.description);
-    const id = req.params.video;
-    const topicName = escapeHTML(req.params.topic);
+    const Response = new ApiResponse('error',500,'Something went wrong.');
+    if (paramsExist([req.body.title,req.body.description,req.params.topic])) {
+        const title = escapeHTML(req.body.title);
+        let description = escapeHTML(req.body.description);
+        const id = req.params.video;
 
-    if (description.length > 2048) description = description.substring(0,2047);
+        if (description.length > 2048) description = description.substring(0,2047);
 
-    if (await videoExists(id)) {
-        let result = await modifyVideo(id, title, description, null, false);
-
-        if (result instanceof AppError) return next(result);
-
-        req.flash('success', 'Video Updated');
-        res.redirect(`/user/${req.params.username}/dashboard/${topicName}`);
+        try {
+            if (await videoExists(id)) {
+                let result = await modifyVideo(id, title, description, null, false);
+                if (result instanceof AppError) return next(result);
+    
+                Response.setApiResponse('success',200,'Video Updated','/');
+            }
+            else {
+                Response.setStatus = 400;
+                Response.setMessage = 'Video Doesn\'t Exist.';
+            }
+        } catch (err) {
+            Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error Editing Video';
+        }
     }
     else {
-        req.flash('error', "Video Doesn't Exist");
-        res.redirect(`/user/${req.params.username}/dashboard/${topicName}`);
+        Response.setApiResponse('error',422,'Invalid Arguments','/');
     }
+    res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const swapVideos = async (req, res, next) => {
     const Response = new ApiResponse('error',500,'Something went wrong.','/');
@@ -147,111 +155,116 @@ const swapVideos = async (req, res, next) => {
     res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const refreshMetadata = async (req,res,next) => {
-    const {videos} = req.body;
-    let vidInfo,
-        vidInfos,
-        result,
-        finalResult = new Array();
+    const Response = new ApiResponse('error',500,'Something went wrong.','/');
+    if (paramsExist([req.body.videos,req.user.username])) {
+        const {videos} = req.body;
+        let vidInfo,
+            vidInfos,
+            result,
+            finalResult = new Array();
 
-    const {settingRefreshTitle,
-        settingRefreshDescription,
-        settingRefreshThumbnail} = await getUser(req.user.username);
+        const {settingRefreshTitle,
+            settingRefreshDescription,
+            settingRefreshThumbnail} = await getUser(req.user.username);
 
-    if (settingRefreshTitle === 1) {
-        if (settingRefreshDescription === 1) {
-            if (settingRefreshThumbnail === 1) {
-                vidInfos = await getVideos(videos);
-                for (let i = 0; i < vidInfos.length; i++) {
-                    vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
-                    result = await modifyVideo(videos[i], vidInfo.title, vidInfo.description.substring(0,2047), vidInfo.thumbnail);
-                    if (result instanceof AppError) break;
-                    result.description = unescapeSQL(result.description);
-                    result.title = unescapeSQL(result.title);
-                    finalResult.push(result);
+        if (settingRefreshTitle === 1) {
+            if (settingRefreshDescription === 1) {
+                if (settingRefreshThumbnail === 1) {
+                    vidInfos = await getVideos(videos);
+                    for (let i = 0; i < vidInfos.length; i++) {
+                        vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
+                        result = await modifyVideo(videos[i], vidInfo.title, vidInfo.description.substring(0,2047), vidInfo.thumbnail);
+                        if (result instanceof AppError) break;
+                        result.description = unescapeSQL(result.description);
+                        result.title = unescapeSQL(result.title);
+                        finalResult.push(result);
+                    }
                 }
+                else {
+                    vidInfos = await getVideos(videos);
+                    for (let i = 0; i < vidInfos.length; i++) {
+                        vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
+                        result = await modifyVideo(videos[i], vidInfo.title, vidInfo.description.substring(0,2047), null);
+                        if (result instanceof AppError) break;
+                        result.description = unescapeSQL(result.description);
+                        result.title = unescapeSQL(result.title);
+                        result.thumbnail = null;
+                        finalResult.push(result);
+                    }
+                }
+            }
+            else if (settingRefreshThumbnail === 1) {
+                vidInfos = await getVideos(videos);
+                    for (let i = 0; i < vidInfos.length; i++) {
+                        vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
+                        result = await modifyVideo(videos[i], vidInfo.title, null, vidInfo.thumbnail);
+                        if (result instanceof AppError) break;
+                        result.description = null;
+                        result.title = unescapeSQL(result.title);
+                        finalResult.push(result);
+                    }
             }
             else {
                 vidInfos = await getVideos(videos);
-                for (let i = 0; i < vidInfos.length; i++) {
-                    vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
-                    result = await modifyVideo(videos[i], vidInfo.title, vidInfo.description.substring(0,2047), null);
-                    if (result instanceof AppError) break;
-                    result.description = unescapeSQL(result.description);
-                    result.title = unescapeSQL(result.title);
-                    result.thumbnail = null;
-                    finalResult.push(result);
-                }
+                    for (let i = 0; i < vidInfos.length; i++) {
+                        vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
+                        result = await modifyVideo(videos[i], vidInfo.title, null, null);
+                        if (result instanceof AppError) break;
+                        result.description = null;
+                        result.title = unescapeSQL(result.title);
+                        result.thumbnail = null;
+                        finalResult.push(result);
+                    }
+            }
+        }
+        else if (settingRefreshDescription === 1) {
+            if (settingRefreshThumbnail === 1) {
+                vidInfos = await getVideos(videos);
+                    for (let i = 0; i < vidInfos.length; i++) {
+                        vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
+                        result = await modifyVideo(videos[i], null, vidInfo.description.substring(0,2047), vidInfo.thumbnail);
+                        if (result instanceof AppError) break;
+                        result.title = null;
+                        result.description = unescapeSQL(result.description);
+                        finalResult.push(result);
+                    }
+            }
+            else {
+                vidInfos = await getVideos(videos);
+                    for (let i = 0; i < vidInfos.length; i++) {
+                        vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
+                        result = await modifyVideo(videos[i], null, vidInfo.description.substring(0,2047), null);
+                        if (result instanceof AppError) break;
+                        result.title = null;
+                        result.description = unescapeSQL(result.description);
+                        result.thumbnail = null;
+                        finalResult.push(result);
+                    }
             }
         }
         else if (settingRefreshThumbnail === 1) {
             vidInfos = await getVideos(videos);
-                for (let i = 0; i < vidInfos.length; i++) {
-                    vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
-                    result = await modifyVideo(videos[i], vidInfo.title, null, vidInfo.thumbnail);
-                    if (result instanceof AppError) break;
-                    result.description = null;
-                    result.title = unescapeSQL(result.title);
-                    finalResult.push(result);
-                }
+                    for (let i = 0; i < vidInfos.length; i++) {
+                        vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
+                        result = await modifyVideo(videos[i], null, null, vidInfo.thumbnail);
+                        if (result instanceof AppError) break;
+                        result.title = null;
+                        result.description = null;
+                        finalResult.push(result);
+                    }
         }
         else {
-            vidInfos = await getVideos(videos);
-                for (let i = 0; i < vidInfos.length; i++) {
-                    vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
-                    result = await modifyVideo(videos[i], vidInfo.title, null, null);
-                    if (result instanceof AppError) break;
-                    result.description = null;
-                    result.title = unescapeSQL(result.title);
-                    result.thumbnail = null;
-                    finalResult.push(result);
-                }
+            finalResult = {result:'All Refresh Settings Are Off'};
         }
-    }
-    else if (settingRefreshDescription === 1) {
-        if (settingRefreshThumbnail === 1) {
-            vidInfos = await getVideos(videos);
-                for (let i = 0; i < vidInfos.length; i++) {
-                    vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
-                    result = await modifyVideo(videos[i], null, vidInfo.description.substring(0,2047), vidInfo.thumbnail);
-                    if (result instanceof AppError) break;
-                    result.title = null;
-                    result.description = unescapeSQL(result.description);
-                    finalResult.push(result);
-                }
+        if (!(result instanceof AppError)) {
+            Response.setApiResponse('success',200,'Successfully refreshed metadata','/',finalResult);
         }
-        else {
-            vidInfos = await getVideos(videos);
-                for (let i = 0; i < vidInfos.length; i++) {
-                    vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
-                    result = await modifyVideo(videos[i], null, vidInfo.description.substring(0,2047), null);
-                    if (result instanceof AppError) break;
-                    result.title = null;
-                    result.description = unescapeSQL(result.description);
-                    result.thumbnail = null;
-                    finalResult.push(result);
-                }
-        }
-    }
-    else if (settingRefreshThumbnail === 1) {
-        vidInfos = await getVideos(videos);
-                for (let i = 0; i < vidInfos.length; i++) {
-                    vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
-                    result = await modifyVideo(videos[i], null, null, vidInfo.thumbnail);
-                    if (result instanceof AppError) break;
-                    result.title = null;
-                    result.description = null;
-                    finalResult.push(result);
-                }
     }
     else {
-        finalResult = {result:'All Refresh Settings Are Off'};
+        Response.setApiResponse('error',422,'Invalid Arguments','/');
     }
-    if (result instanceof AppError) {
-        res.json({response: 'error'});
-    }
-    else {
-        res.json({finalResult});
-    }
+    res.status(Response.getStatus).json(Response.getApiResponse());
+    
 }
 const deleteVideo = async (req, res, next) => {
     const Response = new ApiResponse('error',500,'Something went wrong.','/');

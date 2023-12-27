@@ -20,8 +20,9 @@ const addSubscribeEvents = () => {
         if (data.response === 'success') {
             btnSubscribe.classList.add('displayNone');
             btnUnsubscribe.classList.remove('displayNone');
+            flashBanner(data.response,data.message,FLASH_REFERENCE);
         } else {
-            flashBanner('error',data.message,FLASH_REFERENCE);
+            flashBanner(data.response,data.message,FLASH_REFERENCE);
         }
         btnSubscribe.disabled = false;
     });
@@ -44,7 +45,7 @@ const addSubscribeEvents = () => {
             btnUnsubscribe.classList.add('displayNone');
             btnSubscribe.classList.remove('displayNone');
         } else {
-            flashBanner('error',data.message,FLASH_REFERENCE);
+            flashBanner(data.response,data.message,FLASH_REFERENCE);
         }
         btnUnsubscribe.disabled = false;
     });

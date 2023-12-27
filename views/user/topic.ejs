@@ -89,7 +89,7 @@
           <div class="videoThumbnailContainer" id="thumbnail<%=video.id%>" style="background-image:url('<%=video.thumbnail%>')">
           </div>
           <div class="editVideoForm displayNone" id="editVideoForm<%=video.id%>">
-            <form class="editForm" action="/video/<%=user.username%>/<%=video.topicUrl%>/<%=video.id%>/edit" method="POST">
+            <form class="editForm">
               <div class="firstRow">
                 <input id="editTitle<%=video.id%>" type="text" name="title" placeholder="<%=video.title%>" value="<%=video.title%>">
                 <div class="editVideoButtons">
