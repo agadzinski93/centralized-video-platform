@@ -43,37 +43,36 @@ const appendAboutMe = (subscriptions,dateJoined,aboutMe) => {
  * @param {int} page - page number 
  */
 const getMoreResults = async (choice,page) => {
-    let output = null;
  try{
     let result = await fetch(`/user/${AUTHOR}/getUserContent?content=${choice}&viewAll=true&page=${page}`);
     let data = await result.json();
     switch(choice){
         case 'topics':
-            appendTopics(data.data);
+            appendTopics(data.data.data);
             break;
         case 'videos':
-            appendVideos(data.data);
+            appendVideos(data.data.data);
             break;
         default:
     }
-    output = {response:'success',moreResults:data.moreResults}; 
+    if (data.response === 'success') {
+        let btnSeeMore = document.getElementById('btnSeeMore');
+        if (seeMore) {
+            btnSeeMore.removeEventListener("click",seeMore);
+        }
+        if (data.data.moreResults) {
+            seeMore = getMoreResults.bind(null,choice,page+1);
+            btnSeeMore.addEventListener("click",seeMore);
+        }
+        else {
+            document.querySelector('.moreResultsContainer').classList.add('displayNone');
+        }
+     } else {
+        flashBanner(data.response,data.message,FLASH_REFERENCE);
+     }
+    data = {response:'success',moreResults:data.data.moreResults}; 
  } catch(err) {
-    output = {response:'error',message:'Problem retrieving results.'}
- }
- if (output.response === 'success') {
-    let btnSeeMore = document.getElementById('btnSeeMore');
-    if (seeMore) {
-        btnSeeMore.removeEventListener("click",seeMore);
-    }
-    if (output.moreResults) {
-        seeMore = getMoreResults.bind(null,choice,page+1);
-        btnSeeMore.addEventListener("click",seeMore);
-    }
-    else {
-        document.querySelector('.moreResultsContainer').classList.add('displayNone');
-    }
- } else {
-    flashBanner('error',output.message,FLASH_REFERENCE);
+    data = {response:'error',message:'Problem retrieving results.'}
  }
 }
 const toggleViewAllButton = (enable = false) => {
@@ -196,17 +195,17 @@ const getAuthorTopics = async (e, viewAll = false, override = false) => {
         let data = await result.json();
         toggleBackgroundLoading(false,document.getElementById('userContent'),false,null);
         if (data.response === 'success') {
-            if (data.data.length > 0) {
-                const topics = data.data;
+            if (data.data.data.length > 0) {
+                const topics = data.data.data;
                 appendTopics(topics);
-                if (data.data.length === 12 && !viewAll) {
+                if (topics.length === 12 && !viewAll) {
                     toggleViewAllButton(true);
                 }
                 else {
                     toggleViewAllButton();
                 }
                 let btnSeeMore = document.getElementById('btnSeeMore');
-                if (data.moreResults){
+                if (data.data.moreResults){
                     if (seeMore) {
                         btnSeeMore.removeEventListener("click",seeMore);
                     }
@@ -257,17 +256,17 @@ const getAuthorVideos = async (e, viewAll = false, override = false) => {
         let data = await result.json();
         toggleBackgroundLoading(false,document.getElementById('userContent'),false,null);
         if (data.response === 'success') {
-            if (data.data.length > 0) {
-                const videos = data.data;
+            if (data.data.data.length > 0) {
+                const videos = data.data.data;
                 appendVideos(videos);
-                if (data.data.length === 12 && !viewAll) {
+                if (videos.length === 12 && !viewAll) {
                     toggleViewAllButton(true);
                 }
                 else {
                     toggleViewAllButton();
                 }
                 let btnSeeMore = document.getElementById('btnSeeMore');
-                if (data.moreResults){
+                if (data.data.moreResults){
                     if (seeMore) {
                         btnSeeMore.removeEventListener("click",seeMore);
                     }
@@ -313,6 +312,7 @@ const getAuthorAbout = async (e,override = false) => {
             data = await result.json();
             toggleBackgroundLoading(false,document.getElementById('userContent'),false,null);
             if (data.response === 'success') {
+                data = data.data;
                 appendAboutMe(data.data.subscriptions,data.data.dateJoined,data.data.about_me);
             }
             else {

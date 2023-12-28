@@ -150,7 +150,6 @@ const addBasicInfoEvents = () => {
             toggleEditProfilePicForm();
             toggleBackdrop(true, '#fff', '10%');
             toggleModal(true, 'Updating profile pic...');
-            
             const form = document.getElementById('editProfilePicForm');
             const formData = new FormData(form);
             let result = await fetch(`/user/${USERNAME}/settings/updateProfilePic`, {
@@ -158,23 +157,19 @@ const addBasicInfoEvents = () => {
                 body: formData,
             });
             let data = await result.json();
-            
             toggleBackdrop(false);
             toggleModal(false);
-            if (Object.keys(data).includes('error')) {
-                flashBanner('error', `${data.error}`, FLASH_REFERENCE);
-            }
-            else {
-                flashBanner('success', 'Successfully updated profile picture.', FLASH_REFERENCE);
-                document.querySelector('.settingsProfilePic').style.backgroundImage = `url('${data.path}')`;
-                document.getElementById('editProfilePicImage').style.backgroundImage = `url('${data.path}')`;
-                document.querySelector('.avatar').style.backgroundImage = `url('${data.path}')`;
+            if (data.response === 'success'){
+                document.querySelector('.settingsProfilePic').style.backgroundImage = `url('${data.data.path}')`;
+                document.getElementById('editProfilePicImage').style.backgroundImage = `url('${data.data.path}')`;
+                document.querySelector('.avatar').style.backgroundImage = `url('${data.data.path}')`;
                 document.getElementById('btnProfilePicUpload').value = null;
                 document.getElementById('streamedProfilePic').classList.add('displayNone');
                 document.querySelector('#lblProfilePicUpload span').classList.remove('displayNone');
                 document.getElementById('profilePicSelected').textContent = 'No file selected.';
                 document.getElementById('btnDeleteProfilePic').classList.remove('displayNone');
             }
+            flashBanner(data.response, data.message, FLASH_REFERENCE);
         });
     }
     updateProfilePicEvent();
@@ -191,18 +186,15 @@ const addBasicInfoEvents = () => {
 
             toggleBackdrop(false);
             toggleModal(false);
-            if (Object.keys(data).includes('error')) {
-                flashBanner('error', `${data.error}`, FLASH_REFERENCE);
-            }
-            else {
-                flashBanner('success', 'Successfully deleted profile picture.', FLASH_REFERENCE);
-                document.querySelector('.settingsProfilePic').style.backgroundImage = `url('${data.image.path}')`;
-                document.getElementById('editProfilePicImage').style.backgroundImage = `url('${data.image.path}')`;
-                document.querySelector('.avatar').style.backgroundImage = `url('${data.image.path}')`;
+            if (data.response === 'success') {
+                document.querySelector('.settingsProfilePic').style.backgroundImage = `url('${data.data.image.path}')`;
+                document.getElementById('editProfilePicImage').style.backgroundImage = `url('${data.data.image.path}')`;
+                document.querySelector('.avatar').style.backgroundImage = `url('${data.data.image.path}')`;
                 document.getElementById('btnProfilePicUpload').value = null;
                 document.getElementById('profilePicSelected').textContent = 'No file selected.';
                 document.getElementById('btnDeleteProfilePic').classList.add('displayNone');
             }
+            flashBanner(data.response, data.message, FLASH_REFERENCE);
         });
     }
     deleteProfilePicEvent();
@@ -318,7 +310,6 @@ const addBasicInfoEvents = () => {
             });
             let data = await result.json();
             if (data.response === 'success') {
-                flashBanner('success', data.message, FLASH_REFERENCE);
                 document.getElementById('email').textContent = txtEmail;
                 document.getElementById('editDisplayEmailContainer').classList.add('displayNone');
                 document.getElementById('displayEmailContainer').classList.remove('displayNone');
@@ -326,9 +317,7 @@ const addBasicInfoEvents = () => {
                 txtE.setAttribute('placeholder',txtEmail);
                 document.getElementById('btnEditEmail').classList.remove('displayNone');
             }
-            else if (data.response === 'error') {
-                flashBanner('error', data.message, FLASH_REFERENCE);
-            }
+            flashBanner(data.response, data.message, FLASH_REFERENCE);
         }
     });
     //Cancel Email Button
@@ -362,13 +351,9 @@ const addBasicInfoEvents = () => {
             let data = await result.json();
             toggleBackdrop(false);
             toggleModal(false);
-            if (data.response === 'error') {
-                flashBanner('error', `${data.error}`, FLASH_REFERENCE);
-            }
-            else {
-                flashBanner('success', data.message, FLASH_REFERENCE);
+            if(data.response === 'success') {
                 let aboutMe = document.getElementById('txtAboutMe');
-                if (data.aboutMe === "") {
+                if (data.data.aboutMe === "") {
                     aboutMe.classList.add('noDisplayName');
                     aboutMe.classList.remove('aboutMeContainer');
                     aboutMe.textContent = 'None';
@@ -376,11 +361,13 @@ const addBasicInfoEvents = () => {
                 else {
                     aboutMe.classList.remove('noDisplayName');
                     aboutMe.classList.add('aboutMeContainer');
-                    aboutMe.textContent = data.aboutMe;
+                    aboutMe.textContent = data.data.aboutMe;
                 }
                 document.getElementById('aboutMeContainer').classList.remove('displayNone');
                 document.getElementById('editAboutMeContainer').classList.add('displayNone');
+                document.getElementById('btnEditAboutMe').classList.remove('displayNone');
             }
+            flashBanner(data.response, data.message, FLASH_REFERENCE);
         }
     });
     //Cancel About Me
@@ -429,23 +416,20 @@ const addBasicInfoEvents = () => {
             
             toggleBackdrop(false);
             toggleModal(false);
-            if (Object.keys(data).includes('error')) {
-                flashBanner('error', `${data.error}`, FLASH_REFERENCE);
-            }
-            else {
-                flashBanner('success', 'Successfully updated banner.', FLASH_REFERENCE);
-                document.querySelector('.channelBannerPreview').style.backgroundImage = `url('${data.path}')`;
+            if (data.response === 'success') {
+                document.querySelector('.channelBannerPreview').style.backgroundImage = `url('${data.data.path}')`;
                 document.getElementById('btnBannerUpload').value = null;
                 document.getElementById('streamedBanner').classList.add('displayNone');
                 document.querySelector('#lblBannerUpload span').classList.remove('displayNone');
                 document.getElementById('bannerSelected').textContent = 'No file selected.';
                 document.getElementById('btnDeleteBanner').classList.remove('displayNone');
             }
+            flashBanner(data.response, data.message, FLASH_REFERENCE);
         });
     }
     updateBannerEvent();
     const deleteBannerEvent = () => {
-        const btnDeleteBanner = document.getElementById('btnDeleteBanner').addEventListener('click', async () => {
+        document.getElementById('btnDeleteBanner').addEventListener('click', async () => {
             toggleBackdrop(true, '#fff', '10%');
             toggleModal(true, 'Deleting Banner...');
 
@@ -459,13 +443,11 @@ const addBasicInfoEvents = () => {
             
             toggleBackdrop(false);
             toggleModal(false);
-            if (Object.keys(data).includes('error')) {
-                flashBanner('error', `${data.error}`, FLASH_REFERENCE);
-            } else {
-                flashBanner('success', 'Successfully deleted banner.', FLASH_REFERENCE);
+            if (data.response === 'success') {
                 document.getElementById('btnDeleteBanner').classList.add('displayNone');
                 document.querySelector('.channelBannerPreview').style.backgroundImage = `url('')`;
             }
+            flashBanner(data.response, data.message, FLASH_REFERENCE);
         })
     }
     deleteBannerEvent();

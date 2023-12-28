@@ -28,14 +28,23 @@ const {
 import { getUserTopics, getTopic } from '../utilities/helpers/topicHelpers.mjs';
 import { getTopicVideos } from '../utilities/helpers/videoHelpers.mjs';
 
-const getUserContent = async (req,res,next)=>{
-  const username = escapeHTML(req.params.username);
-  let content = (req.query.content) ? (escapeSQL(escapeHTML(req.query.content.toString()))) : 'topics';
-  let all = (req.query.viewAll) ? (escapeSQL(escapeHTML(req.query.viewAll.toString()))) : false;
-  let page = (req.query.page) ? (escapeSQL(escapeHTML(req.query.page.toString()))): 0;
-  page = parseInt(page);
-  let data = await getUserInfo(username,content,all,page);
-  res.json(data);
+const getUserContent = async (req,res)=>{
+  let Response = new ApiResponse('error',500,'Something went wrong!');
+  if (paramsExist([req.params.username])) {
+    const username = escapeHTML(req.params.username);
+    let content = (req.query.content) ? (escapeSQL(escapeHTML(req.query.content.toString()))) : 'topics';
+    let all = (req.query.viewAll) ? (escapeSQL(escapeHTML(req.query.viewAll.toString()))) : false;
+    let page = (req.query.page) ? (escapeSQL(escapeHTML(req.query.page.toString()))): 0;
+    page = parseInt(page);
+    let data = await getUserInfo(username,content,all,page);
+    if (data.response === 'success') {
+      Response.setApiResponse('success',200,'Successfully retrieved more content.','/',data);
+    }
+  }
+  else {
+    Response.setApiResponse('error',422,'Invalid Arguments');
+  }
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const renderUserPage = async (req, res, next) => {
   const username = escapeHTML(req.params.username);
@@ -79,190 +88,199 @@ const renderUserSettings = async (req, res) => {
   });
 }
 const updateRefreshMetadata = async (req,res) => {
-  let output = new ApiResponse('error',500,'Something went wrong!');
-  const username = escapeHTML(req.params.username);
-  const user = await getUser(username, USER_ID);
-  if (user instanceof AppError) return res.json({test:'error'});
-
-  const exist = paramsExist([req.body.setting,req.body.value]);
-  if (exist) {
-    let {setting, value} = req.body;
-    setting = escapeHTML(setting);
-    value = escapeHTML(value);
-    if (value !== '0' && value !== '1') {
-      output.setApiResponse('error',422,'Invalid Arguments');
+  let Response = new ApiResponse('error',500,'Something went wrong!');
+  if (paramsExist([req.body.setting,req.body.value])) {
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username, USER_ID);
+    if (!(user instanceof AppError)) {
+      let {setting, value} = req.body;
+      setting = escapeHTML(setting);
+      value = escapeHTML(value);
+      if (value !== '0' && value !== '1') {
+        Response.setApiResponse('error',422,'Invalid Arguments');
+      }
+      else {
+        let result = await updateRefreshSettings(user.user_id, setting, value);
+        if (!(result instanceof AppError)) {
+          Response.setApiResponse('success',200,'Updated Refresh Settings!');
+        }
+      }
     }
     else {
-      let result = await updateRefreshSettings(user.user_id, setting, value);
-    
-      if (!(result instanceof AppError)) {
-        output.setApiResponse('success',200,'Updated Refresh Settings!');
-      }
+      Response.setStatus = 400;
+      Response.setMessage = 'User doesn\'t exist.';
     }
   }
   else {
-    output.setApiResponse('error',422,'Invalid Arguments');
+    Response.setApiResponse('error',422,'Invalid Arguments');
   }
-  res.status(output.getStatus).json(output.getApiResponse());
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const updateDisplayName = async (req,res) => {
-  let output = new ApiResponse('error',500,'Something went wrong!');
-  const username = escapeHTML(req.params.username);
-  const user = await getUser(username, USER_ID);
+  let Response = new ApiResponse('error',500,'Something went wrong!');
+  if (paramsExist([req.body.displayName,req.params.username])) {
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username, USER_ID);
 
-  let {displayName} = req.body;
-  const exist = paramsExist([displayName]);
-  if (exist) {
+    let {displayName} = req.body;
+    
     let newDisplayName = escapeHTML(escapeSQL(displayName.toString()));
-  
+
     let result = await updateDisplayNameSetting(user.user_id, newDisplayName);
 
     if (!(result instanceof AppError)) {
-      output.setApiResponse('success',200,'Display name successfully updated!');
+      Response.setApiResponse('success',200,'Display name successfully updated!','/');
     }
   }
   else {
-    output.setApiResponse('error',422,'Invalid Arguments');
+    Response.setApiResponse('error',422,'Invalid Arguments');
   }
-  res.status(output.getStatus).json(output.getApiResponse());
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const updateEmail = async (req,res) => {
-  let output = new ApiResponse('error',500,'Something went wrong!');
-  const username = escapeHTML(req.params.username);
-  const user = await getUser(username, USER_ID);
-  
-  let {email} = req.body;
-  const exist = paramsExist([email]);
-  if (exist) {
+  let Response = new ApiResponse('error',500,'Something went wrong!');
+  if (paramsExist([req.params.username,req.body.email])) {
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username, USER_ID);
+    
+    let {email} = req.body;
     let newEmail = escapeHTML(escapeSQL(email.toString()));
-
     let result = await updateEmailSetting(user.user_id,newEmail);
 
     if (result instanceof AppError) {
       if (result.message.includes('Duplicate')) {
-        output.setApiResponse('error',400,'Email Already Exists.');
+        Response.setApiResponse('error',409,'Email Already Exists.','/');
       }
     }
     else {
-      output.setApiResponse('success',200,'Email successfully updated!');
+      Response.setApiResponse('success',200,'Email successfully updated!','/');
     }
   }
   else {
-    output.setApiResponse('error',422,'Invalid Arguments.');
+    Response.setApiResponse('error',422,'Invalid Arguments.','/');
   }
-  res.status(output.getStatus).json(output.getApiResponse());
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const updateProfilePic = async (req,res) => {
-  const username = escapeHTML(req.params.username);
-  const user_cols = concat_user_columns([USER_ID,PIC_FILENAME]);
-  const user = await getUser(username, user_cols);
-  let data = null;
-  let picUrl,
-      filename;
-  if (req.file != undefined) {
-    picUrl = req.file.path;
-    filename = req.file.filename;
+  const Response = new ApiResponse('error',500,'Something went wrong.','/');
+  if (paramsExist([req.params.username,req.file])) {
+    const username = escapeHTML(req.params.username);
+    const user_cols = concat_user_columns([USER_ID,PIC_FILENAME]);
+    const user = await getUser(username, user_cols);
+
+    let picUrl = req.file.path,
+        filename = req.file.filename;
+    
+    let error = await deleteImage(user, 'PROFILE PIC');
+    if (error instanceof AppError) {
+      await cloudinary.uploader.destroy(filename);
+      Response.setMessage = (process.env.NODE_ENV === 'development') ? error.message : 'Error deleting profile picture.';
+    }
+    else {
+      let data = await modifyImage(
+        user.user_id,
+        picUrl,
+        filename,
+        'PROFILE PIC'
+      );
+      if (data instanceof AppError) {
+        try {
+          await cloudinary.uploader.destroy(filename);
+          Response.setMessage = (process.env.NODE_ENV === 'development') ? data.message : 'Error Uploading New Image';
+        } catch (err) {
+          Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error communicating with file host.'; 
+        }
+      } 
+      Response.setApiResponse('success',200,'Successfully updated profile picture.','/', data);
+    }
   }
   else {
-    picUrl = null;
-    filename = null;
+    Response.setApiResponse('error',422,'Invalid Arguments.','/');
   }
-  
-  let error = await deleteImage(user, 'PROFILE PIC');
-  if (error instanceof AppError) {
-    await cloudinary.uploader.destroy(filename);
-    return res.json({error:'Error Deleting Profile Pic'});
-  }
-  error = await modifyImage(
-    user.user_id,
-    picUrl,
-    filename,
-    'PROFILE PIC'
-  );
-  if (error instanceof AppError) {
-    await cloudinary.uploader.destroy(filename);
-    return res.json({error:'Error Uploading New Image'});
-  } 
-  
-  data = error;
-  res.json(data);
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const deleteProfilePic = async(req,res) => {
-  const username = escapeHTML(req.params.username);
-  const user = await getUser(username);
+  const Response = new ApiResponse('error',500,'Something went wrong.','/');
+  if (paramsExist([req.params.username])) {
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username);
 
-  let data = null;
-  let error = await deleteImage(user, 'PROFILE PIC');
-  if (error instanceof AppError) {
-    return res.json({error:'Error Deleting Profile Pic'});
+    let data = await deleteImage(user, 'PROFILE PIC');
+    if (!(data instanceof AppError)) {
+      Response.setApiResponse('success',200,'Successfully deleted profile picture.','/',data);
+    }
+    else {
+      Response.setMessage = 'Error deleting profile picture.';
+    }
   }
-  data = error;
-  res.json(data);
+  else {
+    Response.setApiResponse('error',422,'Invalid Arguments.','/');
+  }
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const updateAboutMe = async(req,res)=>{
-  const username = escapeHTML(req.params.username);
-  const user = await getUser(username, USER_ID);
+  const Response = new ApiResponse('error',500,'Something went wrong.','/');
+  if (paramsExist([req.params.username,req.body.txtAboutMe])) {
+    const username = escapeHTML(req.params.username);
+    const user = await getUser(username, USER_ID);
 
-  let data = null;
-  let {txtAboutMe} = req.body;
-  const exist = paramsExist([txtAboutMe]);
-  if (exist) {
+    let {txtAboutMe} = req.body;
     let aboutMe = escapeSQL(txtAboutMe.toString());
 
     let error = await updateAboutMeSetting(user.user_id,aboutMe);
-    if (error instanceof AppError) {
-      data = {response:'error',message:'Error Updating \'About Me\''};
-    }
-    else {
-      data = {response:'success',message:'Successfully updated your \'About Me\'',aboutMe:unescapeSQL(aboutMe)};
+    if (!(error instanceof AppError)) {
+      Response.setApiResponse('success',200,'Successfully updated your \'About Me\'','/',{aboutMe:unescapeSQL(aboutMe)});
     }
   }
   else {
-    res.status(422);
-    data = {response: 'error', message:'Invalid Arguments'};
+    Response.setApiResponse('error',422,'Invalid Arguments.','/');
   }
-  res.json(data);
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const updateBanner = async (req,res) => {
-  const username = escapeHTML(req.params.username);
-  const user_cols = concat_user_columns([USER_ID,BANNER_URL,BANNER_FILENAME]);
-  const user = await getUser(username, user_cols);
+  const Response = new ApiResponse('error',500,'Something went wrong.','/');
+  if (paramsExist([req.params.username,req.file])) {
+    const username = escapeHTML(req.params.username);
+    const user_cols = concat_user_columns([USER_ID,BANNER_URL,BANNER_FILENAME]);
+    const user = await getUser(username, user_cols);
 
-  let data = null;
+    let data = null,
+        error = null,
+        picUrl = req.file.path,
+        filename = req.file.filename;
+    
+    if (user.banner_url !== null) {
+      error = await deleteImage(user, 'BANNER');
+    }
 
-  let picUrl,
-      filename;
-  if (req.file != undefined) {
-    picUrl = req.file.path;
-    filename = req.file.filename;
-  }
-  else {
-    picUrl = null;
-    filename = null;
-  }
-  let error;
-  
-  if (user.banner_url !== null) {
-    error = await deleteImage(user, 'BANNER');
     if (error instanceof AppError) {
       await cloudinary.uploader.destroy(filename);
-      return res.json({error:'Error Deleting Banner'});
+      Response.setMessage = 'Error deleting banner.';
+    }
+    else {
+      data = await modifyImage(
+        user.user_id,
+        picUrl,
+        filename,
+        'BANNER'
+      );
+      if (data instanceof AppError) {
+        try {
+          await cloudinary.uploader.destroy(filename);
+          Response.setMessage = (process.env.NODE_ENV === 'development') ? data.message : 'Error uploading new image.';
+        } catch (err) {
+          Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error communicating with file host.'; 
+        }
+      }
+      else {
+        Response.setApiResponse('success',200,'Successfully updated banner.','/',data);
+      }
     }
   }
-  
-  error = await modifyImage(
-    user.user_id,
-    picUrl,
-    filename,
-    'BANNER'
-  );
-  if (error instanceof AppError) {
-    await cloudinary.uploader.destroy(filename);
-    return res.json({error:'Error Uploading New Image'});
-  } 
-
-  data = error;
-  res.json(data);
+  else {
+    Response.setApiResponse('error',422,'Invalid Arguments.','/');
+  }
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const renderUserDashboard = async (req, res, next) => {
   const pageStyles = `${pathCSS}user/dashboard.css`;
@@ -317,23 +335,32 @@ const renderUserTopic = async (req, res, next) => {
   });
 }
 const deleteBanner = async (req,res) => {
-  const username = escapeHTML(req.params.username);
-  const user_cols = concat_user_columns([USER_ID,BANNER_URL,BANNER_FILENAME]);
-  const user = await getUser(username, user_cols);
-  const filename = user.banner_filename;
-  
-  let data = null;
-  let error;
-  
-  if (user.banner_url !== null) {
-    error = await deleteImage(user, 'BANNER');
-    if (error instanceof AppError) {
-      await cloudinary.uploader.destroy(filename);
-      return res.json({error:'Error Deleting Banner'});
+  const Response = new ApiResponse('error',500,'Something went wrong.','/');
+  if (paramsExist([req.params.username])) {
+    const username = escapeHTML(req.params.username);
+    const user_cols = concat_user_columns([USER_ID,BANNER_URL,BANNER_FILENAME]);
+    const user = await getUser(username, user_cols);
+    const filename = user.banner_filename;
+    
+    let data = null;
+    
+    if (user.banner_url !== null) {
+      data = await deleteImage(user, 'BANNER');
+      if (data instanceof AppError) {
+        try {
+          await cloudinary.uploader.destroy(filename);
+          Response.setMessage = (process.env.NODE_ENV === 'development') ? data.message : 'Error deleting banner.';
+        } catch (err) {
+          Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error communicating with file host.'; 
+        }
+      }
     }
+    Response.setApiResponse('success',200,'Successfully deleted banner.','/',data);
   }
-  data = {response:'success', message:'Successfully Deleted Banner'};
-  res.json(data);
+  else {
+    Response.setApiResponse('error',422,'Invalid Arguments.','/');
+  }
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const deleteAccount = async (req,res,next) => {
   const username = escapeHTML(req.params.username);
