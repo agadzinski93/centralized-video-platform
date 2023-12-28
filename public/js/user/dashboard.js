@@ -71,6 +71,8 @@ const toggleNewTopicForm = () => {
     }
   };
   const deleteSelectedTopics = async () => {
+    toggleBackdrop(true, '#fff', '10%');
+    toggleModal(true, 'Deleting topic...');
     let selectedTopics = document.querySelectorAll('.dashboardTopicWrapperSelected');
     if (selectedTopics.length > 0) {
       try {
@@ -78,7 +80,7 @@ const toggleNewTopicForm = () => {
         for (let i = 0;i < selectedTopics.length; i++) {
           topicsToDelete.push(selectedTopics[i].getAttribute('id').replaceAll(' ','-'));
         }
-        await fetch(`/topics/${USERNAME}/deleteSelected`, {
+        const result = await fetch(`/topics/${USERNAME}/deleteSelected`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json'},
@@ -86,17 +88,25 @@ const toggleNewTopicForm = () => {
             topics: topicsToDelete
           }),
         });
-        for (let i = 0;i < selectedTopics.length; i++) {
-          selectedTopics[i].remove();
+        const data = await result.json();
+        if (data.response === 'success') {
+          for (let i = 0;i < selectedTopics.length; i++) {
+            selectedTopics[i].remove();
+          }
+          let itemsSelected = document.getElementById('itemsSelected');
+          itemsSelected.classList.remove('itemsSelected');
+          itemsSelected.textContent = ``;
+          document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
+          document.getElementById('btnSelectAllTopics').classList.remove('selectedAll');
         }
-        let itemsSelected = document.getElementById('itemsSelected');
-        itemsSelected.classList.remove('itemsSelected');
-        itemsSelected.textContent = ``;
-        document.getElementById('btnDeleteSelected').classList.remove('deleteSelected');
-        document.getElementById('btnSelectAllTopics').classList.remove('selectedAll');
-      } catch {
+        flashBanner(data.response,data.message,REFERENCE_NODE);
+        
+      } catch (err) {
+        console.error(`Error deleting selected topics: ${err.message}`);
       };
     }
+    toggleBackdrop(false);
+    toggleModal(false);
   };
   const addTopicSelectEvents = () => {
     for (let i = 0;i < topics.length; i++) {
@@ -275,6 +285,71 @@ const toggleNewTopicForm = () => {
         );
       }
   }
+  const deleteTopicHandler = async (e) => {
+    e.preventDefault();
+    toggleBackdrop(true, '#fff', '10%');
+    toggleModal(true, 'Deleting topics...');
+    const id = e.target.parentElement.getAttribute('id').substring(14);
+    try {
+      const result = await fetch(`/topics/${USERNAME}/delete/${id.replaceAll(' ','-')}`,{
+        method:'DELETE'
+      });
+      const data = await result.json();
+      if (data.response === 'success') {
+        e.target.parentElement.parentElement.parentElement.parentElement.remove();
+      }
+      flashBanner(data.response,data.message,REFERENCE_NODE);
+    } catch (err) {
+      console.error(`Error deleting topic: ${err.message}`);
+    }
+    toggleBackdrop(false);
+    toggleModal(false);
+  }
+  const addDeleteTopicEvents = () => {
+    const topics = document.getElementsByClassName('deleteTopic');
+    for (const topic of topics) {
+      topic.addEventListener('click',deleteTopicHandler);
+    }
+  }
+  const saveEditHandler = async (e) => {
+    e.preventDefault();
+    toggleBackdrop(true, '#fff', '10%');
+    toggleModal(true, 'Editing topic...');
+    try {
+      const form = e.target.parentElement.parentElement.parentElement;
+      const id = form.getAttribute('id').substring(8);
+      const submitForm = new FormData(form);
+
+      let body = {};
+      submitForm.forEach((v,k)=>{
+        body[k] = v;
+      });
+
+      const result = await fetch(`/topics/${USERNAME}/edit/${id}`,{
+        method:'PUT',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify(body)
+      });
+      const data = await result.json();
+      
+      if (data.response === 'success') {
+        //DO STUFF!!!
+      }
+      flashBanner(data.response,data.message,REFERENCE_NODE)
+    } catch(err) {
+      console.error(`Error editing topic: ${err.message}`);
+    }
+    toggleBackdrop(false);
+    toggleModal(false);
+  }
+  const addSaveEditEvents = () => {
+    const topics = document.getElementsByClassName('editTopic');
+    for (const topic of topics) {
+      topic.addEventListener('click',saveEditHandler);
+    }
+  }
   const init = () => {
     topics = document.getElementsByClassName("topicName");
 
@@ -291,5 +366,7 @@ const toggleNewTopicForm = () => {
     addTopicSelectEvents();
     topicImageEvent();
     addTopicAddAndEditEvents();
+    addDeleteTopicEvents();
+    addSaveEditEvents();
   };
   init();

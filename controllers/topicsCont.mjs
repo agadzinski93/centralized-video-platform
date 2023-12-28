@@ -1,3 +1,5 @@
+import { ApiResponse } from "../utilities/ApiResponse.mjs";
+import { paramsExist } from "../utilities/validators/paramsExist.mjs";
 import {AppError} from "../utilities/AppError.mjs";
 import { escapeHTML } from "../utilities/helpers/sanitizers.mjs";
 import { 
@@ -45,74 +47,115 @@ const createTopic = async (req, res, next) => {
     res.redirect(`/user/${req.user.username}/dashboard`);
   }
 }
-const editTopic = async (req, res, next) => {
-  const originalTopicName = enableHyphens(escapeHTML(req.params.topic),false);
-  const topicName = escapeHTML(req.body.topic.name);
-  const topicDifficulty = req.body.topic.difficulty;
-  const topicDescription = escapeHTML(req.body.topic.description);
-  
-  const result = await updateTopic(
-    topicName,
-    topicDifficulty,
-    topicDescription,
-    originalTopicName
-  );
-  
-  if (result instanceof AppError) return next(result);
-  else {
-    req.flash("success", "Topic Updated");
-    res.redirect(`/user/${req.user.username}/dashboard`);
+const editTopic = async (req, res) => {
+  const Response = new ApiResponse('error',500,'Something went wrong.','/');
+  if (paramsExist([req.user?.username,req.body.name,req.body.difficulty,req.body.description])) {
+    const originalTopicName = enableHyphens(escapeHTML(req.params.topic),false);
+    const topicName = escapeHTML(req.body.name);
+    const topicDifficulty = req.body.difficulty;
+    const topicDescription = escapeHTML(req.body.description);
+    
+    const result = await updateTopic(
+      topicName,
+      topicDifficulty,
+      topicDescription,
+      originalTopicName
+    );
+    if (result instanceof AppError) {
+      Response.setStatus = result.status;
+      Response.setMessage = (process.env.NODE_ENV === 'development') ? result.message : 'Error updating topic.';
+    }
+    else {
+      Response.setApiResponse('success',200,'Topic updated.','/');
+    }
   }
+  else {
+    Response.setApiResponse('error',422,'Invalid Arguments');
+  }
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const editTopicImage = async (req,res) => {
-  const topicName = enableHyphens(escapeHTML(req.params.topic),false);
-  let newImgUrl = null;
+  const Response = new ApiResponse('error',500,'Something went wrong.','/');
+  if (paramsExist([req.params.topic,req.file])) {
+    const topicName = enableHyphens(escapeHTML(req.params.topic),false);
+    let newImgUrl = null;
 
-  let topicImage,
-      filename;
-  if (req.file != undefined) {
-    topicImage = req.file.path;
-    filename = req.file.filename;
+    let topicImage = req.file.path,
+        filename = req.file.filename;
+
+    const exists = await topicExists(topicName);
+    if (exists instanceof AppError) {
+      Response.setMessage = (process.env.NODE_ENV === 'development') ? exists.message : 'Error validating topic.';
+    }
+    else if (exists === 0) {
+      Response.setStatus = 400;
+      Response.setMessage = 'Topic does not exist.';
+    } 
+    else {
+      let error = await deleteTopicImage(topicName);
+      if (error instanceof AppError) {
+        Response.setMessage = (process.env.NODE_ENV === 'development') ? error.message : 'Error deleting topic image.';
+      }
+      else {
+        newImgUrl = await modifyTopicImage(
+          topicName,
+          topicImage,
+          filename
+        );
+        if (newImgUrl instanceof AppError) {
+          Response.setMessage = (process.env.NODE_ENV === 'development') ? newImgUrl.message : 'Error uploading new image.';
+        }
+        else {
+          Response.setApiResponse('success',200,'Successfully updated topic image.','/',newImgUrl);
+        }
+      }
+    }
   }
   else {
-    topicImage = null;
-    filename = null;
+    Response.setApiResponse('error',422,'Invalid Arguments');
   }
-
-  const exists = await topicExists(topicName);
-  if (exists instanceof AppError) return res.json({error:'Topic Not Found'});
-  else if (exists === 0) {
-    res.json({error:'Topic Doesn\'t Exist'});
-  } 
-  else {
-    let error = await deleteTopicImage(topicName);
-    if (error instanceof AppError) return res.json({error:'Error Deleting Image'});
-    error = await modifyTopicImage(
-      topicName,
-      topicImage,
-      filename
-    );
-    if (error instanceof AppError) return res.json({error:'Error Uploading New Image'});
-
-    newImgUrl = error;
-
-  }
-  res.json(newImgUrl);
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
-const deleteTopic = async (req, res, next) => {
-  const topicName = enableHyphens(escapeHTML(req.params.topic),false);
-  const result = await removeTopic(topicName);
-  if (result instanceof AppError) return next(result);
-  else {
-    req.flash("success", "Topic Deleted");
-    res.redirect(`/user/${req.user.username}/dashboard`);
+const deleteTopic = async (req, res) => {
+  const Response = new ApiResponse('error',500,'Something went wrong.','/');
+  if (paramsExist([req.user.username,req.params.topic])) {
+    const topicName = enableHyphens(escapeHTML(req.params.topic),false);
+    const result = await removeTopic(topicName);
+    if (result instanceof AppError) {
+      Response.setStatus = result.status;
+      Response.setMessage = (process.env.NODE_ENV === 'development') ? result.message : 'Error deleting topic.';
+    }
+    else {
+      Response.setApiResponse('success',200,'Topic deleted.','/');
+    }
   }
+  else {
+    Response.setApiResponse('error',422,'Invalid Arguments');
+  }
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
-const deleteSelectedTopics = async (req,res,next) => {
-  let {topics} = req.body;
+const deleteSelectedTopics = async (req,res) => {
+  const Response = new ApiResponse('error',500,'Something went wrong.','/');
+  if (paramsExist([req.body.topics])) {
+    let {topics} = req.body;
   
-  const result = await removeSelectedTopics(topics);
-  if (result instanceof AppError) return next(result);
-  res.json(result);
+    const result = await removeSelectedTopics(topics);
+    if (result instanceof AppError) {
+      Response.setStatus = result.status;
+      Response.setMessage = (process.env.NODE_ENV === 'development') ? result.message : 'Error deleting topics.';
+    }
+    else {
+      if (topics.length === 1) {
+        Response.setApiResponse('success',200,`Successfully deleted ${topics.length} topic.`);
+      }
+      else {
+        Response.setApiResponse('success',200,`Successfully deleted ${topics.length} topics.`);
+      }
+    }
+  }
+  else {
+    Response.setApiResponse('error',422,'Invalid Arguments');
+  }
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 export {createTopic,editTopic,editTopicImage,deleteTopic,deleteSelectedTopics};

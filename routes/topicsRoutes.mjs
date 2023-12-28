@@ -24,15 +24,15 @@ router.route('/:username/create')
   .all(verifyMethods(['POST']));
 
 router.route('/:username/edit/:topic')
-  .post(isLoggedIn,isAuthor,topicValidation,editTopic)
-  .all(verifyMethods(['POST']));
+  .put(isLoggedIn,isAuthor,topicValidation,editTopic)
+  .all(verifyMethods(['PUT']));
 
 router.route('/:username/editImage/:topic')
   .post(isLoggedIn,isAuthor,parser.single('topic[file]'), editTopicImage)
   .all(verifyMethods(['POST']));
 
 router.route('/:username/delete/:topic')
-  .post(isLoggedIn, isAuthor, deleteTopic)
+  .delete(isLoggedIn, isAuthor, deleteTopic)
   .all(verifyMethods(['DELETE']));
 
 router.route('/:username/deleteSelected')

@@ -1,5 +1,9 @@
 <div class="dashboardTopicPageContainer">
   <div class="backdrop"></div>
+  <div class="modal displayNone">
+    <div class="spinner"></div>
+    <p class="modelText" id="modalText"></p>
+  </div>
   <%- include("../partials/navbar.ejs") %>
   <div class="dashboardOptionsContainer">
     <div id="main"  class="createTopicContainer">
@@ -81,15 +85,10 @@
             <img class="icon" src="/assets/svg/edit-dark.png" alt="edit">
             <span>Edit Topic</span>
           </button>
-          <form
-            action="/topics/<%= user.username %>/delete/<%= topic.topicUrl %>"
-            method="POST"
-          >
-            <button class="btnTopicDelete">
+            <button id="btnDeleteTopic<%= topic.topicUrl %>" class="btnTopicDelete deleteTopic">
               <img class="icon" src="/assets/svg/trashBlack.svg" alt="delete">
               <span>Delete Topic</span>
             </button>
-          </form>
         </div>
       </div>
       <a href="/user/<%= user.username %>/dashboard/<%=topic.topicUrl%>"
@@ -101,7 +100,7 @@
           <%}%>
           <div id="topicInfo" class="topicInfo">
             <div class="dashboardTopicFirstRow">
-              <p class="topicName"><%= topic.name %></p>
+              <p id="topicNameTitle" class="topicName"><%= topic.name %></p>
             </div>
             <p class="topicDifficulty"><%= topic.difficulty %></p>
             <p class="topicDescription" id="<%= topic.name.replaceAll(' ','-') %>Description">
@@ -112,19 +111,16 @@
       </a>
     </div>
     <div class="dashboardTopicWrapperEdit removeDisplay" id="edit<%=topic.name.replaceAll(' ','-')%>">
-      <form
-        action="/topics/<%= user.username %>/edit/<%=topic.topicUrl%>"
-        method="POST"
-      >
+      <form id="editForm<%=topic.topicUrl%>">
         <div class="topicButtons">
-          <button class="btnTopicDelete">
+          <button class="btnTopicEdit editTopic">
             <img class="icon" src="/assets/svg/accept.png" alt="save changes">
             <span>Save Changes</span>
           </button>
 
           <button
             type="button"
-            class="btnTopicEdit"
+            class="btnTopicDelete cancelEdit"
             id="btnCancelEdit<%=topic.name.replaceAll(' ','-')%>"
           >
             <img class="icon" src="/assets/svg/cancel.png" alt="cancel">
@@ -134,13 +130,13 @@
         <label for="topicName" class="lblTopicName">Topic Name</label>
         <input
           type="text"
-          name="topic[name]"
+          name="name"
           id="topicName"
           placeholder="<%= topic.name %>"
         >
         <div class="editDifficultyContainer">
           <label for="difficulty" class="lblTopicDifficulty">Difficulty</label>
-          <select name="topic[difficulty]" id="difficulty">
+          <select name="difficulty" id="difficulty">
             <option value="Beginner">Beginner</option>
             <option value="Intermediate">Intermediate</option>
             <option value="Advanced">Advanced</option>
@@ -150,7 +146,7 @@
           >Description</label
         >
         <textarea
-          name="topic[description]"
+          name="description"
           id="<%= topic.name.replaceAll(' ','-') %>DescriptionInput"
           cols="50"
           rows="5"
@@ -162,7 +158,9 @@
     <% } %> <% } %>
   </div>
 </div>
-<script src="/js/user/dashboard.js"></script>
 <script>
+  const REFERENCE_NODE = document.querySelector('.dashboardTopicList');
   const USERNAME = '<%=user.username%>';
 </script>
+<script src="/js/global.js"></script>
+<script src="/js/user/dashboard.js"></script>

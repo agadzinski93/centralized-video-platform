@@ -600,20 +600,20 @@ const addSwapVideoEvents = async () => {
         
         toggleBackdrop(false);
         toggleModal(false);
-        if (Object.keys(data).includes('error')) {
-          flashBanner('error', `${data.error}`, REFERENCE_NODE);
-        }
-        else {
-          flashBanner('success', 'Successfully updated image', REFERENCE_NODE);
-          document.querySelector('.topicPageImageContainer').style.backgroundImage = `url('${data}')`;
-          document.querySelector('.editTopicImageImageContainer').style.backgroundImage = `url('${data}')`;
+        if (data.response === 'success') {
+          document.querySelector('.topicPageImageContainer').style.backgroundImage = `url('${data.data}')`;
+          document.querySelector('.editTopicImageImageContainer').style.backgroundImage = `url('${data.data}')`;
           document.getElementById('btnFileUpload').value = null;
           document.querySelector('.streamedTopicImg').classList.add('displayNone');
-          document.querySelector('.file-upload div').classList.remove('displayNone');
-          document.getElementById('fileSelected').textContent = 'No file selected.';
-          document.getElementById('no-image').remove();
+          document.querySelector('#lblFileUpload > span').classList.remove('displayNone');
+          const noImageText = document.getElementById('no-image');
+          if (noImageText) {
+            noImageText.remove();
+          }
           document.querySelector('.txtNoTopicImage').classList.add('displayNone');
+          document.getElementById('fileSelected').textContent = 'No file selected.';
         }
+        flashBanner(data.response, data.message, REFERENCE_NODE);
       }
     });
   }

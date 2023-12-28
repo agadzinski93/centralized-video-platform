@@ -1,3 +1,5 @@
+import { ApiResponse } from "../../ApiResponse.mjs";
+import { paramsExist } from "../paramsExist.mjs";
 import registerValidator from "../registerValidator.mjs";
 import topicValidator from "../topicValidator.mjs";
 import { cloudinary } from "../../cloudinary.mjs";
@@ -18,16 +20,22 @@ const registrationValidation = (req, res, next) => {
   }
 }
 const topicValidation = (req, res, next) => {
-  let { error } = topicValidator.validate(req.body);
-  if (error) {
-    if (req.file) {
-      cloudinary.uploader.destroy(req.file.filename);
+  const Response = new ApiResponse('error',500,'Something went wrong.','/');
+  if (paramsExist([req.body])) {
+    let { error } = topicValidator.validate(req.body);
+    if (error) {
+      if (req.file) {
+        cloudinary.uploader.destroy(req.file.filename);
+      }
+      Response.setApiResponse('error',400,error.details[0].message,'/');
+    } else {
+      return next();
     }
-    req.flash("error", error.details[0].message);
-    res.redirect(`/user/${req.user.username}/dashboard`);
-  } else {
-    next();
   }
+  else {
+    Response.setApiResponse('error',422,'Invalid Arguments.','/');
+  }
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 
 export {registrationValidation,topicValidation};
