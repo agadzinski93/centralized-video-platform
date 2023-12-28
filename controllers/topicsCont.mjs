@@ -14,9 +14,9 @@ import {
 } from "../utilities/helpers/topicHelpers.mjs";
 
 const createTopic = async (req, res, next) => {
-  const topicName = escapeHTML(req.body.topic.name);
-  const topicDifficulty = req.body.topic.difficulty;
-  const topicDescription = escapeHTML(req.body.topic.description);
+  const topicName = escapeHTML(req.body.name);
+  const topicDifficulty = req.body.difficulty;
+  const topicDescription = escapeHTML(req.body.description);
   let topicImage,
       filename;
   if (req.file != undefined) {

@@ -73,13 +73,14 @@ const toggleNewTopicForm = () => {
   const deleteSelectedTopics = async () => {
     toggleBackdrop(true, '#fff', '10%');
     toggleModal(true, 'Deleting topic...');
-    let selectedTopics = document.querySelectorAll('.dashboardTopicWrapperSelected');
+    let selectedTopics = document.querySelectorAll('.dashboardTopicWrapperSelected .topicName');
     if (selectedTopics.length > 0) {
       try {
         let topicsToDelete = new Array();
         for (let i = 0;i < selectedTopics.length; i++) {
-          topicsToDelete.push(selectedTopics[i].getAttribute('id').replaceAll(' ','-'));
+          topicsToDelete.push(selectedTopics[i].textContent);
         }
+
         const result = await fetch(`/topics/${USERNAME}/deleteSelected`, {
           method: 'DELETE',
           headers: {
@@ -91,7 +92,7 @@ const toggleNewTopicForm = () => {
         const data = await result.json();
         if (data.response === 'success') {
           for (let i = 0;i < selectedTopics.length; i++) {
-            selectedTopics[i].remove();
+            selectedTopics[i].parentElement.parentElement.parentElement.parentElement.parentElement.remove();
           }
           let itemsSelected = document.getElementById('itemsSelected');
           itemsSelected.classList.remove('itemsSelected');
@@ -111,6 +112,7 @@ const toggleNewTopicForm = () => {
   const addTopicSelectEvents = () => {
     for (let i = 0;i < topics.length; i++) {
       document.getElementById(`btnSelect${topics[i].textContent.replaceAll(' ','-')}`).addEventListener("click", (e) => {
+        let topicNames = document.getElementsByClassName("dashboardTopicWrapper");
         let numOfSelected = document.getElementsByClassName('btnSelectTopicSelected').length;
         let allTopics = document.getElementsByClassName('btnSelectTopic');
         let totalTopics = allTopics.length;
@@ -148,7 +150,7 @@ const toggleNewTopicForm = () => {
  
             for (let k = firstPreviousItem; k <= currentItem; k++) {
               document.getElementById(`btnSelect${topics[k].textContent.replaceAll(' ','-')}`).classList.remove('btnSelectTopicSelected');
-              document.getElementById(`${topics[k].textContent.replaceAll(' ','-')}`).classList.remove('dashboardTopicWrapperSelected');
+              document.getElementById(`${topicNames[k].getAttribute('id')}`).classList.remove('dashboardTopicWrapperSelected');
             }
           } 
           //Shift+Click On Unselected Item
@@ -164,13 +166,13 @@ const toggleNewTopicForm = () => {
 
             for (let k = firstPreviousItem; k <= i; k++) {
               document.getElementById(`btnSelect${topics[k].textContent.replaceAll(' ','-')}`).classList.add('btnSelectTopicSelected');
-              document.getElementById(`${topics[k].textContent.replaceAll(' ','-')}`).classList.add('dashboardTopicWrapperSelected');
+              document.getElementById(`${topicNames[k].getAttribute('id')}`).classList.add('dashboardTopicWrapperSelected');
             }
           }
         }
         else {
           document.getElementById(`btnSelect${topics[i].textContent.replaceAll(' ','-')}`).classList.toggle('btnSelectTopicSelected');
-          document.getElementById(`${topics[i].textContent.replaceAll(' ','-')}`).classList.toggle('dashboardTopicWrapperSelected');
+          document.getElementById(`${topicNames[i].getAttribute('id')}`).classList.toggle('dashboardTopicWrapperSelected');
         }
         
         numOfSelected = document.getElementsByClassName('btnSelectTopicSelected').length;
@@ -290,8 +292,9 @@ const toggleNewTopicForm = () => {
     toggleBackdrop(true, '#fff', '10%');
     toggleModal(true, 'Deleting topics...');
     const id = e.target.parentElement.getAttribute('id').substring(14);
+    const fetchId = document.querySelector(`#${id} p#topicNameTitle`).textContent.replaceAll(' ','-');
     try {
-      const result = await fetch(`/topics/${USERNAME}/delete/${id.replaceAll(' ','-')}`,{
+      const result = await fetch(`/topics/${USERNAME}/delete/${fetchId.replaceAll(' ','-')}`,{
         method:'DELETE'
       });
       const data = await result.json();
@@ -317,7 +320,9 @@ const toggleNewTopicForm = () => {
     toggleModal(true, 'Editing topic...');
     try {
       const form = e.target.parentElement.parentElement.parentElement;
-      const id = form.getAttribute('id').substring(8);
+      const id = document.querySelector(`#${form.getAttribute('id').substring(8)}`).getAttribute('id');
+      const fetchId = document.querySelector(`#${id} p#topicNameTitle`).textContent.replaceAll(' ','-');
+      console.log(fetchId);
       const submitForm = new FormData(form);
 
       let body = {};
@@ -325,7 +330,7 @@ const toggleNewTopicForm = () => {
         body[k] = v;
       });
 
-      const result = await fetch(`/topics/${USERNAME}/edit/${id}`,{
+      const result = await fetch(`/topics/${USERNAME}/edit/${fetchId}`,{
         method:'PUT',
         headers:{
           'Content-Type':'application/json'
@@ -335,7 +340,17 @@ const toggleNewTopicForm = () => {
       const data = await result.json();
       
       if (data.response === 'success') {
-        //DO STUFF!!!
+        try {
+          const newTitle = document.querySelector(`#editForm${id} > input[name="name"]`).value;
+          document.querySelector(`#${id} p#topicNameTitle`).textContent = newTitle;
+          document.querySelector(`#${id} p.topicDifficulty`).textContent = document.querySelector(`#editForm${id} > .editDifficultyContainer > select`).value;
+          document.getElementById(`${id}Description`).textContent = document.querySelector(`#editForm${id} > textArea`).value;
+          document.querySelector(`#editForm${id} > input[name="name"]`).setAttribute('placeholder',newTitle);
+          document.querySelector(`#${id.replaceAll(' ','-')} > a`).setAttribute('href',`/user/${USERNAME}/dashboard/${newTitle.replaceAll(' ','-')}`);
+          document.getElementById(`btnSelect${fetchId}`).setAttribute('id',`btnSelect${newTitle.replaceAll(' ','-')}`);
+        } catch (err) {
+          console.error(`Topic updated but error updating screen: ${err.message}`);
+        }
       }
       flashBanner(data.response,data.message,REFERENCE_NODE)
     } catch(err) {
@@ -352,7 +367,6 @@ const toggleNewTopicForm = () => {
   }
   const init = () => {
     topics = document.getElementsByClassName("topicName");
-
     document.querySelector('.backdrop').classList.toggle('displayNone');
     document.querySelector('.newTopicFormContainer').classList.toggle('displayNone');
 
