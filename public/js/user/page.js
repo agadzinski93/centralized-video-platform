@@ -18,25 +18,16 @@ const appendVideos = (videos) => {
         }
 }
 const appendAboutMe = (subscriptions,dateJoined,aboutMe) => {
-    let infoContainer = document.createElement('div');
-    infoContainer.classList.add('infoContainer');
-    let lblSubscriptions = document.createElement('p');
-    lblSubscriptions.textContent = "Subscriptions: ";
-    let p_subscriptions = document.createElement('p');
-    p_subscriptions.textContent = subscriptions;
+    aboutMeText = (aboutMe == '' || aboutMe == null) ? 'Nothing here!' : aboutMe;
 
-    let lblDateJoined = document.createElement('p');
-    lblDateJoined.textContent = "Joined: "
-    let p_dateJoined = document.createElement('p');
-    p_dateJoined.textContent = convertSQLDate(dateJoined);
-
-    let lblAboutMe = document.createElement('p');
-    lblAboutMe.textContent = 'About Me'
-    let p_aboutMe = document.createElement('p');
-    p_aboutMe.textContent = (aboutMe == '' || aboutMe == null) ? 'Nothing here!' : aboutMe;
-
-    infoContainer.append(lblSubscriptions,p_subscriptions,lblDateJoined,p_dateJoined,lblAboutMe,p_aboutMe);
-    document.getElementById('userContent').append(infoContainer);
+    document.getElementById('userContent').append(document.createElementTree('div',['infoContainer'],null,[
+        ['p',null,null,null,'Subscriptions: '],
+        ['p',null,null,null,`${subscriptions}`],
+        ['p',null,null,null,'Joined: '],
+        ['p',null,null,null,`${convertSQLDate(dateJoined)}`],
+        ['p',null,null,null,'About Me'],
+        ['p',null,null,null,`${aboutMeText}`]
+    ]));
 }
 /**
  * @param {string} choice - select from 'topics' or 'videos'
@@ -96,48 +87,27 @@ const btnViewAll = async () => {
     }
 }
 const createTopic = (link,thumbnail,title) => {
-    let topicLink = document.createElement('a');
-    topicLink.classList.add('displayBlock', 'contentLink');
-    topicLink.setAttribute('href',link);
-    let topicContainer = document.createElement('div');
-    topicContainer.classList.add('videoContainer');
-    let topicThumbnail = document.createElement('div');
-    topicThumbnail.classList.add('thumbnail');
-    topicThumbnail.style.backgroundImage = `url('${thumbnail}')`;
-    topicContainer.append(topicThumbnail);
-    let topicTitle = document.createElement('p');
-    topicTitle.classList.add('title');
-    topicTitle.textContent = title;
-    topicContainer.append(topicTitle);
-    topicLink.append(topicContainer);
-    return topicLink;
+    return document.createElementTree('a',['displayBlock', 'contentLink'],{href:`${link}`},[
+        ['div',['videoContainer'],null,[
+            ['div',['thumbnail'],{style:`background-image:url('${thumbnail}')`}],
+            ['p',['title'],null,null,`${title}`]
+        ]]
+    ]);
 }
 const createVideo = (link,thumbnail,title) => {
-    let videoLink = document.createElement('a');
-    videoLink.classList.add('displayBlock', 'contentLink');
-    videoLink.setAttribute('href',link);
-    let videoContainer = document.createElement('div');
-    videoContainer.classList.add('videoContainer');
-    let videoThumbnail = document.createElement('div');
-    videoThumbnail.classList.add('thumbnail');
-    videoThumbnail.style.backgroundImage = `url('${thumbnail}')`;
-    videoContainer.append(videoThumbnail);
-    let videoTitle = document.createElement('p');
-    videoTitle.classList.add('title');
-    videoTitle.textContent = title;
-    videoContainer.append(videoTitle);
-    videoLink.append(videoContainer);
-    return videoLink;
+    return document.createElementTree('a',['displayBlock', 'contentLink'],{href:`${link}`},[
+        ['div',['videoContainer'],null,[
+            ['div',['thumbnail'],{style:`background-image:url('${thumbnail}')`}],
+            ['p',['title'],null,null,`${title}`]
+        ]]
+    ]);
 }
 /**
  * Prints alternative data if author has no videos or topics
  * @param {string} text - text to display
  */
 const txtNoContent = (text) => {
-    const element = document.createElement('span');
-    element.classList.add('noContent');
-    element.textContent = text;
-    document.getElementById('userContent').append(element);
+    document.getElementById('userContent').append(document.createElementTree('span',['noContent'],null,null,`${text}`));
 }
 /**
  * @param {object} element 
