@@ -3,7 +3,7 @@ import bluebird from 'bluebird';
 import session from 'express-session';
 import MySQLStore from 'express-mysql-session';
 const MySQLStoreSession = MySQLStore(session);
-import { AppError } from './AppError.mjs';
+import { AppError } from '../AppError.mjs';
 
 let db;
 let host,

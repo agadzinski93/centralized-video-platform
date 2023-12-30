@@ -1,4 +1,5 @@
 import { ApiResponse } from "../utilities/ApiResponse.mjs";
+import { videoLogger } from "../utilities/logger.mjs";
 import {AppError} from "../utilities/AppError.mjs";
 import {paramsExist} from '../utilities/validators/paramsExist.mjs'
 import { getUser } from "../utilities/helpers/authHelpers.mjs";
@@ -47,13 +48,15 @@ const createVideo = async (req, res, next) => {
 
         if (exists instanceof AppError) return next(exists);
         else if (exists === 0) {
-            Response.setApiResponse('error',400,'Topic Doesn\'t Exist');
+            videoLogger('error','Topic doesn\'t exist.');
+            Response.setApiResponse('error',400,'Topic doesn\'t exist');
         } 
         else {
             if (!isPlaylist) {
                 let wait = await videoExistsInTopic(vidId, topicNameNoDash);
                 if (wait) {
-                    Response.setApiResponse('error',409,'Video Already Exists in Topic');
+                    videoLogger('error','Video already exists in topic.');
+                    Response.setApiResponse('error',409,'Video already exists in topic');
                 }
                 else {
                     try {
@@ -67,7 +70,8 @@ const createVideo = async (req, res, next) => {
                         Response.setApiResponse('success',201,'Video Added','/',outputData);
                     }
                     catch (err) {
-                        Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error Inserting Video';
+                        videoLogger('error',err.message);
+                        Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error Inserting Video';
                     }
                 }
             }
@@ -95,6 +99,7 @@ const createVideo = async (req, res, next) => {
         }
     }
     else {
+        videoLogger('error','Invalid Arguments');
         Response.setApiResponse('error',422,'Invalid Arguments','/');
     }
     res.status(Response.getStatus).json(Response.getApiResponse());
@@ -116,14 +121,17 @@ const editVideo = async (req,res,next) => {
                 Response.setApiResponse('success',200,'Video Updated','/');
             }
             else {
+                videoLogger('error','Video doesn\'t exist.');
                 Response.setStatus = 400;
-                Response.setMessage = 'Video Doesn\'t Exist.';
+                Response.setMessage = 'Video doesn\'t exist.';
             }
         } catch (err) {
-            Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error Editing Video';
+            videoLogger('error',err.message);
+            Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error Editing Video';
         }
     }
     else {
+        videoLogger('error','Invalid Arguments');
         Response.setApiResponse('error',422,'Invalid Arguments','/');
     }
     res.status(Response.getStatus).json(Response.getApiResponse());
@@ -140,16 +148,19 @@ const swapVideos = async (req, res, next) => {
                 result = await swapVideoRecords(currentVidId, swapVidId);
                 if (result instanceof AppError) throw new AppError(result.status,result.message);
             } catch(err) {
-                Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error swapping videos.';
+                videoLogger('error',err.message);
+                Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error swapping videos.';
             }
             Response.setApiResponse('success',200,'Successfully swapped videos.','/',result);
         }
         else {
+            videoLogger('error','Video doesn\'t exist.');
             Response.setStatus = 400;
-            Response.setMessage = 'Video Doesn\'t Exist';
+            Response.setMessage = 'Video doesn\'t exist';
         }
     }
     else {
+        videoLogger('error','Invalid Arguments');
         Response.setApiResponse('error',422,'Invalid Arguments','/');
     }
     res.status(Response.getStatus).json(Response.getApiResponse());
@@ -259,8 +270,14 @@ const refreshMetadata = async (req,res,next) => {
         if (!(result instanceof AppError)) {
             Response.setApiResponse('success',200,'Successfully refreshed metadata','/',finalResult);
         }
+        else {
+            videoLogger('error',result.message);
+            Response.setStatus = result.status;
+            Response.setMessage = (process.env.NODE_ENV !== 'production') ? result.message : 'Error updating metadata.';
+        }
     }
     else {
+        videoLogger('error','Invalid Arguments');
         Response.setApiResponse('error',422,'Invalid Arguments','/');
     }
     res.status(Response.getStatus).json(Response.getApiResponse());
@@ -278,17 +295,20 @@ const deleteVideo = async (req, res, next) => {
                 let result = await removeVideo(id);
                 if (result instanceof AppError) throw new AppError(result.status,result.message);
             } catch(err) {
-                Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error Removing Video';
+                videoLogger('error',err.message);
+                Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error Removing Video';
             }
             
             Response.setApiResponse('success',200,'Video Deleted','/');
         }
         else {
+            videoLogger('error','Video doesn\'t exist.');
             Response.setStatus = 400;
-            Response.setMessage = 'Video Doesn\'t Exist';
+            Response.setMessage = 'Video doesn\'t exist';
         }
     }
     else {
+        videoLogger('error','Invalid Arguments');
         Response.setApiResponse('error',422,'Invalid Arguments','/');
     }
     res.status(Response.getStatus).json(Response.getApiResponse());
@@ -305,10 +325,12 @@ const deleteSelectedVideos = async (req, res, next) => {
 
             Response.setApiResponse('success',200,'Successfully deleted videos.','/',result);
         } catch(err) {
-            Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error Removing Videos';
+            videoLogger('error',err.message);
+            Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error Removing Videos';
         }
         
     } else {
+        videoLogger('error','Invalid Arguments');
         Response.setApiResponse('error',422,'Invalid Arguments','/');
     }
     res.status(Response.getStatus).json(Response.getApiResponse());

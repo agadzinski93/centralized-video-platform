@@ -1,4 +1,4 @@
-import { getDatabase } from "../mysql-connect.mjs";
+import { getDatabase } from "../db/mysql-connect.mjs";
 import { escapeSQL } from "./sanitizers.mjs";
 import {AppError} from "../AppError.mjs";
 import { cloudinary } from "../cloudinary.mjs";

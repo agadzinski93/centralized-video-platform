@@ -3,7 +3,7 @@ import passport from "passport";
 import ppLocal from 'passport-local';
 const localStrategy = ppLocal.Strategy;
 import bcrypt from 'bcrypt'
-import {getDatabase} from './mysql-connect.mjs'
+import {getDatabase} from './db/mysql-connect.mjs'
 import { AppError } from "./AppError.mjs";
 
 passport.use(

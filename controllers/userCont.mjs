@@ -1,5 +1,6 @@
 import {AppError} from '../utilities/AppError.mjs';
 import { ApiResponse } from '../utilities/ApiResponse.mjs';
+import { userLogger } from '../utilities/logger.mjs';
 import { pathCSS,pathAssets } from '../utilities/config.mjs';
 import { cloudinary } from '../utilities/cloudinary.mjs';
 import { escapeHTML,escapeSQL,unescapeSQL } from '../utilities/helpers/sanitizers.mjs';
@@ -42,6 +43,7 @@ const getUserContent = async (req,res)=>{
     }
   }
   else {
+    userLogger('error',`User ID: ${username} -> Invalid Arguments.`);
     Response.setApiResponse('error',422,'Invalid Arguments');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -107,11 +109,13 @@ const updateRefreshMetadata = async (req,res) => {
       }
     }
     else {
+      userLogger('error',`User ID: None -> User doesn\'t exist.`);
       Response.setStatus = 400;
       Response.setMessage = 'User doesn\'t exist.';
     }
   }
   else {
+    userLogger('error',`User ID: ${user.user_id} -> Invalid Arguments.`);
     Response.setApiResponse('error',422,'Invalid Arguments');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -131,8 +135,14 @@ const updateDisplayName = async (req,res) => {
     if (!(result instanceof AppError)) {
       Response.setApiResponse('success',200,'Display name successfully updated!','/');
     }
+    else {
+      userLogger('error',`User ID: ${user.user_id} -> ${result.message}`);
+      Response.setStatus = result.status;
+      Response.setMessage = (process.env.NODE_ENV !== 'production') ? result.message : 'Error updating display name.';
+    }
   }
   else {
+    userLogger('error',`User ID: ${user.user_id} -> Invalid Arguments.`);
     Response.setApiResponse('error',422,'Invalid Arguments');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -151,12 +161,18 @@ const updateEmail = async (req,res) => {
       if (result.message.includes('Duplicate')) {
         Response.setApiResponse('error',409,'Email Already Exists.','/');
       }
+      else {
+        userLogger('error',`User ID: ${user.user_id} -> ${result.message}`);
+        Response.setStatus = result.status;
+        Response.setMessage = (process.env.NODE_ENV !== 'production') ? result.message : 'Error updating email.';
+      }
     }
     else {
       Response.setApiResponse('success',200,'Email successfully updated!','/');
     }
   }
   else {
+    userLogger('error',`User ID: ${user.user_id} -> Invalid Arguments.`);
     Response.setApiResponse('error',422,'Invalid Arguments.','/');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -174,7 +190,7 @@ const updateProfilePic = async (req,res) => {
     let error = await deleteImage(user, 'PROFILE PIC');
     if (error instanceof AppError) {
       await cloudinary.uploader.destroy(filename);
-      Response.setMessage = (process.env.NODE_ENV === 'development') ? error.message : 'Error deleting profile picture.';
+      Response.setMessage = (process.env.NODE_ENV !== 'production') ? error.message : 'Error deleting profile picture.';
     }
     else {
       let data = await modifyImage(
@@ -184,17 +200,21 @@ const updateProfilePic = async (req,res) => {
         'PROFILE PIC'
       );
       if (data instanceof AppError) {
+        userLogger('error',`User ID: ${user.user_id} -> ${data.message}`);
         try {
           await cloudinary.uploader.destroy(filename);
-          Response.setMessage = (process.env.NODE_ENV === 'development') ? data.message : 'Error Uploading New Image';
+          Response.setStatus = data.status;
+          Response.setMessage = (process.env.NODE_ENV !== 'production') ? data.message : 'Error Uploading New Image';
         } catch (err) {
-          Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error communicating with file host.'; 
+          userLogger('error',`User ID: ${user.user_id} -> ${err.message}`);
+          Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error communicating with file host.'; 
         }
       } 
       Response.setApiResponse('success',200,'Successfully updated profile picture.','/', data);
     }
   }
   else {
+    userLogger('error',`User ID: ${user.user_id} -> Invalid Arguments.`);
     Response.setApiResponse('error',422,'Invalid Arguments.','/');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -210,10 +230,13 @@ const deleteProfilePic = async(req,res) => {
       Response.setApiResponse('success',200,'Successfully deleted profile picture.','/',data);
     }
     else {
+      userLogger('error',`User ID: ${user.user_id} -> ${data.message}`);
+      Response.setStatus = data.status;
       Response.setMessage = 'Error deleting profile picture.';
     }
   }
   else {
+    userLogger('error',`User ID: ${user.user_id} -> Invalid Arguments.`);
     Response.setApiResponse('error',422,'Invalid Arguments.','/');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -231,8 +254,14 @@ const updateAboutMe = async(req,res)=>{
     if (!(error instanceof AppError)) {
       Response.setApiResponse('success',200,'Successfully updated your \'About Me\'','/',{aboutMe:unescapeSQL(aboutMe)});
     }
+    else {
+      userLogger('error',`User ID: ${user.user_id} -> ${error.message}`);
+      Response.setStatus = error.status;
+      Response.setMessage = (process.env.NODE_ENV !== 'production') ? error.message : 'Error updating email.';
+    }
   }
   else {
+    userLogger('error',`User ID: ${user.user_id} -> Invalid Arguments.`);
     Response.setApiResponse('error',422,'Invalid Arguments.','/');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -254,7 +283,9 @@ const updateBanner = async (req,res) => {
     }
 
     if (error instanceof AppError) {
+      userLogger('error',`User ID: ${user.user_id} -> ${error.message}`);
       await cloudinary.uploader.destroy(filename);
+      Response.setStatus = error.status;
       Response.setMessage = 'Error deleting banner.';
     }
     else {
@@ -265,11 +296,14 @@ const updateBanner = async (req,res) => {
         'BANNER'
       );
       if (data instanceof AppError) {
+        userLogger('error',`User ID: ${user.user_id} -> ${data.message}`);
+        Response.setStatus = data.status;
         try {
           await cloudinary.uploader.destroy(filename);
-          Response.setMessage = (process.env.NODE_ENV === 'development') ? data.message : 'Error uploading new image.';
+          Response.setMessage = (process.env.NODE_ENV !== 'production') ? data.message : 'Error uploading new image.';
         } catch (err) {
-          Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error communicating with file host.'; 
+          userLogger('error',`User ID: ${user.user_id} -> ${err.message}`);
+          Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error communicating with file host.'; 
         }
       }
       else {
@@ -278,6 +312,7 @@ const updateBanner = async (req,res) => {
     }
   }
   else {
+    userLogger('error',`User ID: ${user.user_id} -> Invalid Arguments.`);
     Response.setApiResponse('error',422,'Invalid Arguments.','/');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -347,17 +382,21 @@ const deleteBanner = async (req,res) => {
     if (user.banner_url !== null) {
       data = await deleteImage(user, 'BANNER');
       if (data instanceof AppError) {
+        userLogger('error',`User ID: ${user.user_id} -> ${data.message}`);
+        Response.setStatus = data.status;
         try {
           await cloudinary.uploader.destroy(filename);
-          Response.setMessage = (process.env.NODE_ENV === 'development') ? data.message : 'Error deleting banner.';
+          Response.setMessage = (process.env.NODE_ENV !== 'production') ? data.message : 'Error deleting banner.';
         } catch (err) {
-          Response.setMessage = (process.env.NODE_ENV === 'development') ? err.message : 'Error communicating with file host.'; 
+          userLogger('error',`User ID: ${user.user_id} -> ${err.message}`);
+          Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error communicating with file host.'; 
         }
       }
     }
     Response.setApiResponse('success',200,'Successfully deleted banner.','/',data);
   }
   else {
+    userLogger('error',`User ID: ${user.user_id} -> Invalid Arguments.`);
     Response.setApiResponse('error',422,'Invalid Arguments.','/');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());

@@ -24,7 +24,7 @@ This is a long-term project that will be ongoing.
 
 ## Database Setup
 1. Open your RDBMS software (e.g. MySQL Workbench/phpMyAdmin)
-2. Open the script found in `utilities/create-db.sql`
+2. Open the script found in `utilities/db/create-db.sql`
 3. (Optional) In the first 3 lines of the SQL script, you may rename the database as you see fit
 4. Run the script
 5. Set the system variable `innodb_autoinc_lock_mode = 1`
@@ -93,4 +93,8 @@ Create the `.env` file in the root of the project.
 
 ## Final Steps
 
-You should be good to go! Just run `npm install` followed by `npm run dev` and give it a try.
+You should be good to go! Just run the code below and give it a try.
+```bash
+npm install
+npm run dev
+```

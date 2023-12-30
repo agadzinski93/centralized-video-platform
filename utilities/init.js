@@ -85,7 +85,7 @@ const Init = {
 
         //Passport
         const {default:passport} = await import('../utilities/auth.mjs');
-        const { sessionStore } = await import("./mysql-connect.mjs");
+        const { sessionStore } = await import("./db/mysql-connect.mjs");
         const {flash : flashMessage} = await import("../utilities/flash.mjs");
         app.use(
         //Must occur prior to passport.initialize()

@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt'
 import { containsHTML,escapeSQL } from '../utilities/helpers/sanitizers.mjs';
 import {v4 as uuidv4} from 'uuid';
 import {AppError} from '../utilities/AppError.mjs';
-import { getDatabase } from '../utilities/mysql-connect.mjs';
+import { getDatabase } from '../utilities/db/mysql-connect.mjs';
 import { getUserById } from '../utilities/helpers/authHelpers.mjs';
 import { createEmail,sendEmail } from '../utilities/email/Email.mjs';
 import { USER_COLS } from '../utilities/globals/user.mjs';

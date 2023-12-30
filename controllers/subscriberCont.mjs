@@ -1,4 +1,5 @@
 import { ApiResponse } from "../utilities/ApiResponse.mjs";
+import { userLogger } from "../utilities/logger.mjs";
 import {AppError} from "../utilities/AppError.mjs";
 import { paramsExist } from "../utilities/validators/paramsExist.mjs";
 import { escapeHTML } from "../utilities/helpers/sanitizers.mjs";
@@ -17,6 +18,8 @@ const subscribe = async(req,res)=>{
         if (userId !== authorId) {
             result = await subscribeUser(userId,authorId, res);
             if (result instanceof AppError) {
+                userLogger('error',`User ID: ${userId} -> ${result.message}`);
+                Response.setStatus = result.status;
                 Response.setMessage = 'Unable to subscribe. Try again.';
             }
             else {
@@ -24,11 +27,13 @@ const subscribe = async(req,res)=>{
             }
         }
         else {
+            userLogger('error',`User ID: ${userId} -> Cannot subscribe to yourself.`);
             Response.setStatus = 400;
             Response.setMessage = 'Cannot subscribe to yourself.';
         }
     }
     else {
+        userLogger('error',`User ID: ${userId} -> Invalid Arguments.`);
         Response.setApiResponse('error',422,'Invalid Arguments.','/');
     }
     res.status(Response.getStatus).json(Response.getApiResponse()); 
@@ -43,6 +48,8 @@ const unsubscribe = async(req,res)=>{
         const authorId = escapeHTML(req.body.author_id.toString());
         result = await unsubscribeUser(userId,authorId);
         if (result instanceof AppError) {
+            userLogger('error',`User ID: ${userId} -> ${result.message}`);
+            Response.setStatus = result.status;
             Response.setMessage = 'Unable to unsubscribe. Try again.';
         }
         else {
@@ -50,11 +57,10 @@ const unsubscribe = async(req,res)=>{
         }
     }
     else {
+        userLogger('error',`User ID: ${userId} -> Invalid Arguments.`);
         Response.setApiResponse('error',422,'Invalid Arguments.','/');
     }
-    res.status(Response.getStatus).json(Response.getApiResponse()); 
-        
+    res.status(Response.getStatus).json(Response.getApiResponse());    
 }
     
-
 export {subscribe,unsubscribe};
