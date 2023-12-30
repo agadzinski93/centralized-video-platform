@@ -45,6 +45,8 @@ const insertTopic = async (
       `INSERT INTO topics (name, description, difficulty, username, imageUrl, filename, timeCreated) 
       VALUES('${topicName}', '${topicDescription}', '${topicDifficulty}', '${username}', '${topicImage}', '${filename}', NOW())`
     );
+
+    return await getTopic(topicName);
   } catch (err) {
     return new AppError(500, `Error creating topic: ${err.message}`);
   }

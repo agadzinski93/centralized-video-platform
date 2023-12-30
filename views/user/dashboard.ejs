@@ -22,7 +22,7 @@
   
   <div class="newTopicFormContainer">
     <h2 class="createTopicHeader">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Create New Topic<button class="btnCancelNewTopic">&#10006;</button></h2>
-    <form action="/topics/<%= user.username %>/create" method="POST" enctype="multipart/form-data" novalidate>
+    <form id="newTopicForm" enctype="multipart/form-data" novalidate>
       <div class="newTopicNameDifficultyContainer">
         <div>
           <label for="name">Name</label>
@@ -67,7 +67,7 @@
         <span class="fileSizeLimit">Max File Size: 1MB</span>
       </div>
       <div class="newTopicAddBtn">
-        <button>Add</button>
+        <button type="submit">Add</button>
       </div>
     </form>
   </div>

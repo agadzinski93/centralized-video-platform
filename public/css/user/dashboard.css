@@ -269,14 +269,6 @@ a:focus-visible {
   .dashboardTopicList > .dashboardTopicWrapperEdit a {
     text-decoration: none;
   }
-  .dashboardTopicWrapper:hover .btnTopicEdit,
-  .dashboardTopicWrapperEdit:hover .btnTopicEdit {
-    display: inline;
-  }
-  .dashboardTopicWrapper:hover .btnTopicDelete,
-  .dashboardTopicWrapperEdit:hover .btnTopicDelete {
-    display: inline;
-  }
   .dashboardTopicContainer {
     display:flex;
     height:10rem;
@@ -310,7 +302,6 @@ a:focus-visible {
   .btnTopicEdit {
     border: none;
     margin-left: auto;
-    display: none;
     width:32px;
     height:32px;
     background-color:inherit;
@@ -322,7 +313,6 @@ a:focus-visible {
     border: none;
     width:32px;
     height:32px;
-    display: none;
     background-color:inherit;
   }
   .btnTopicDelete img {

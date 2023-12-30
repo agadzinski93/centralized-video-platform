@@ -36,19 +36,25 @@ const flashBanner = (type = 'success', text = '', reference) => {
 };
 /**
  * 
- * @param {boolean} enable - enable/disable backdrop
+ * @param {boolean} enable - enable/disable backdrop or 'toggle'
  * @param {string} bgColor - background color of backdrop using acceptable CSS units
  * @param {string} opacity - opacity of backdrop using acceptable CSS units
  */
 const toggleBackdrop = (enable = false, bgColor = "#000", opacity = '50%') => {
     let backdrop = document.querySelector('.backdrop');
-    if (enable) {
-        backdrop.classList.remove('displayNone');
-        document.querySelector('body').classList.add('overflowHidden');
-    }
-    else {
-        backdrop.classList.add('displayNone');
-        document.querySelector('body').classList.remove('overflowHidden');
+    switch(enable) {
+        case true:
+            backdrop.classList.remove('displayNone');
+            document.querySelector('body').classList.add('overflowHidden');
+            break;
+        case false:
+            backdrop.classList.add('displayNone');
+            document.querySelector('body').classList.remove('overflowHidden');
+            break;
+        case 'toggle':
+            backdrop.classList.toggle('displayNone');
+            document.querySelector('body').classList.toggle('overflowHidden');
+        default:
     }
     backdrop.style.backgroundColor = bgColor;
     backdrop.opacity = opacity;

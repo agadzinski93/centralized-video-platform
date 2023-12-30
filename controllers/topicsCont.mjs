@@ -14,38 +14,52 @@ import {
 } from "../utilities/helpers/topicHelpers.mjs";
 
 const createTopic = async (req, res, next) => {
-  const topicName = escapeHTML(req.body.name);
-  const topicDifficulty = req.body.difficulty;
-  const topicDescription = escapeHTML(req.body.description);
-  let topicImage,
-      filename;
-  if (req.file != undefined) {
-    topicImage = req.file.path;
-    filename = req.file.filename;
+  const Response = new ApiResponse('error',500,'Something went wrong.','/');
+  if (paramsExist([req.user?.username,req.body.name,req.body.difficulty,req.body.description])) {
+    const topicName = escapeHTML(req.body.name);
+    const topicDifficulty = req.body.difficulty;
+    const topicDescription = escapeHTML(req.body.description);
+    let topicImage,
+        filename;
+    if (req.file != undefined) {
+      topicImage = req.file.path;
+      filename = req.file.filename;
+    }
+    else {
+      topicImage = null;
+      filename = null;
+    }
+
+    const exists = await topicExists(topicName);
+    if (exists instanceof AppError) {
+      Response.setStatus = exists.status;
+      Response.setMessage = (process.env.NODE_ENV === 'development') ? exists.message : 'Error verifying topic\'s existence.';
+    }
+    else if (exists !== 0) {
+      Response.setStatus = 409;
+      Response.setMessage = `Topic of name '${topicName}' already exists`;
+    } else {
+      const topic = await insertTopic(
+        topicName,
+        topicDifficulty,
+        topicDescription,
+        req.user.username,
+        topicImage,
+        filename,
+      );
+      if (topic instanceof AppError) {
+        Response.setStatus = error.status;
+        Response.setMessage = (process.env.NODE_ENV === 'development') ? topic.message : 'Error inserting topic.';
+      }
+      else {
+        Response.setApiResponse('success',201,'Topic created.','/',topic);
+      }
+    }
   }
   else {
-    topicImage = null;
-    filename = null;
+    Response.setApiResponse('error',422,'Invalid Arguments');
   }
-
-  const exists = await topicExists(topicName);
-  if (exists instanceof AppError) return next(exists);
-  else if (exists !== 0) {
-    req.flash("error", "Topic Already Exists");
-    res.redirect(`/user/${req.user.username}/dashboard`);
-  } else {
-    const error = await insertTopic(
-      topicName,
-      topicDifficulty,
-      topicDescription,
-      req.user.username,
-      topicImage,
-      filename,
-    );
-    if (error instanceof AppError) return next(error);
-    req.flash("success", "Topic Created");
-    res.redirect(`/user/${req.user.username}/dashboard`);
-  }
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const editTopic = async (req, res) => {
   const Response = new ApiResponse('error',500,'Something went wrong.','/');

@@ -18,7 +18,7 @@ const appendVideos = (videos) => {
         }
 }
 const appendAboutMe = (subscriptions,dateJoined,aboutMe) => {
-    aboutMeText = (aboutMe == '' || aboutMe == null) ? 'Nothing here!' : aboutMe;
+    const aboutMeText = (aboutMe == '' || aboutMe == null) ? 'Nothing here!' : aboutMe;
 
     document.getElementById('userContent').append(document.createElementTree('div',['infoContainer'],null,[
         ['p',null,null,null,'Subscriptions: '],
