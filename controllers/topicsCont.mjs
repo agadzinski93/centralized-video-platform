@@ -48,7 +48,7 @@ const createTopic = async (req, res, next) => {
         filename,
       );
       if (topic instanceof AppError) {
-        Response.setStatus = error.status;
+        Response.setStatus = topic.status;
         Response.setMessage = (process.env.NODE_ENV === 'development') ? topic.message : 'Error inserting topic.';
       }
       else {
