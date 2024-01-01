@@ -3,7 +3,7 @@ const express = require("express");
 require("dotenv").config();
 const app = express();
 const path = require("path");
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 const expressLayouts = require("express-ejs-layouts");
 const {
   addSecurityPolicy,
@@ -56,6 +56,18 @@ app.use(function(req,res,next){
     return next();
   }
 });
+
+app.get("/_health",(req,res)=>{
+  res.status(200).send('App is running.');
+});
+
+if (process.env.NODE_ENV === 'production'){
+  const __dirname = path.resolve();
+  app.use(express.static(path.join(__dirname,'client/dist')));
+  app.get('*',(req,res)=>{
+      res.sendFile(path.resolve(__dirname,'client','index.html'));
+  });
+}
 
 //Port
 const server = app.listen(PORT);

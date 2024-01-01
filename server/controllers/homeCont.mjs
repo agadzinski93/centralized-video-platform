@@ -24,6 +24,41 @@ const renderHome = async (req,res,next) => {
         next(new AppError(500, err.message));
       }
 }
+const renderHomeScreen = async (req,res,next) => {
+  const Response = new ApiResponse('error',500,'Something went wrong!','/');
+  try {
+    const videos = await getRecentVideos();
+    if (videos instanceof AppError) {
+      Response.setStatus = videos.status;
+      Response.setMessage = (process.env.NODE_ENV !== 'production') ? videos.message : 'Error retrieving recent videos.';
+    }
+    else {
+      for (let video of videos) {
+        video.topicUrl = enableHyphens(video.topic,true);
+      }
+      const topics = await getRecentTopic();
+      if (topics instanceof AppError) {
+        Response.setStatus = topics.status;
+        Response.setMessage = (process.env.NODE_ENV !== 'production') ? topics.message : 'Error retrieving recent videos.';
+      }
+      else {
+        for (let topic of topics) {
+          topic.topicUrl = enableHyphens(topic.name,true);
+        }
+        const output = {
+          title: 'Programming Help | Your Source For Programming Tutorials',
+          videos,
+          topics
+        }
+        Response.setApiResponse('success',200,'Successfully retrieved home page data.','/',output);
+      }
+    }
+    
+  } catch (err) {
+    Response.setMessage = `Error retrieving home page data: ${err.message}`;
+  }
+  res.status(Response.getStatus).json(Response.getApiResponse());
+}
 const renderSearch = async (req,res,next) => {
   const pageStyles = `${pathCSS}search.css`;
   let searchQuery = null,
@@ -67,4 +102,4 @@ const getMoreResults = async (req,res,next) => {
   
   res.status(output.getStatus).json(output.getApiResponse());
 }
-export {renderHome,renderSearch,getMoreResults};
+export {renderHome,renderHomeScreen,renderSearch,getMoreResults};

@@ -4,9 +4,11 @@
   "description": "Main Site",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js",
+    "build": "vite build client",
+    "client": "npm run dev --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "server": "nodemon server/server.js"
   },
   "author": "ahuntley",
   "license": "ISC",
@@ -17,6 +19,7 @@
     "cloudinary": "^1.41.1",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
@@ -36,6 +39,7 @@
     "winston": "^3.11.0"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "nodemon": "^3.0.1"
   },
   "overrides": {

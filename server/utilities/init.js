@@ -1,4 +1,6 @@
+const path = require('path');
 const helmet = require('helmet');
+const cors = require('cors');
 const closeApp = require('./closeApp');
 const session = require("express-session");
 const flash = require("connect-flash"); //Dependent on express-session
@@ -74,6 +76,7 @@ const Init = {
               }
             },
         }));
+        app.use(cors());
     },
     initializePassport: async(app) => {
         //Flash

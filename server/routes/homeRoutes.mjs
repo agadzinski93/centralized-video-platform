@@ -4,12 +4,17 @@ import { setHeaders } from '../utilities/validators/middleware/setHeaders.mjs';
 const router = express.Router({caseSensitive:false, strict:false});
 import { 
     renderHome,
+    renderHomeScreen,
     renderSearch,
     getMoreResults
 } from '../controllers/homeCont.mjs';
 
 router.route('/')
     .get(setHeaders,renderHome)
+    .all(verifyMethods(['GET']));
+
+router.route('/home')
+    .get(setHeaders,renderHomeScreen)
     .all(verifyMethods(['GET']));
 
 router.route('/search')
