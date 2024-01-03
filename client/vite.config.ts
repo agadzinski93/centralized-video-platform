@@ -1,7 +1,6 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   test: {
@@ -13,10 +12,11 @@ export default defineConfig({
     host: true,
     port: 3000,
     proxy: {
-      "/api/v1": {
+      "/api": {
         target: "http://localhost:5000",
         secure: (process.env.NODE_ENV === 'production') ? true : false,
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
         configure: proxy => {
           proxy.on('error', err => {
             console.error(`Proxy Error Message: ${err}`);

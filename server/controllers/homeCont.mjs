@@ -4,6 +4,8 @@ import { pathCSS,pathAssets } from '../utilities/config.mjs';
 import { escapeHTML,escapeSQL } from '../utilities/helpers/sanitizers.mjs';
 import { getRecentVideos, searchVideos, getMoreVideos } from '../utilities/helpers/videoHelpers.mjs';
 import { enableHyphens, getRecentTopic } from '../utilities/helpers/topicHelpers.mjs';
+import { redisCache } from '../utilities/redisCache.mjs';
+import { getRedisConnection } from '../utilities/db/redis.mjs';
 
 const renderHome = async (req,res,next) => {
     try {
@@ -27,33 +29,40 @@ const renderHome = async (req,res,next) => {
 const renderHomeScreen = async (req,res,next) => {
   const Response = new ApiResponse('error',500,'Something went wrong!','/');
   try {
-    const videos = await getRecentVideos();
-    if (videos instanceof AppError) {
-      Response.setStatus = videos.status;
-      Response.setMessage = (process.env.NODE_ENV !== 'production') ? videos.message : 'Error retrieving recent videos.';
+    const cache = await redisCache('url:home');
+    if (cache) {
+      Response.setApiResponse(cache.response,cache.status,cache.message,cache.previousUrl,cache.data);
     }
     else {
-      for (let video of videos) {
-        video.topicUrl = enableHyphens(video.topic,true);
-      }
-      const topics = await getRecentTopic();
-      if (topics instanceof AppError) {
-        Response.setStatus = topics.status;
-        Response.setMessage = (process.env.NODE_ENV !== 'production') ? topics.message : 'Error retrieving recent videos.';
+      const videos = await getRecentVideos();
+      if (videos instanceof AppError) {
+        Response.setStatus = videos.status;
+        Response.setMessage = (process.env.NODE_ENV !== 'production') ? videos.message : 'Error retrieving recent videos.';
       }
       else {
-        for (let topic of topics) {
-          topic.topicUrl = enableHyphens(topic.name,true);
+        for (let video of videos) {
+          video.topicUrl = enableHyphens(video.topic,true);
         }
-        const output = {
-          title: 'Programming Help | Your Source For Programming Tutorials',
-          videos,
-          topics
+        const topics = await getRecentTopic();
+        if (topics instanceof AppError) {
+          Response.setStatus = topics.status;
+          Response.setMessage = (process.env.NODE_ENV !== 'production') ? topics.message : 'Error retrieving recent videos.';
         }
-        Response.setApiResponse('success',200,'Successfully retrieved home page data.','/',output);
+        else {
+          for (let topic of topics) {
+            topic.topicUrl = enableHyphens(topic.name,true);
+          }
+          const output = {
+            title: 'Programming Help | Your Source For Programming Tutorials',
+            videos,
+            topics
+          }
+          Response.setApiResponse('success',200,'Successfully retrieved home page data.','/',output);
+          const redis = await getRedisConnection();
+          await redis.set('url:home',JSON.stringify(Response.getApiResponse()));
+        }
       }
-    }
-    
+    } 
   } catch (err) {
     Response.setMessage = `Error retrieving home page data: ${err.message}`;
   }

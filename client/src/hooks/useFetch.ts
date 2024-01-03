@@ -1,41 +1,74 @@
 import { useState, useEffect } from 'react'
 
-type ApiResponse = {
-  response: string,
-  status: number,
-  message: string,
-  previousUrl: string,
-  data?: object
-}
+type RequestOptions = {
+  method: string,
+  body?: object,
+  cache?: string,
+  credentials?: string,
+  headers?: {
+    Authorization?: string,
+    ContentType?: string
+  },
+  mode?: string,
+  redirect?: string,
+  referrerPolicy?: string
+};
 
-const useFetch = (url: string) => {
+const useFetch = <ResponseType>(url: string, { body, method }: RequestOptions) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<ApiResponse>({ response: '', status: 0, message: '', previousUrl: '' });
+  const [data, setData] = useState<ResponseType>();
   const [error, setError] = useState<Error>();
 
   useEffect(() => {
-    fetch(url, {
-      method: "GET",
-    })
-      .then((result) => {
-        result
-          .json()
-          .then((output: ApiResponse) => {
-            setIsLoading(false);
-            setData(output);
-            console.log(output);
-          })
-          .catch((err) => {
-            setIsLoading(false);
-            setError(err);
-            console.error(err.message);
-          });
+    if (body) {
+      fetch(url, {
+        method: method,
+        body: JSON.stringify(body)
       })
-      .catch((err) => {
-        setIsLoading(false);
-        setError(err);
-        console.error(err.message);
-      });
+        .then((result) => {
+          result
+            .json()
+            .then((output: ResponseType) => {
+              setIsLoading(false);
+              setData(output);
+            })
+            .catch((err) => {
+              setIsLoading(false);
+              setError(err);
+              console.error(err.message);
+            });
+        })
+        .catch((err) => {
+          setIsLoading(false);
+          setError(err);
+          console.error(err.message);
+        });
+    }
+    else {
+      fetch(url, {
+        method: method,
+      })
+        .then((result) => {
+          result
+            .json()
+            .then((output: ResponseType) => {
+              setIsLoading(false);
+              console.log(output);
+              setData(output);
+            })
+            .catch((err) => {
+              setIsLoading(false);
+              setError(err);
+              console.error(err.message);
+            });
+        })
+        .catch((err) => {
+          setIsLoading(false);
+          setError(err);
+          console.error(err.message);
+        });
+    }
+
   }, []);
 
   return { isLoading, data, error };
