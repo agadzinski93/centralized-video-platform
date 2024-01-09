@@ -16,47 +16,65 @@ const getUserInfo = async (username,content,getAll=false,page=0) => {
     const RESULTS_PER_PAGE = 24;
     let data = null;
     let choice = content.toLowerCase();
-    if (choice === 'topics' || choice === 'videos'){
-        let {resultsPerPage,pageNum} = setPaginationData(RESULTS_DEFAULT,0);
-        if (getAll && choice !== 'about-me') {
-            ({resultsPerPage,pageNum} = setPaginationData(RESULTS_PER_PAGE,page));
-        }
-        try {
-            const db = await getDatabase();
-            if (db instanceof AppError) {
-                data = {response:'error',message:'Couldn\'t connet to database.'};
-            }
-            let result = await db.execute(`SELECT * FROM ${choice} 
-                WHERE username = '${username}' ORDER BY timeCreated DESC LIMIT ${resultsPerPage} OFFSET ${pageNum * resultsPerPage}`);
-            data = result[0];
-            result = await db.execute(`SELECT count(*) AS count FROM ${choice} WHERE username = '${username}'`);
-            let count = Object.assign({},result[0][0]).count;
-            const moreResults = (getAll) ? endOfResults(resultsPerPage,page,count) : false;
-            if (choice === 'topics') {
-                for (let object of data) {
-                    object.topicUrl = enableHyphens(object.name,true);
-                }
-            }
-            else if (choice === 'videos') {
-                for (let object of data) {
-                    object.topicUrl = enableHyphens(object.topic,true);
-                }
-            }
-            data = {response:'success',data,moreResults};
-        } catch(err) {
-            data = {response:'error',message:`Error: ${err.message}`};
-        }
-    }
-    else if (choice === 'about-me') {
+    try {
         const db = await getDatabase();
         if (db instanceof AppError) {
             data = {response:'error',message:'Couldn\'t connet to database.'};
         }
-        let result = await db.execute(`SELECT dateJoined,about_me,subscriptions FROM users WHERE username = '${username}'`);
-        data = {response:'success',data:result[0][0]};
-    }
-    else {
-        data = {response:'error',message:'Invalid query.'};
+        else {
+            let {resultsPerPage,pageNum} = setPaginationData(RESULTS_DEFAULT,0);
+            let result,
+                count,
+                moreResults;
+
+            switch(choice) {
+                case 'topics':
+                    if (getAll) {
+                        ({resultsPerPage,pageNum} = setPaginationData(RESULTS_PER_PAGE,page));
+                    }
+                    result = await db.execute(`SELECT * FROM topics 
+                        WHERE username = ? ORDER BY timeCreated DESC LIMIT ? OFFSET ?`,
+                        [username,resultsPerPage.toString(),(pageNum*resultsPerPage).toString()]);
+
+                    data = result[0];
+                    result = await db.execute(`SELECT count(*) AS count FROM topics WHERE username = ?`,
+                        [username]);
+                    count = Object.assign({},result[0][0]).count;
+                    moreResults = (getAll) ? endOfResults(resultsPerPage,page,count) : false;
+                    for (let object of data) {
+                        object.topicUrl = enableHyphens(object.name,true);
+                    }
+                    data = {response:'success',data,moreResults};
+                    break;
+                case 'videos':
+                    if (getAll) {
+                        ({resultsPerPage,pageNum} = setPaginationData(RESULTS_PER_PAGE,page));
+                    }
+                    result = await db.execute(`SELECT * FROM videos 
+                        WHERE username = ? ORDER BY timeCreated DESC LIMIT ? OFFSET ?`,
+                        [username,resultsPerPage.toString(),(pageNum*resultsPerPage).toString()]);
+                    data = result[0];
+                    result = await db.execute(`SELECT count(*) AS count FROM videos WHERE username = ?`,
+                        [username]);
+                    count = Object.assign({},result[0][0]).count;
+                    moreResults = (getAll) ? endOfResults(resultsPerPage,page,count) : false;
+                    for (let object of data) {
+                        object.topicUrl = enableHyphens(object.topic,true);
+                    }
+                    data = {response:'success',data,moreResults};
+                    break;
+                case 'about-me':
+                    result = await db.execute(`SELECT dateJoined,about_me,subscriptions FROM users WHERE username = ?`,
+                        [username]);
+                    data = {response:'success',data:result[0][0]};
+                    break;
+                default:
+                    data = {response:'error',message:'Invalid query.'};
+            }
+        }
+    } catch (err) {
+        console.log(err.message);
+        data = {response:'error',message:`Error: ${err.message}`};
     }
     return data;
 }
@@ -77,13 +95,15 @@ const modifyImage = async (userId, path, filename, target) => {
         switch(target) {
             case 'PROFILE PIC':
                 result = await db.execute(`UPDATE users 
-                    SET pic_url = '${path}', pic_filename = '${filename}' 
-                    WHERE user_id = '${userId}'`);
+                    SET pic_url = ?, pic_filename = ? 
+                    WHERE user_id = ?`,
+                    [path,filename,userId]);
                 break;
             case 'BANNER':
                 result = await db.execute(`UPDATE users 
-                    SET banner_url = '${path}', banner_filename = '${filename}' 
-                    WHERE user_id = '${userId}'`);
+                    SET banner_url = ?, banner_filename = ? 
+                    WHERE user_id = ?`,
+                    [path,filename,userId]);
                 break;
             default:
         }
@@ -105,18 +125,18 @@ const updateRefreshSettings = async (userId, setting, value) => {
         switch(setting) {
             case 'Title':
             case 'title':
-                result = await db.execute(`UPDATE users SET settingRefreshTitle = '${value}' 
-                WHERE user_id = '${userId}'`);
+                result = await db.execute(`UPDATE users SET settingRefreshTitle = ? WHERE user_id = ?`,
+                [value,userId]);
                 break;
             case 'Description':
             case 'description':
-                result = await db.execute(`UPDATE users SET settingRefreshDescription = '${value}' 
-                WHERE user_id = '${userId}'`);
+                result = await db.execute(`UPDATE users SET settingRefreshDescription = ? WHERE user_id = ?`,
+                [value,userId]);
                 break;
             case 'Thumbnail':
             case 'thumbnail':
-                result = await db.execute(`UPDATE users SET settingRefreshThumbnail = '${value}' 
-                WHERE user_id = '${userId}'`);
+                result = await db.execute(`UPDATE users SET settingRefreshThumbnail = ? WHERE user_id = ?`,
+                [value,userId]);
                 break;
             default:
                 result = null;
@@ -130,8 +150,8 @@ const updateDisplayNameSetting = async (userId, newDisplayName) => {
     let result;
     try {
         const db = await getDatabase();
-        result = await db.execute(`UPDATE users SET display_name = '${newDisplayName}'
-            WHERE user_id = '${userId}'`);
+        result = await db.execute(`UPDATE users SET display_name = ? WHERE user_id = ?`,
+            [newDisplayName,userId]);
     } catch(err) {
         result = new AppError(500, err.message);
     }
@@ -141,8 +161,8 @@ const updateEmailSetting = async (userId, newEmail) => {
     let result;
     try {
         const db = await getDatabase();
-        result = await db.execute(`UPDATE users SET email = '${newEmail}'
-            WHERE user_id = '${userId}'`);
+        result = await db.execute(`UPDATE users SET email = ? WHERE user_id = ?`,
+            [newEmail,userId]);
     } catch(err) {
         result = new AppError(500, err.message);
     }
@@ -152,8 +172,8 @@ const updateAboutMeSetting = async (userId,newAboutMe) => {
     let result;
     try {
         const db = await getDatabase();
-        result = await db.execute(`UPDATE users SET about_me = '${newAboutMe}'
-            WHERE user_id = '${userId}'`);
+        result = await db.execute(`UPDATE users SET about_me = ? WHERE user_id = ?`,
+            [newAboutMe,userId]);
     } catch(err) {
         result = new AppError(500,err.message);
     }
@@ -172,8 +192,8 @@ const deleteImage = async (user,target) => {
                 if (filename !== process.env.DEFAULT_PIC_FILENAME) {
                     await cloudinary.uploader.destroy(filename);
                 }
-                db.execute(`UPDATE users SET pic_url = '${process.env.DEFAULT_PROFILE_PIC}', pic_filename = '${process.env.DEFAULT_PIC_FILENAME}'
-                    WHERE user_id = '${user.user_id}'`);
+                db.execute(`UPDATE users SET pic_url = ?, pic_filename = ? WHERE user_id = ?`,
+                    [process.env.DEFAULT_PROFILE_PIC,process.env.DEFAULT_PIC_FILENAME,user.user_id]);
                 path = process.env.DEFAULT_PROFILE_PIC;
                 filename = process.env.DEFAULT_PIC_FILENAME;
                 break;
@@ -181,7 +201,8 @@ const deleteImage = async (user,target) => {
                 filename = user.banner_filename;
                 await cloudinary.uploader.destroy(filename);
                 db.execute(`UPDATE users SET banner_url = null, banner_filename = null
-                    WHERE user_id = '${user.user_id}'`);
+                    WHERE user_id = ?`,
+                    [user.user_id]);
                 break;
             default:
         }
@@ -202,7 +223,8 @@ const deleteUser = async (id) => {
         const db = await getDatabase();
         if (db instanceof AppError) return next(db);
 
-        result = await db.execute(`DELETE FROM users WHERE user_id = '${id}'`);
+        result = await db.execute(`DELETE FROM users WHERE user_id = ?`,
+            [id]);
     }catch(err) {
         result = new AppError(500, "Something went wrong deleting user account!");
     }

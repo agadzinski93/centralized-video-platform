@@ -43,6 +43,7 @@ async function getConnection() {
         waitForConnections:true,
         connectionLimit:10,
         queueLimit:0,
+        namedPlaceholders:true,
         Promise: bluebird,
       });
   }

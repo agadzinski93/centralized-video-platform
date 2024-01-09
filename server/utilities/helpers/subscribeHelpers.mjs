@@ -13,7 +13,8 @@ const isSubscribed = async(userId,authorId)=>{
     let subscribed = false;
     
     try{
-        result = await db.execute(`SELECT count(*) AS count FROM subscribers WHERE user_id = '${userId}' AND subscriber_id = '${authorId}'`);
+        result = await db.execute(`SELECT count(*) AS count FROM subscribers WHERE user_id = ? AND subscriber_id = ?`,
+            [userId,authorId]);
         if (Object.assign({},result[0][0]).count > 0) {
             subscribed = true;
         }
@@ -32,7 +33,8 @@ const subscribeUser = async(userId,authorId)=>{
     let result = null;
     try {
         const db = await getDatabase();
-        result = await db.execute(`INSERT INTO subscribers(user_id,subscriber_id) VALUES('${userId}','${authorId}')`);
+        result = await db.execute(`INSERT INTO subscribers(user_id,subscriber_id) VALUES(?,?)`,
+            [userId,authorId]);
     }catch(err){
         result = new AppError(500,"Error Subscribing user");
     }
@@ -48,7 +50,8 @@ const unsubscribeUser = async(userId,authorId)=>{
     let result = null
     try {
         const db = await getDatabase();
-        result = await db.execute(`DELETE FROM subscribers WHERE user_id = '${userId}' AND subscriber_id = '${authorId}'`);
+        result = await db.execute(`DELETE FROM subscribers WHERE user_id = ? AND subscriber_id = ?`,
+            [userId,authorId]);
     }catch(err){
         result = new AppError(500,"Error Unsubscribing User");
     }
