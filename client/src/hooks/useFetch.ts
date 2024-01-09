@@ -20,55 +20,38 @@ const useFetch = <ResponseType>(url: string, { body, method }: RequestOptions) =
   const [error, setError] = useState<Error>();
 
   useEffect(() => {
+    let req = null;
     if (body) {
-      fetch(url, {
+      req = {
         method: method,
         body: JSON.stringify(body)
-      })
-        .then((result) => {
-          result
-            .json()
-            .then((output: ResponseType) => {
-              setIsLoading(false);
-              setData(output);
-            })
-            .catch((err) => {
-              setIsLoading(false);
-              setError(err);
-              console.error(err.message);
-            });
-        })
-        .catch((err) => {
-          setIsLoading(false);
-          setError(err);
-          console.error(err.message);
-        });
+      };
     }
     else {
-      fetch(url, {
-        method: method,
-      })
-        .then((result) => {
-          result
-            .json()
-            .then((output: ResponseType) => {
-              setIsLoading(false);
-              console.log(output);
-              setData(output);
-            })
-            .catch((err) => {
-              setIsLoading(false);
-              setError(err);
-              console.error(err.message);
-            });
-        })
-        .catch((err) => {
-          setIsLoading(false);
-          setError(err);
-          console.error(err.message);
-        });
+      req = {
+        method: method
+      };
     }
 
+    fetch(url, req)
+      .then((result) => {
+        result
+          .json()
+          .then((output: ResponseType) => {
+            setIsLoading(false);
+            setData(output);
+          })
+          .catch((err) => {
+            setIsLoading(false);
+            setError(err);
+            console.error(err.message);
+          });
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setError(err);
+        console.error(err.message);
+      });
   }, []);
 
   return { isLoading, data, error };

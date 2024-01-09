@@ -83,7 +83,7 @@ const Init = {
         app.use(flash());
 
         //Cookie Parser
-        const COOKIE_SECRET = process.env.COOKIE_SECRET || "notsomuchasecret";
+        const COOKIE_SECRET = process.env.COOKIE_SECRET;
         app.use(cookieParser(COOKIE_SECRET));
 
         //Passport

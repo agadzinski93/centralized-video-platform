@@ -1,3 +1,4 @@
+import { logger } from "../logger.mjs";
 import { createClient } from "redis";
 
 let client = null;
@@ -13,12 +14,12 @@ class RedisConnection {
                     path:process.env.REDIS_PATH,
                     port:process.env.REDIS_PORT
                 }
-            }).on('error', err => console.error(`Redis Client Error: ${err.message}`))
+            }).on('error', err => logger('error',`Redis Client Error: ${err.message}`))
                 .connect();
         }
         else {
             this.#client = await createClient()
-                .on('error', err => console.error(`Redis Client Error: ${err.message}`))
+                .on('error', err => logger('error',`Redis Client Error: ${err.message}`))
                 .connect();
 
         }

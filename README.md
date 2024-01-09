@@ -91,6 +91,12 @@ Create the `.env` file in the root of the project.
 
 `EMAIL_USER` - Email account that is responsible for sending emails
 
+`REDIS_ENABLED` - True/False on whether Redis is active
+
+`REDIS_PATH` - Path on server to redis socket file
+
+`REDIS_PORT` - Port to redis database
+
 ## Final Steps
 
 You should be good to go! Just run the code below and give it a try.

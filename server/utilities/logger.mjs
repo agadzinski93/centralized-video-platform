@@ -8,6 +8,16 @@ const ConsoleLog = new transports.Console({
     format:format.simple()
 });
 
+const logger = createLogger({
+    transports:[
+        new transports.File({
+            filename:'error.log',
+            level:'error',
+            format:format.combine(format.timestamp({format:timeZone}),format.json())
+        })
+    ]
+});
+
 const topicLogger = createLogger({
     transports:[
         new transports.File({
@@ -39,9 +49,10 @@ const videoLogger = createLogger({
 });
 
 if (process.env.NODE_ENV !== 'production') {
+    logger.add(ConsoleLog);
     topicLogger.add(ConsoleLog);
     userLogger.add(ConsoleLog);
     videoLogger.add(ConsoleLog);
 }
 
-export {topicLogger,userLogger,videoLogger};
+export {logger,topicLogger,userLogger,videoLogger};

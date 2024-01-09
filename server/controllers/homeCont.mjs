@@ -4,7 +4,7 @@ import { pathCSS,pathAssets } from '../utilities/config.mjs';
 import { escapeHTML,escapeSQL } from '../utilities/helpers/sanitizers.mjs';
 import { getRecentVideos, searchVideos, getMoreVideos } from '../utilities/helpers/videoHelpers.mjs';
 import { enableHyphens, getRecentTopic } from '../utilities/helpers/topicHelpers.mjs';
-import { redisCache } from '../utilities/redisCache.mjs';
+import { getRedisCache, setRedisCache } from '../utilities/db/redisCache.mjs';
 import { getRedisConnection } from '../utilities/db/redis.mjs';
 
 const renderHome = async (req,res,next) => {
@@ -28,10 +28,11 @@ const renderHome = async (req,res,next) => {
 }
 const renderHomeScreen = async (req,res,next) => {
   const Response = new ApiResponse('error',500,'Something went wrong!','/');
+  const CACHE_KEY = 'url:home';
   try {
-    const cache = await redisCache('url:home');
+    const cache = await getRedisCache(CACHE_KEY);
     if (cache) {
-      Response.setApiResponse(cache.response,cache.status,cache.message,cache.previousUrl,cache.data);
+      Response.setApiResponse(...Object.values(cache));
     }
     else {
       const videos = await getRecentVideos();
@@ -58,8 +59,7 @@ const renderHomeScreen = async (req,res,next) => {
             topics
           }
           Response.setApiResponse('success',200,'Successfully retrieved home page data.','/',output);
-          const redis = await getRedisConnection();
-          await redis.set('url:home',JSON.stringify(Response.getApiResponse()));
+          await setRedisCache(CACHE_KEY,JSON.stringify(Response.getApiResponse()),{EX:30});
         }
       }
     } 
