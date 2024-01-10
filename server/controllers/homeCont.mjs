@@ -103,12 +103,11 @@ const getMoreResults = async (req,res,next) => {
       for (let video of videos) {
         video.topicUrl = enableHyphens(video.topic,true);
       }
-      output.setApiResponse('success',200,'Successfully retrieved more videos!',videos);
+      output.setApiResponse('success',200,'Successfully retrieved more videos!','/',videos);
     } catch(err) {
       output.setMessage = 'Trouble getting more videos.';
     }
   }
-  
   res.status(output.getStatus).json(output.getApiResponse());
 }
 export {renderHome,renderHomeScreen,renderSearch,getMoreResults};

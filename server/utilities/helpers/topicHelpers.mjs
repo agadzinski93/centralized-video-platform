@@ -18,10 +18,10 @@ const topicExists = async (name) => {
     let topicName = escapeSQL(name);
     const db = await getDatabase();
     if (db instanceof AppError) return db;
-    let exists = await db.execute(
-      `SELECT COUNT(name) FROM topics WHERE name = ? LIMIT 1`,
-      [topicName]
-    );
+
+    const sql = `SELECT COUNT(name) FROM topics WHERE name = ?`;
+    const values = [topicName];
+    let exists = await db.execute(sql,values);
     
     return Object.values(Object.assign({}, exists[0][0]))[0];
   } catch (err) {
@@ -41,12 +41,12 @@ const insertTopic = async (
     if (db instanceof AppError) return db;
     topicName = escapeSQL(topicName);
     topicDescription = escapeSQL(topicDescription);
+
+    const sql = `INSERT INTO topics (name, description, difficulty, username, imageUrl, filename, timeCreated) 
+      VALUES(?, ?, ?, ?, ?, ?, NOW())`;
+    const values = [topicName,topicDescription,topicDifficulty,username,topicImage,filename];
     
-    await db.execute(
-      `INSERT INTO topics (name, description, difficulty, username, imageUrl, filename, timeCreated) 
-      VALUES(?, ?, ?, ?, ?, ?, NOW())`,
-      [topicName,topicDescription,topicDifficulty,username,topicImage,filename]
-    );
+    await db.execute(sql,values);
 
     return await getTopic(topicName);
   } catch (err) {
@@ -57,9 +57,9 @@ const getAllTopics = async () => {
   try {
     const db = await getDatabase();
     if (db instanceof AppError) return db;
-    let topics = await db.execute(
-      "SELECT name, description, difficulty, username, imageUrl FROM topics LIMIT 10"
-    );
+
+    const sql = `SELECT name, description, difficulty, username, imageUrl FROM topics LIMIT 10`;
+    let topics = await db.execute(sql);
     return topics[0].map((o) => Object.assign({}, o));
   } catch (err) {
     return new AppError(500, "Error Retrieving Topics");
@@ -69,9 +69,12 @@ const getUserTopics = async (username) => {
   try {
     const db = await getDatabase();
     if (db instanceof AppError) return db;
-    let topics = await db.execute(`SELECT name, description, difficulty, imageUrl 
-      FROM topics WHERE username = ? LIMIT 10`,
-      [username]);
+
+    const sql = `SELECT name, description, difficulty, imageUrl 
+      FROM topics WHERE username = ? LIMIT 10`;
+    const values = [username];
+
+    let topics = await db.execute(sql,values);
     return topics[0].map((o) => Object.assign({}, o));
   } catch (err) {
     return new AppError(500, `Error Retrieving ${username}'s topics`);
@@ -82,9 +85,11 @@ const getTopic = async (topic) => {
     const db = await getDatabase();
     if (db instanceof AppError) return db;
     topic = escapeSQL(topic);
-    let topics = await db.execute(`SELECT name, description, difficulty, imageUrl 
-      FROM topics WHERE name = ? LIMIT 1`,
-      [topic]);
+
+    const sql = `SELECT name, description, difficulty, imageUrl 
+      FROM topics WHERE name = ?`;
+    const values = [topic];
+    let topics = await db.execute(sql,values);
     return topics[0].map((o) => Object.assign({}, o));
   } catch (err) {
     return new AppError(500, `Error Retrieving Topic`);
@@ -95,7 +100,9 @@ const getRecentTopic = async () => {
     const db = await getDatabase();
     if (db instanceof AppError) return db;
 
-    let topics = await db.execute('SELECT * FROM recent_topics LIMIT 14');
+    const sql = 'SELECT * FROM recent_topics LIMIT 14';
+
+    let topics = await db.execute(sql);
     return topics[0].map(o => Object.assign({}, o));
   } catch(err) {
     return new AppError(500, 'Error Retrieving Recent Videos');
@@ -110,12 +117,13 @@ const updateTopic = async (
   try {
     const db = await getDatabase();
     if (db instanceof AppError) return db;
-    await db.execute(
-      `UPDATE topics 
+
+    const sql = `UPDATE topics 
       SET name = ?, difficulty = ?, description = ?
-      WHERE name = ?`,
-      [topicName,topicDifficulty,topicDescription,originalTopicName]
-  );
+      WHERE name = ?`;
+    const values = [topicName,topicDifficulty,topicDescription,originalTopicName];
+
+    await db.execute(sql,values);
   } catch (err) {
     return new AppError(500, `Error Updating Topic: ${err.message}`);
   }
@@ -126,10 +134,13 @@ const modifyTopicImage = async (topicName, topicImage, filename) => {
     if (db instanceof AppError) return db;
 
     //Get topic filename
-    let result = await db.execute(`UPDATE topics SET imageUrl = ?, filename = ? WHERE name = ?`,
-      [topicImage,filename,topicName]);
-    result = await db.execute(`SELECT imageUrl FROM topics WHERE name = ?`,
-      [topicName]);
+    const sql = `UPDATE topics SET imageUrl = ?, filename = ? WHERE name = ?`;
+    const values = [topicImage,filename,topicName];
+    let result = await db.execute(sql,values);
+
+    const sqlTwo = `SELECT imageUrl FROM topics WHERE name = ?`;
+    const valuesTwo = [topicName];
+    result = await db.execute(sqlTwo,valuesTwo);
     let topic = result[0].map(o => Object.assign({},o));
     
     return topic[0].imageUrl;
@@ -142,11 +153,18 @@ const removeTopic = async (topic) => {
     const db = await getDatabase();
     if (db instanceof AppError) return db;
     topic = escapeSQL(topic);
-    let topicInfo = await db.execute(`SELECT filename FROM topics WHERE name = ? LIMIT 1`,
-      [topic]);
+
+    const sql = `SELECT filename FROM topics WHERE name = ?`;
+    const values = [topic];
+
+    let topicInfo = await db.execute(sql,values);
     topicInfo = topicInfo[0].map((o) => Object.assign({},o))
     await cloudinary.uploader.destroy(topicInfo[0].filename);
-    await db.execute(`DELETE FROM topics WHERE name = '${topic}'`);
+
+    const sqlTwo = `DELETE FROM topics WHERE name = ?`;
+    const valuesTwo = [topic];
+
+    await db.execute(sqlTwo,valuesTwo);
     return null;
   } catch (err) {
     return new AppError(500, "Error Deleting Topic");
@@ -160,8 +178,10 @@ const deleteTopicImage = async (topicName) => {
     topicName = escapeSQL(topicName);
 
     //Get topic filename
-    let result = await db.execute(`SELECT filename FROM topics WHERE name = ?`,
-      [topicName]);
+    const sql = `SELECT filename FROM topics WHERE name = ?`;
+    const values = [topicName];
+
+    let result = await db.execute(sql,values);
     let topic = result[0].map(o => Object.assign({}, o));
     let filename = topic[0].filename;
     if (filename !== 'null') {
@@ -177,21 +197,23 @@ const removeSelectedTopics = async (topics) => {
   try {
     const db = await getDatabase();
     if (db instanceof AppError) return db;
-    let sql = '';
+    let stmt = '';
     for (let i = 0; i < topics.length; i++) {
-      (i === 0) ? sql += `'${escapeSQL(topics[i])}'`: sql += `,'${escapeSQL(topics[i])}'`;
+      (i === 0) ? stmt += `'${escapeSQL(topics[i])}'`: stmt += `,'${escapeSQL(topics[i])}'`;
     }
 
     //Select topics to get filenames
-    let selectedTopics = await db.execute(`SELECT filename FROM topics WHERE name IN (?)`,
-      [sql]);
+    const sql = `SELECT filename FROM topics WHERE name IN (?)`;
+    const values = [stmt];
+    let selectedTopics = await db.execute(sql,values);
     selectedTopics = selectedTopics[0].map(o => Object.assign({},o));
     for (let i = 0;i < selectedTopics.length; i++) {
       await cloudinary.uploader.destroy(selectedTopics[i].filename);
     }
 
-    await db.execute(`DELETE FROM topics WHERE name IN (?)`,
-      [sql]);
+    const sqlTwo = `DELETE FROM topics WHERE name IN (?)`;
+    const valuesTwo = [stmt];
+    await db.execute(sqlTwo,valuesTwo);
   } catch (err) {
     return new AppError(500, "Error Deleting Topics");
   }

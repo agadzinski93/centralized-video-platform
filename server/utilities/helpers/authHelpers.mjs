@@ -37,9 +37,11 @@ const getUserById = async (id, columns = '*') => {
   try {
     const db = await getDatabase();
     if (db instanceof AppError) return db;
-    const user = await db.execute(
-      `SELECT ${columns} FROM users WHERE user_id = ?`,
-      [id]);
+
+    const sql = `SELECT ${columns} FROM users WHERE user_id = ?`;
+    const values = [id];
+
+    const user = await db.execute(sql,values);
 
     if (user[0].length === 0) {
       return new AppError(400, "User Doesn't Exist");
@@ -60,9 +62,11 @@ const usernameMatch = async (loggedUsername, urlUsername) => {
   try {
     const db = await getDatabase();
     if (db instanceof AppError) return db;
-    const user = await db.execute(
-      `SELECT username FROM users WHERE username = ?`,
-      [urlUsername]);
+
+    const sql = `SELECT username FROM users WHERE username = ?`;
+    const values = [urlUsername];
+
+    const user = await db.execute(sql,values);
 
     if (user[0].length === 0) {
       return new AppError(400, "User Doesn't Exist");

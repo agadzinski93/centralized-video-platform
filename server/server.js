@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 5000;
 const expressLayouts = require("express-ejs-layouts");
 const {
   addSecurityPolicy,
+  addRateLimit,
   addCloseProcessHandlers, 
   addRoutes,
   initializePassport
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 addSecurityPolicy(app);
+addRateLimit(app);
 
 let routesLoaded = false;
 

@@ -5,6 +5,7 @@ const closeApp = require('./closeApp');
 const session = require("express-session");
 const flash = require("connect-flash"); //Dependent on express-session
 const cookieParser = require("cookie-parser");
+const rateLimit = require('express-rate-limit');
 
 const Init = {
     addCloseProcessHandlers: (server) => {
@@ -77,6 +78,15 @@ const Init = {
             },
         }));
         app.use(cors());
+    },
+    addRateLimit: (app) => {
+        const limiter = rateLimit({
+            windowMs: 5 * 60 * 1000,
+            limit: 100,
+            standardHeaders: 'draft-7',
+            legacyHeaders:false
+        });
+        app.use(limiter);
     },
     initializePassport: async(app) => {
         //Flash

@@ -1,5 +1,5 @@
 import { getDatabase } from "../db/mysql-connect.mjs";
-import { escapeSQL } from "./sanitizers.mjs";
+import { escapeSQL,prepareLikeStatement } from "./sanitizers.mjs";
 import {AppError} from "../AppError.mjs";
 
   const getTopicVideos = async (topic) => {
@@ -7,9 +7,11 @@ import {AppError} from "../AppError.mjs";
       const db = await getDatabase();
       if (db instanceof AppError) return db;
       topic = escapeSQL(topic);
-      const videos = await db.execute(
-        `SELECT * FROM videos WHERE topic = '${topic}' ORDER BY id`
-      );
+
+      const sql = `SELECT * FROM videos WHERE topic = ? ORDER BY id`;
+      const values = [topic];
+
+      const videos = await db.execute(sql,values);
       
       return videos[0].map((v) => Object.assign({}, v));
     } catch (err) {
@@ -24,7 +26,6 @@ import {AppError} from "../AppError.mjs";
    * @returns AppError or Object containing video info
    */
   const getVideo = async (vidId, topicName, author = false) => {
-    let video;
     try {
       const db = await getDatabase();
       if (db instanceof AppError) return db;
@@ -34,9 +35,18 @@ import {AppError} from "../AppError.mjs";
       const vidUrl = 'youtube.com/watch?v=' + vidId;
       let video;
       if (!author) {
-        video = await db.execute(`SELECT * FROM videos WHERE url = '${vidUrl}' AND topic = '${topicName}' LIMIT 1`);
+        const sql = `SELECT * FROM videos WHERE url = ? AND topic = ?`;
+        const values = [vidUrl,topicName];
+
+        video = await db.execute(sql,values);
       } else {
-        video = await db.execute(`SELECT v.*,u.user_id,u.subscribers,u.pic_url FROM videos v JOIN users u ON v.username = u.username WHERE url = '${vidUrl}' AND topic = '${topicName}' LIMIT 1`);
+        const sqlTwo = `SELECT v.*,u.user_id,u.subscribers,u.pic_url 
+          FROM videos v JOIN users u 
+          ON v.username = u.username 
+          WHERE url = ? AND topic = ?`;
+        const valuesTwo = [vidUrl,topicName];
+
+        video = await db.execute(sqlTwo,valuesTwo);
       }
 
       let videoInfo = video[0].map((v) => Object.assign({}, v));
@@ -51,7 +61,7 @@ import {AppError} from "../AppError.mjs";
     }
   }
   const getVideos = async (vidIds) => {
-    let video;
+    let videos;
     let input = ``;
     try {
       const db = await getDatabase();
@@ -66,7 +76,10 @@ import {AppError} from "../AppError.mjs";
         }
       }
       
-      let videos = await db.execute(`SELECT url FROM videos WHERE id IN (${input})`);
+      const sql = `SELECT url FROM videos WHERE id IN (?)`;
+      const values = [input];
+
+      videos = await db.execute(sql,values);
 
       let videoInfo = videos[0].map((v) => Object.assign({}, v));
       if (videoInfo.length < 1) {
@@ -84,7 +97,9 @@ import {AppError} from "../AppError.mjs";
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      let videos = await db.execute(`SELECT * FROM recent_videos LIMIT 14`);
+      const sql = 'SELECT * FROM recent_videos LIMIT 14';
+
+      let videos = await db.execute(sql);
 
       return videos[0].map((v) => Object.assign({}, v));
     } catch(err) {
@@ -96,8 +111,13 @@ import {AppError} from "../AppError.mjs";
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      let videos = await db.execute(`SELECT * FROM search_videos WHERE title LIKE '%${q}%' LIMIT 20`);
-      return videos[0].map((v) => Object.assign({}, v));
+      const query = prepareLikeStatement(q);
+
+      const sql = `SELECT * FROM search_videos WHERE title LIKE ? LIMIT 20`;
+      const values = [query+'%'];
+
+      let videos = await db.execute(sql,values);
+      return videos[0];
     } catch(err) {
       return new AppError(500, "Error Retrieving Videos");
     }
@@ -109,8 +129,13 @@ import {AppError} from "../AppError.mjs";
 
       const skip = pageNumber * 20;
 
-      let videos = await db.execute(`SELECT * FROM search_videos WHERE title LIKE '%${q}%' LIMIT 20 OFFSET ${skip}`);
-      return videos[0].map((v) => Object.assign({}, v));
+      const query = prepareLikeStatement(q);
+
+      const sql = `SELECT * FROM search_videos WHERE title LIKE ? LIMIT 20 OFFSET ?`;
+      const values = [query+'%',skip.toString()];
+
+      let videos = await db.execute(sql,values);
+      return videos[0];
     } catch(err) {
       return new AppError(500, "Error Retrieving Videos");
     }
@@ -224,9 +249,10 @@ import {AppError} from "../AppError.mjs";
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      const result = await db.execute(
-        `SELECT COUNT(url) FROM videos WHERE id = '${id}' LIMIT 1`
-      );
+      const sql = `SELECT COUNT(url) FROM videos WHERE id = ? LIMIT 1`;
+      const values = [id];
+
+      const result = await db.execute(sql,values);
       
       exists = Object.values(result[0][0])[0] === 0 ? (exists = false) : (exists = true);
         
@@ -243,9 +269,10 @@ import {AppError} from "../AppError.mjs";
 
       topicName = escapeSQL(topicName);
 
-      const result = await db.execute(
-        `SELECT COUNT(url) FROM videos WHERE url = 'youtube.com/watch?v=${vidId}' AND topic = '${topicName}' LIMIT 1`
-      );
+      const sql = `SELECT COUNT(url) FROM videos WHERE url = 'youtube.com/watch?v=:vidId' AND topic = :topicName`;
+      const values = {vidId,topicName};
+
+      const result = await db.execute(sql,values);
       exists = Object.values(result[0][0])[0] === 0 ? (exists = false) : (exists = true);
         
       return exists;
@@ -292,14 +319,21 @@ import {AppError} from "../AppError.mjs";
           values += `('${videos[i].title}', 'youtube.com/watch?v=${videos[i].resourceId.videoId}', '${videos[i].description}', '5', '${videos[i].thumbnails.medium.url}', '${topicName}', '${username}'), `;
         }
       }
-      let result = await db.query(`INSERT IGNORE INTO videos (title, url, description, views, thumbnail, topic, username) 
-            VALUES ${values};`);
+      const sql = `INSERT IGNORE INTO videos (title, url, description, views, thumbnail, topic, username) 
+        VALUES ?`;
+      const input = [values];
 
-      let firstId = await db.query('SELECT LAST_INSERT_ID() As firstId;');
+      let result = await db.execute(sql,input);
+
+      let firstId = await db.execute('SELECT LAST_INSERT_ID() As firstId');
       firstId = firstId[0][0].firstId;
       
       let data = result.map(o => Object.assign({},o))
-      let addedVideos = await db.query(`SELECT * FROM videos WHERE id BETWEEN ${firstId} AND ${firstId + data[0].affectedRows - 1};`);
+
+      const sqlTwo = `SELECT * FROM videos WHERE id BETWEEN ? AND ?`;
+      const inputTwo = [firstId,firstId + data[0].affectedRows - 1];
+
+      let addedVideos = await db.execute(sqlTwo,inputTwo);
       
       return {
         affectedRows: data[0].affectedRows,
@@ -334,29 +368,43 @@ import {AppError} from "../AppError.mjs";
       if (title !== null) {
         if (description !== null) {
           if (thumbnail !== null) {
-            await db.execute(`UPDATE videos SET title = '${title}', description = '${description}', thumbnail = '${thumbnail}' WHERE id = ${id}`);
+            const sql = `UPDATE videos SET title = ?, description = ?, thumbnail = ? WHERE id = ?`;
+            const values = [title,description,thumbnail,id];
+            await db.execute(sql,values);
           }
           else {
-            await db.execute(`UPDATE videos SET title = '${title}', description = '${description}' WHERE id = ${id}`);
+            const sqlTwo = `UPDATE videos SET title = ?, description = ? WHERE id = ?`;
+            const valuesTwo = [title,description,id];
+            await db.execute(sqlTwo,valuesTwo);
           }
         }
         else if (thumbnail !== null) {
-          await db.execute(`UPDATE videos SET title = '${title}', thumbnail = '${thumbnail}' WHERE id = ${id}`);
+          const sqlThree = `UPDATE videos SET title = ?, thumbnail = ? WHERE id = ?`;
+          const valuesThree = [title,thumbnail,id];
+          await db.execute(sqlThree,valuesThree);
         }
         else {
-          await db.execute(`UPDATE videos SET title = '${title}' WHERE id = ${id}`);
+          const sqlFour = `UPDATE videos SET title = ? WHERE id = ?`;
+          const valuesFour = [title,id];
+          await db.execute(sqlFour,valuesFour);
         }
       }
       else if (description !== null) {
         if (thumbnail !== null) {
-          await db.execute(`UPDATE videos SET description = '${description}', thumbnail = '${thumbnail}' WHERE id = ${id}`);
+          const sqlFive = `UPDATE videos SET description = ?, thumbnail = ? WHERE id = ?`;
+          const valuesFive = [description,thumbnail,id];
+          await db.execute(sqlFive,valuesFive);
         }
         else {
-          await db.execute(`UPDATE videos SET description = '${description}' WHERE id = ${id}`);
+          const sqlSix = `UPDATE videos SET description = ? WHERE id = ?`;
+          const valuesSix = [description,id];
+          await db.execute(sqlSix,valuesSix);
         }
       }
       else if (thumbnail !== null) {
-        await db.execute(`UPDATE videos SET thumbnail = '${thumbnail}' WHERE id = ${id}`);
+        const sqlSeven = `UPDATE videos SET thumbnail = ? WHERE id = ?`;
+        const valuesSeven = [thumbnail,id];
+        await db.execute(sqlSeven,valuesSeven);
       }
       return {title, description, thumbnail};
     } catch(err) {
@@ -368,7 +416,10 @@ import {AppError} from "../AppError.mjs";
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      const result = await db.execute(`CALL swap_video_rows(${currentVidId},${swapVideoId})`);
+      const sql = `CALL swap_video_rows(?,?)`;
+      const values = [currentVidId,swapVideoId];
+
+      await db.execute(sql,values);
       
       return null;
     } catch(err) {
@@ -380,7 +431,10 @@ import {AppError} from "../AppError.mjs";
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      await db.execute(`DELETE FROM videos WHERE id = ${id}`);
+      const sql = `DELETE FROM videos WHERE id = ?`;
+      const values = [id];
+
+      await db.execute(sql,values);
 
       return null;
     } catch (err) {
@@ -392,18 +446,21 @@ import {AppError} from "../AppError.mjs";
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      let sql = '';
+      let stmt = '';
 
       for (let i = 0; i < videos.length; i++) {
         if (i === 0) {
-          sql += `${videos[i]}`;
+          stmt += `${videos[i]}`;
         }
         else {
-          sql += `,${videos[i]}`;
+          stmt += `,${videos[i]}`;
         }
       }
+
+      const sql = `DELETE FROM videos WHERE id IN (?)`;
+      const values = [stmt];
       
-      await db.execute(`DELETE FROM videos WHERE id IN (${sql})`);
+      await db.execute(sql,values);
 
       return null
     } catch(err) {

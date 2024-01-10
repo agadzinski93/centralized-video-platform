@@ -32,9 +32,11 @@ const getUserInfo = async (username,content,getAll=false,page=0) => {
                     if (getAll) {
                         ({resultsPerPage,pageNum} = setPaginationData(RESULTS_PER_PAGE,page));
                     }
-                    result = await db.execute(`SELECT * FROM topics 
-                        WHERE username = ? ORDER BY timeCreated DESC LIMIT ? OFFSET ?`,
-                        [username,resultsPerPage.toString(),(pageNum*resultsPerPage).toString()]);
+                    const sql = `SELECT * FROM topics 
+                        WHERE username = ? ORDER BY timeCreated DESC LIMIT ? OFFSET ?`;
+                    const values = [username,resultsPerPage.toString(),(pageNum*resultsPerPage).toString()];
+                    
+                    result = await db.execute(sql,values);
 
                     data = result[0];
                     result = await db.execute(`SELECT count(*) AS count FROM topics WHERE username = ?`,
@@ -50,9 +52,11 @@ const getUserInfo = async (username,content,getAll=false,page=0) => {
                     if (getAll) {
                         ({resultsPerPage,pageNum} = setPaginationData(RESULTS_PER_PAGE,page));
                     }
-                    result = await db.execute(`SELECT * FROM videos 
-                        WHERE username = ? ORDER BY timeCreated DESC LIMIT ? OFFSET ?`,
-                        [username,resultsPerPage.toString(),(pageNum*resultsPerPage).toString()]);
+                    const sqlTwo = `SELECT * FROM videos 
+                        WHERE username = ? ORDER BY timeCreated DESC LIMIT ? OFFSET ?`;
+                    const valuesTwo = [username,resultsPerPage.toString(),(pageNum*resultsPerPage).toString()];
+                    
+                    result = await db.execute(sqlTwo,valuesTwo);
                     data = result[0];
                     result = await db.execute(`SELECT count(*) AS count FROM videos WHERE username = ?`,
                         [username]);
@@ -64,8 +68,9 @@ const getUserInfo = async (username,content,getAll=false,page=0) => {
                     data = {response:'success',data,moreResults};
                     break;
                 case 'about-me':
-                    result = await db.execute(`SELECT dateJoined,about_me,subscriptions FROM users WHERE username = ?`,
-                        [username]);
+                    const sqlThree = `SELECT dateJoined,about_me,subscriptions FROM users WHERE username = ?`;
+                    const valuesThree = [username];
+                    result = await db.execute(sqlThree,valuesThree);
                     data = {response:'success',data:result[0][0]};
                     break;
                 default:
@@ -94,16 +99,20 @@ const modifyImage = async (userId, path, filename, target) => {
         let result;
         switch(target) {
             case 'PROFILE PIC':
-                result = await db.execute(`UPDATE users 
+                const sql = `UPDATE users 
                     SET pic_url = ?, pic_filename = ? 
-                    WHERE user_id = ?`,
-                    [path,filename,userId]);
+                    WHERE user_id = ?`;
+                const values = [path,filename,userId];
+
+                result = await db.execute(sql,values);
                 break;
             case 'BANNER':
-                result = await db.execute(`UPDATE users 
+                const sqlTwo = `UPDATE users 
                     SET banner_url = ?, banner_filename = ? 
-                    WHERE user_id = ?`,
-                    [path,filename,userId]);
+                    WHERE user_id = ?`;
+                const valuesTwo = [path,filename,userId];
+
+                result = await db.execute(sqlTwo,valuesTwo);
                 break;
             default:
         }
@@ -125,18 +134,24 @@ const updateRefreshSettings = async (userId, setting, value) => {
         switch(setting) {
             case 'Title':
             case 'title':
-                result = await db.execute(`UPDATE users SET settingRefreshTitle = ? WHERE user_id = ?`,
-                [value,userId]);
+                const sql = `UPDATE users SET settingRefreshTitle = ? WHERE user_id = ?`;
+                const values = [value,userId];
+
+                result = await db.execute(sql,values);
                 break;
             case 'Description':
             case 'description':
-                result = await db.execute(`UPDATE users SET settingRefreshDescription = ? WHERE user_id = ?`,
-                [value,userId]);
+                const sqlTwo = `UPDATE users SET settingRefreshDescription = ? WHERE user_id = ?`;
+                const valuesTwo = [value,userId];
+
+                result = await db.execute(sqlTwo,valuesTwo);
                 break;
             case 'Thumbnail':
             case 'thumbnail':
-                result = await db.execute(`UPDATE users SET settingRefreshThumbnail = ? WHERE user_id = ?`,
-                [value,userId]);
+                const sqlThree = `UPDATE users SET settingRefreshThumbnail = ? WHERE user_id = ?`;
+                const valuesThree = [value,userId];
+
+                result = await db.execute(sqlThree,valuesThree);
                 break;
             default:
                 result = null;
@@ -150,8 +165,10 @@ const updateDisplayNameSetting = async (userId, newDisplayName) => {
     let result;
     try {
         const db = await getDatabase();
-        result = await db.execute(`UPDATE users SET display_name = ? WHERE user_id = ?`,
-            [newDisplayName,userId]);
+        const sql = `UPDATE users SET display_name = ? WHERE user_id = ?`;
+        const values = [newDisplayName,userId];
+
+        result = await db.execute(sql,values);
     } catch(err) {
         result = new AppError(500, err.message);
     }
@@ -161,8 +178,10 @@ const updateEmailSetting = async (userId, newEmail) => {
     let result;
     try {
         const db = await getDatabase();
-        result = await db.execute(`UPDATE users SET email = ? WHERE user_id = ?`,
-            [newEmail,userId]);
+        const sql = `UPDATE users SET email = ? WHERE user_id = ?`;
+        const values = [newEmail,userId];
+
+        result = await db.execute(sql,values);
     } catch(err) {
         result = new AppError(500, err.message);
     }
@@ -172,8 +191,10 @@ const updateAboutMeSetting = async (userId,newAboutMe) => {
     let result;
     try {
         const db = await getDatabase();
-        result = await db.execute(`UPDATE users SET about_me = ? WHERE user_id = ?`,
-            [newAboutMe,userId]);
+        const sql = `UPDATE users SET about_me = ? WHERE user_id = ?`;
+        const values = [newAboutMe,userId];
+
+        result = await db.execute(sql,values);
     } catch(err) {
         result = new AppError(500,err.message);
     }
@@ -192,17 +213,21 @@ const deleteImage = async (user,target) => {
                 if (filename !== process.env.DEFAULT_PIC_FILENAME) {
                     await cloudinary.uploader.destroy(filename);
                 }
-                db.execute(`UPDATE users SET pic_url = ?, pic_filename = ? WHERE user_id = ?`,
-                    [process.env.DEFAULT_PROFILE_PIC,process.env.DEFAULT_PIC_FILENAME,user.user_id]);
+                const sql = `UPDATE users SET pic_url = ?, pic_filename = ? WHERE user_id = ?`;
+                const values = [process.env.DEFAULT_PROFILE_PIC,process.env.DEFAULT_PIC_FILENAME,user.user_id];
+
+                await db.execute(sql,values);
                 path = process.env.DEFAULT_PROFILE_PIC;
                 filename = process.env.DEFAULT_PIC_FILENAME;
                 break;
             case 'BANNER':
                 filename = user.banner_filename;
                 await cloudinary.uploader.destroy(filename);
-                db.execute(`UPDATE users SET banner_url = null, banner_filename = null
-                    WHERE user_id = ?`,
-                    [user.user_id]);
+
+                const sqlTwo = `UPDATE users SET banner_url = null, banner_filename = null WHERE user_id = ?`;
+                const valuesTwo = [user.user_id];
+                
+                await db.execute(sqlTwo,valuesTwo);
                 break;
             default:
         }
@@ -223,8 +248,10 @@ const deleteUser = async (id) => {
         const db = await getDatabase();
         if (db instanceof AppError) return next(db);
 
-        result = await db.execute(`DELETE FROM users WHERE user_id = ?`,
-            [id]);
+        const sql = `DELETE FROM users WHERE user_id = ?`;
+        const values = [id];
+
+        result = await db.execute(sql,values);
     }catch(err) {
         result = new AppError(500, "Something went wrong deleting user account!");
     }

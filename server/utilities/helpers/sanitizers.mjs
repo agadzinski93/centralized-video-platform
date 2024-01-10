@@ -47,10 +47,24 @@ const removeParams = (input) => {
   return output;
 }
 
+/**
+ * Pass the query along with characters like !,%,_, and [] used in SQL LIKE stataement
+ * @param {string} q - Query string meant to be used with the SQL LIKE operator
+ * @returns {string} - Returns a proper query string to be used in a prepared statement
+ */
+const prepareLikeStatement = (q) => {
+  return q
+        .replace('!','!!')
+        .replace('%','!%')
+        .replace('_','!_')
+        .replace('[','![');
+}
+
 export {
   escapeHTML,
   containsHTML,
   escapeSQL,
   unescapeSQL,
-  removeParams
+  removeParams,
+  prepareLikeStatement
 };
