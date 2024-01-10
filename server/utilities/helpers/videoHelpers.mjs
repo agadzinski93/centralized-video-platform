@@ -289,10 +289,16 @@ import {AppError} from "../AppError.mjs";
       if (video.description.length > 2047) {
         video.description = video.description.substring(0,2047).toString();
       }
-      await db.execute(`INSERT INTO videos (title, url, description, views, thumbnail, topic, username) 
-            VALUES('${video.title}', '${video.url}', '${video.description}', '${video.views}', '${video.thumbnail}', '${topicName}', '${username}')`);
+      const sql = `INSERT INTO videos (title, url, description, views, thumbnail, topic, username) 
+        VALUES(?, ?, ?, ?, ?, ?, ?)`;
+      const values = [video.title,video.url,video.description,video.views,video.thumbnail,topicName,username];
 
-      const id = await db.execute(`SELECT id FROM videos WHERE url = '${video.url}' AND topic = '${topicName}' LIMIT 1`);
+      await db.execute(sql,values);
+
+      const sqlTwo = `SELECT id FROM videos WHERE url = ? AND topic = ?`;
+      const valuesTwo = [video.url,topicName];
+
+      const id = await db.execute(sqlTwo,valuesTwo);
       
       return id[0][0].id;
     } catch (err) {

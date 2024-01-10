@@ -108,9 +108,10 @@ const registerUser = async (req, res, next) => {
     let final;
 
     try {
-      results = await db.execute(
-        `SELECT COUNT(username) FROM users WHERE username = '${req.body.reg.username}' LIMIT 1`
-      );
+      const sql = `SELECT COUNT(username) FROM users WHERE username = ?`;
+      const values = [req.body.reg.username];
+
+      results = await db.execute(sql,values);
       final = results[0].map((o) => Object.assign({}, o));
       Object.values(final[0])[0] == 1 ? (exists = true) : (exists = false);
     } catch (err) {
@@ -124,9 +125,10 @@ const registerUser = async (req, res, next) => {
     }
 
     try {
-      results = await db.execute(
-        `SELECT COUNT(email) FROM users WHERE email = '${req.body.reg.email}' LIMIT 1`
-      );
+      const sqlTwo = `SELECT COUNT(email) FROM users WHERE email = ?`;
+      const valuesTwo = [req.body.reg.email];
+
+      results = await db.execute(sqlTwo,valuesTwo);
       final = results[0].map((o) => Object.assign({}, o));
       Object.values(final[0])[0] == 1 ? (exists = true) : (exists = false);
     } catch (err) {
@@ -154,9 +156,9 @@ const registerUser = async (req, res, next) => {
       maxSearch++;
 
       try {
-        final = await db.execute(
-          `SELECT COUNT(user_id) FROM users WHERE user_id = '${id}' LIMIT 1`
-        );
+        const sqlThree = `SELECT COUNT(user_id) FROM users WHERE user_id = ?`;
+        const valuesThree = [id];
+        final = await db.execute(sqlThree,valuesThree);
 
         final = results.map((r) => Object.assign({}, r));
         Object.values(final[0])[0] == 1 ? (exists = true) : (exists = false);
@@ -181,13 +183,10 @@ const registerUser = async (req, res, next) => {
     }
 
     try {
-      await db.execute(`CALL registerUser('${newUser.user_id}',
-        '${newUser.username}',
-        '${newUser.email}',
-        '${newUser.pass}',
-        '${newUser.profile_pic}',
-        '${newUser.pic_filename}',
-        '${newUser.key}')`);
+      const sqlFour = `CALL registerUser(?,?,?,?,?,?,?)`;
+      const valuesFour = [newUser.user_id,newUser.username,newUser.email,newUser.pass,newUser.profile_pic,newUser.pic_filename,newUser.key];
+
+      await db.execute(sqlFour,valuesFour);
     } catch (err) {
       return next(
         new AppError(500, `Database Insertion Error: ${err.message}`)
@@ -213,7 +212,6 @@ const registerUser = async (req, res, next) => {
     res.redirect("/");
   }
   else {
-    console.log(6);
     req.flash("error","Please fill out the form.");
     res.redirect("/");
   }
@@ -232,8 +230,11 @@ const verifyEmail = async(req,res,next)=>{
       const db = await getDatabase();
       const cols = concat_user_columns([USERNAME,EMAIL]);
       const user = await getUserById(userId,cols);
+
+      const sql = `CALL verifyEmail('${userId}','${key}')`;
+      const values = [userId,key];
       
-      let result = await db.execute(`CALL verifyEmail('${userId}','${key}')`);
+      let result = await db.execute(sql,values);
       
       const subject = `Welcome to Programming Help, ${user.username}`;
       const txtBody = `Thanks for joining our site. We hope you have a great time!`;

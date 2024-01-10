@@ -112,6 +112,7 @@ const Init = {
             resave: false,
             saveUninitialized: false,
             secret: COOKIE_SECRET,
+            secure: (process.env.NODE_ENV === 'production') ? true : false,
             store: sessionStore,
             maxAge: 24*60*60*1000,
             sameSite:"Lax"

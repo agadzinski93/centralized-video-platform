@@ -12,10 +12,12 @@ passport.use(
     async (username, password, done) => {
       try {
         const db = await getDatabase();
+        const sql = `SELECT user_id, username, password, activation_status
+          FROM users 
+          WHERE username = ?`;
+        const values = [username];
         
-        const user = await db.execute(`SELECT user_id, username, password, activation_status
-        FROM users 
-        WHERE username = '${username}'`);
+        const user = await db.execute(sql,values);
 
         if (user[0].length === 0) {
           return done(null, false, { message: "Username is incorrect" });
@@ -53,8 +55,12 @@ passport.serializeUser(function (user, done) {
 passport.deserializeUser(async function (id, done) {
   try {
     const db = await getDatabase();
-    const user = await db.execute(`SELECT user_id,username,email,account_type,pic_url
-      FROM users WHERE user_id = '${id}'`);
+    const sql = `SELECT user_id,username,email,account_type,pic_url
+      FROM users 
+      WHERE user_id = ?`;
+    const values = [id];
+
+    const user = await db.execute(``);
 
     const userObj = Object.assign({}, Object.values(user[0])[0]);
     
