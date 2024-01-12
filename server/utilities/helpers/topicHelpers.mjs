@@ -197,23 +197,31 @@ const removeSelectedTopics = async (topics) => {
   try {
     const db = await getDatabase();
     if (db instanceof AppError) return db;
-    let stmt = '';
-    for (let i = 0; i < topics.length; i++) {
-      (i === 0) ? stmt += `'${escapeSQL(topics[i])}'`: stmt += `,'${escapeSQL(topics[i])}'`;
+    if (!(Array.isArray(topics))) {
+      return new AppError(422,'Invalid Arguments.');
     }
-
-    //Select topics to get filenames
-    const sql = `SELECT filename FROM topics WHERE name IN (?)`;
-    const values = [stmt];
-    let selectedTopics = await db.execute(sql,values);
-    selectedTopics = selectedTopics[0].map(o => Object.assign({},o));
-    for (let i = 0;i < selectedTopics.length; i++) {
-      await cloudinary.uploader.destroy(selectedTopics[i].filename);
+    else if (topics.length > 1000) {
+      return new AppError(422,'Can\'t delete more than 1,000 topics at a time.');
     }
+    else {
+      let stmt = '';
+      for (let i = 0; i < topics.length; i++) {
+        (i === 0) ? stmt += `'${escapeSQL(topics[i])}'`: stmt += `,'${escapeSQL(topics[i])}'`;
+      }
 
-    const sqlTwo = `DELETE FROM topics WHERE name IN (?)`;
-    const valuesTwo = [stmt];
-    await db.execute(sqlTwo,valuesTwo);
+      //Select topics to get filenames
+      const sql = `SELECT filename FROM topics WHERE name IN (?)`;
+      const values = [stmt];
+      let selectedTopics = await db.execute(sql,values);
+      selectedTopics = selectedTopics[0].map(o => Object.assign({},o));
+      for (let i = 0;i < selectedTopics.length; i++) {
+        await cloudinary.uploader.destroy(selectedTopics[i].filename);
+      }
+
+      const sqlTwo = `DELETE FROM topics WHERE name IN (?)`;
+      const valuesTwo = [stmt];
+      await db.execute(sqlTwo,valuesTwo);
+    }
   } catch (err) {
     return new AppError(500, "Error Deleting Topics");
   }

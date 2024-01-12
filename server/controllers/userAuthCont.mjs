@@ -231,7 +231,7 @@ const verifyEmail = async(req,res,next)=>{
       const cols = concat_user_columns([USERNAME,EMAIL]);
       const user = await getUserById(userId,cols);
 
-      const sql = `CALL verifyEmail('${userId}','${key}')`;
+      const sql = `CALL verifyEmail(?,?)`;
       const values = [userId,key];
       
       let result = await db.execute(sql,values);

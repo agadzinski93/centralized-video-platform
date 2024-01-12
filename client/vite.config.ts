@@ -12,11 +12,11 @@ export default defineConfig({
     host: true,
     port: 3000,
     proxy: {
-      "/api": {
+      "/api/v1": {
         target: "http://localhost:5000",
         secure: (process.env.NODE_ENV === 'production') ? true : false,
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/api\/v1/, ''),
         configure: proxy => {
           proxy.on('error', err => {
             console.error(`Proxy Error Message: ${err}`);

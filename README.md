@@ -24,7 +24,7 @@ This is a long-term project that will be ongoing.
 
 ## Database Setup
 1. Open your RDBMS software (e.g. MySQL Workbench/phpMyAdmin)
-2. Open the script found in `utilities/db/create-db.sql`
+2. Open the script found in `server/utilities/db/create-db.sql`
 3. (Optional) In the first 3 lines of the SQL script, you may rename the database as you see fit
 4. Run the script
 5. Set the system variable `innodb_autoinc_lock_mode = 1`

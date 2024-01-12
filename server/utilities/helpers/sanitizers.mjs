@@ -6,7 +6,7 @@
 const escapeHTML =  (input) => {
     let output;
   try {
-    output = input.replace(new RegExp("<.+?>", "g"), "");
+    output = input.replace(/<|>/g, "");
   } catch(err) {
     output = null;
   }
@@ -18,7 +18,7 @@ const escapeHTML =  (input) => {
  * @returns {boolean} Whether the string contained HTML tags
  */
 const containsHTML = (input) => {
-  return input.match(new RegExp("<.+?>", "g"));
+  return input.match(/<|>/g, "");
 }
 /**
  * Escapes special characters in strings before use in SQL statements

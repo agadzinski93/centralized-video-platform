@@ -67,26 +67,34 @@ import {AppError} from "../AppError.mjs";
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      for (let i = 0; i < vidIds.length; i++) {
-        if (i === 0) {
-          input += `${vidIds[i]}`;
-        }
-        else {
-          input += `,${vidIds[i]}`;
-        }
+      if (!(Array.isArray(vidIds))) {
+        return new AppError(422,'Invalid Arguments');
       }
-      
-      const sql = `SELECT url FROM videos WHERE id IN (?)`;
-      const values = [input];
-
-      videos = await db.execute(sql,values);
-
-      let videoInfo = videos[0].map((v) => Object.assign({}, v));
-      if (videoInfo.length < 1) {
-        return new AppError(400, "Video Doesn't Exist");
+      else if (vidIds.length > 10000) {
+        return new AppError(422,'Can\'t get more than 10,000 videos at a time.');
       }
       else {
-        return videos[0].map((v) => Object.assign({}, v));
+        for (let i = 0; i < vidIds.length; i++) {
+          if (i === 0) {
+            input += `${vidIds[i]}`;
+          }
+          else {
+            input += `,${vidIds[i]}`;
+          }
+        }
+        
+        const sql = `SELECT url FROM videos WHERE id IN (?)`;
+        const values = [input];
+  
+        videos = await db.execute(sql,values);
+  
+        let videoInfo = videos[0].map((v) => Object.assign({}, v));
+        if (videoInfo.length < 1) {
+          return new AppError(400, "Video Doesn't Exist");
+        }
+        else {
+          return videos[0].map((v) => Object.assign({}, v));
+        }
       }
     } catch(err) {
       return new AppError(500, "Error Retrieving Video");
@@ -449,26 +457,35 @@ import {AppError} from "../AppError.mjs";
   }
   const removeSelectedVideos = async (videos) => {
     try {
+      let output = null;
       const db = await getDatabase();
       if (db instanceof AppError) return db;
 
-      let stmt = '';
+      if (!(Array.isArray(videos))) {
+        output = new AppError(422,'Invalid Arguments');
+      }
+      else if (videos.length > 1000) {
+        output = new AppError(422,'Can\'t delete more than 1,000 videos at a time.');
+      }
+      else {
+        let stmt = '';
 
-      for (let i = 0; i < videos.length; i++) {
-        if (i === 0) {
-          stmt += `${videos[i]}`;
+        for (let i = 0; i < videos.length; i++) {
+          if (i === 0) {
+            stmt += `${videos[i]}`;
+          }
+          else {
+            stmt += `,${videos[i]}`;
+          }
         }
-        else {
-          stmt += `,${videos[i]}`;
-        }
+
+        const sql = `DELETE FROM videos WHERE id IN (?)`;
+        const values = [stmt];
+        
+        await db.execute(sql,values);
       }
 
-      const sql = `DELETE FROM videos WHERE id IN (?)`;
-      const values = [stmt];
-      
-      await db.execute(sql,values);
-
-      return null
+      return output;
     } catch(err) {
       return new AppError(500, "Error Deleting Videos");
     }

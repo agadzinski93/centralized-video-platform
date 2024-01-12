@@ -4,7 +4,7 @@ import type { ApiResponse } from "./types";
 
 import "./App.scss";
 
-const API_TARGET = `/api/home`;
+const API_TARGET = `/api/v1/home`;
 
 function App() {
   const { isLoading, data, error } = useFetch<ApiResponse>(API_TARGET, {

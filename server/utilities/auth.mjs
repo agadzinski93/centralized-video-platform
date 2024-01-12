@@ -60,7 +60,7 @@ passport.deserializeUser(async function (id, done) {
       WHERE user_id = ?`;
     const values = [id];
 
-    const user = await db.execute(``);
+    const user = await db.execute(sql,values);
 
     const userObj = Object.assign({}, Object.values(user[0])[0]);
     
