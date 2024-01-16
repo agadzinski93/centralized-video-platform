@@ -10,7 +10,7 @@ const renderLibaryTopic = async (req, res, next) => {
   const pageStyles = `${pathCSS}lib/topicPage.css`;
 
   let topicName = enableHyphens(escapeHTML(req.params.topic),false);
-  req.session.prevUrl = `/lib/${topicName}`;
+  res.locals.prevUrl = `/lib/${topicName}`;
   let topic = await getTopic(topicName);
   if (topic instanceof AppError) return next(topic);
 
@@ -44,7 +44,7 @@ const renderVideoPage = async (req, res, next) => {
   }
   
   let videoId = escapeHTML(req.params.video);
-  req.session.prevUrl = `/lib/${topicName}/${videoId}`;
+  res.locals.prevUrl = `/lib/${topicName}/${videoId}`;
   let timestamp = null;
   if (videoId.includes('&t=')) {
     if (videoId.charAt(videoId.length - 1 === 's')) {

@@ -25,6 +25,7 @@ app.set("layout", "./layouts/layout.ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+initializePassport(app);
 addSecurityPolicy(app);
 addRateLimit(app);
 
@@ -32,7 +33,7 @@ let routesLoaded = false;
 
 ;(async () => {
   try {
-    await initializePassport(app);
+    
     routesLoaded = await addRoutes(app);
 
   } catch(err) {

@@ -1,4 +1,5 @@
-import pp from '../utilities/auth.mjs'
+import {pp} from '../utilities/ppJwt.mjs'
+import jwt from 'jsonwebtoken'
 import { pathCSS,pathAssets } from '../utilities/config.mjs';
 import { paramsExist } from '../utilities/validators/paramsExist.mjs';
 import bcrypt from 'bcrypt'
@@ -28,8 +29,11 @@ const generatePassword = async (pw) => {
  * @param {*} res
  */
 const renderLogin = (req, res) => {
-  if (res.locals.error.length > 0) {
+  /* if (res.locals.error.length > 0) {
     res.status(401);
+  } */
+  if (req.user) {
+    res.redirect(`/user/${req.user.username}/dashboard`);
   }
   const pageStyles = `${pathCSS}user/loginRegister.css`;
   res.render("login", { title: "Login", 
@@ -47,15 +51,26 @@ const renderLogin = (req, res) => {
  */
 const loginUser = async (req, res, next) => {
   let url = "/";
-  if (req.session.prevUrl) {
-    url = (req.session === "/auth/login") ? "/" : req.session.prevUrl;
-  }
-
-  pp.authenticate("local", {
-    successRedirect: url,
-    failureRedirect: "/auth/login",
-    failureFlash: true,
-  })(req, res, next);
+  pp.authenticate('login', async (err,user,info) => {
+    if (err) {
+        next(new AppError(500,`Login Error: ${err.message}`));
+    }
+    else if (!user) {
+        res.redirect('/auth/login');
+    }
+    else {
+        const body = {email:user.email, username:user.username, pic_url:user.pic_url};
+        const token = jwt.sign(body,process.env.COOKIE_SECRET,{expiresIn:"1hr"});
+        res.cookie('token',token,{
+            httpOnly:true,
+            secure: (process.env.NODE_ENV === 'production') ? true : false,
+            maxAge: Math.floor(Date.now() / 1000) + (60 * 60),
+            sameSite:'Strict',
+            signed:true
+        });
+        res.redirect(url);
+    }
+  })(req,res,next);
 }
 /**
  * Logs the user out
@@ -63,7 +78,8 @@ const loginUser = async (req, res, next) => {
  * @param {*} res
  */
 const logoutUser = (req, res, next) => {
-  req.logout((err) => {if (err) next(err)});
+  //req.logout((err) => {if (err) next(err)});
+  res.clearCookie('token');
   res.redirect("/");
 }
 /**
@@ -73,11 +89,11 @@ const logoutUser = (req, res, next) => {
  */
 const renderRegistration = (req, res) => {
   const pageStyles = `${pathCSS}user/loginRegister.css`;
-  if (res.locals.error.length > 0) {
+  /* if (res.locals.error.length > 0) {
     if (res.locals?.error[0].includes('is required')) {
       res.status(422);
     }
-  }
+  } */
   res.render("register", { title: "Register", 
     pageStyles, 
     pathCSS, 
@@ -87,17 +103,16 @@ const renderRegistration = (req, res) => {
 }
 const registerUser = async (req, res, next) => {
   const exist = paramsExist([
-    req.body.reg,
-    req.body.reg?.username,
-    req.body.reg?.email,
-    req.body.reg?.password
+    req.body.username,
+    req.body.email,
+    req.body.password
   ]);
   if (exist) {
-    if (containsHTML(req.body.reg.username))
+    if (containsHTML(req.body.username))
       return next(new AppError(400, "No HTML Allowed in username!"));
-    if (containsHTML(req.body.reg.email))
+    if (containsHTML(req.body.email))
       return next(new AppError(400, "No HTML Allowed in email!"));
-    if (containsHTML(req.body.reg.password))
+    if (containsHTML(req.body.password))
       return next(new AppError(400, "No HTML Allowed in password!"));
 
     const db = await getDatabase();
@@ -109,7 +124,7 @@ const registerUser = async (req, res, next) => {
 
     try {
       const sql = `SELECT COUNT(username) FROM users WHERE username = ?`;
-      const values = [req.body.reg.username];
+      const values = [req.body.username];
 
       results = await db.execute(sql,values);
       final = results[0].map((o) => Object.assign({}, o));
@@ -126,7 +141,7 @@ const registerUser = async (req, res, next) => {
 
     try {
       const sqlTwo = `SELECT COUNT(email) FROM users WHERE email = ?`;
-      const valuesTwo = [req.body.reg.email];
+      const valuesTwo = [req.body.email];
 
       results = await db.execute(sqlTwo,valuesTwo);
       final = results[0].map((o) => Object.assign({}, o));
@@ -140,7 +155,7 @@ const registerUser = async (req, res, next) => {
       res.redirect("/auth/register");
       return;
     }
-    const pw = await generatePassword(req.body.reg.password);
+    const pw = await generatePassword(req.body.password);
 
     /**
      * Generated ID for new user using UUID
@@ -174,8 +189,8 @@ const registerUser = async (req, res, next) => {
 
     let newUser = {
       user_id:id,
-      username:req.body.reg.username,
-      email:req.body.reg.email,
+      username:req.body.username,
+      email:req.body.email,
       pass:pw,
       profile_pic:process.env.DEFAULT_PROFILE_PIC,
       pic_filename:process.env.DEFAULT_PIC_FILENAME,

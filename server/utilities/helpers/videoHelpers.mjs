@@ -334,10 +334,9 @@ import {AppError} from "../AppError.mjs";
         }
       }
       const sql = `INSERT IGNORE INTO videos (title, url, description, views, thumbnail, topic, username) 
-        VALUES ?`;
-      const input = [values];
+        VALUES ${values}`;
 
-      let result = await db.execute(sql,input);
+      let result = await db.execute(sql);
 
       let firstId = await db.execute('SELECT LAST_INSERT_ID() As firstId');
       firstId = firstId[0][0].firstId;
@@ -468,25 +467,28 @@ import {AppError} from "../AppError.mjs";
         output = new AppError(422,'Can\'t delete more than 1,000 videos at a time.');
       }
       else {
-        let stmt = '';
+        let preparedLength = '';
+        let stmt = Array(videos.length);
 
         for (let i = 0; i < videos.length; i++) {
+          stmt[i] = `${videos[i]}`;
           if (i === 0) {
-            stmt += `${videos[i]}`;
+            preparedLength += '?';
           }
           else {
-            stmt += `,${videos[i]}`;
+            preparedLength += ',?';
           }
         }
 
-        const sql = `DELETE FROM videos WHERE id IN (?)`;
-        const values = [stmt];
+        const sql = `DELETE FROM videos WHERE id IN (${preparedLength})`;
+        const values = stmt;
         
         await db.execute(sql,values);
       }
 
       return output;
     } catch(err) {
+      console.log(err.message);
       return new AppError(500, "Error Deleting Videos");
     }
   }

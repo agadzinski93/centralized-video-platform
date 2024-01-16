@@ -61,7 +61,7 @@ const createTopic = async (req, res, next) => {
     }
   }
   else {
-    topicLogger('error','Invalid Arguments');
+    topicLogger.log('error','Invalid Arguments');
     Response.setApiResponse('error',422,'Invalid Arguments');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -81,7 +81,7 @@ const editTopic = async (req, res) => {
       originalTopicName
     );
     if (result instanceof AppError) {
-      topicLogger('error',result.message);
+      topicLogger.log('error',result.message);
       Response.setStatus = result.status;
       Response.setMessage = (process.env.NODE_ENV !== 'production') ? result.message : 'Error updating topic.';
     }
@@ -90,7 +90,7 @@ const editTopic = async (req, res) => {
     }
   }
   else {
-    topicLogger('error','Invalid Arguments');
+    topicLogger.log('error','Invalid Arguments');
     Response.setApiResponse('error',422,'Invalid Arguments');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -106,19 +106,19 @@ const editTopicImage = async (req,res) => {
 
     const exists = await topicExists(topicName);
     if (exists instanceof AppError) {
-      topicLogger('error',exists.message);
+      topicLogger.log('error',exists.message);
       Response.setStatus = exists.status;
       Response.setMessage = (process.env.NODE_ENV !== 'production') ? exists.message : 'Error validating topic.';
     }
     else if (exists === 0) {
-      topicLogger('error','Topic does not exist.');
+      topicLogger.log('error','Topic does not exist.');
       Response.setStatus = 400;
       Response.setMessage = 'Topic does not exist.';
     } 
     else {
       let error = await deleteTopicImage(topicName);
       if (error instanceof AppError) {
-        topicLogger('error',error.message);
+        topicLogger.log('error',error.message);
         Response.setStatus = error.status;
         Response.setMessage = (process.env.NODE_ENV !== 'production') ? error.message : 'Error deleting topic image.';
       }
@@ -129,7 +129,7 @@ const editTopicImage = async (req,res) => {
           filename
         );
         if (newImgUrl instanceof AppError) {
-          topicLogger('error',newImgUrl.message);
+          topicLogger.log('error',newImgUrl.message);
           Response.setStatus = newImgUrl.status;
           Response.setMessage = (process.env.NODE_ENV !== 'production') ? newImgUrl.message : 'Error uploading new image.';
         }
@@ -140,7 +140,7 @@ const editTopicImage = async (req,res) => {
     }
   }
   else {
-    topicLogger('error','Invalid Arguments');
+    topicLogger.log('error','Invalid Arguments');
     Response.setApiResponse('error',422,'Invalid Arguments');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -151,7 +151,7 @@ const deleteTopic = async (req, res) => {
     const topicName = enableHyphens(escapeHTML(req.params.topic),false);
     const result = await removeTopic(topicName);
     if (result instanceof AppError) {
-      topicLogger('error',result.message);
+      topicLogger.log('error',result.message);
       Response.setStatus = result.status;
       Response.setMessage = (process.env.NODE_ENV !== 'production') ? result.message : 'Error deleting topic.';
     }
@@ -160,7 +160,7 @@ const deleteTopic = async (req, res) => {
     }
   }
   else {
-    topicLogger('error','Invalid Arguments');
+    topicLogger.log('error','Invalid Arguments');
     Response.setApiResponse('error',422,'Invalid Arguments');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -172,7 +172,7 @@ const deleteSelectedTopics = async (req,res) => {
   
     const result = await removeSelectedTopics(topics);
     if (result instanceof AppError) {
-      topicLogger('error',result.message);
+      topicLogger.log('error',result.message);
       Response.setStatus = result.status;
       Response.setMessage = (process.env.NODE_ENV !== 'production') ? result.message : 'Error deleting topics.';
     }
@@ -186,7 +186,7 @@ const deleteSelectedTopics = async (req,res) => {
     }
   }
   else {
-    topicLogger('error','Invalid Arguments');
+    topicLogger.log('error','Invalid Arguments');
     Response.setApiResponse('error',422,'Invalid Arguments');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());

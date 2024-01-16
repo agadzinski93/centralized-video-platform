@@ -8,7 +8,7 @@ import { AppError } from "./AppError.mjs";
 
 passport.use(
   new localStrategy(
-    { usernameField: "reg[username]", passwordField: "reg[password]" },
+    { usernameField: "username", passwordField: "password" },
     async (username, password, done) => {
       try {
         const db = await getDatabase();

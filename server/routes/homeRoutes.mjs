@@ -1,6 +1,7 @@
 import express from 'express';
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods.mjs';
 import { setHeaders } from '../utilities/validators/middleware/setHeaders.mjs';
+import { isLoggedInOptional } from '../utilities/validators/middleware/userAuth.mjs';
 const router = express.Router({caseSensitive:false, strict:false});
 import { 
     renderHome,
@@ -10,15 +11,15 @@ import {
 } from '../controllers/homeCont.mjs';
 
 router.route('/')
-    .get(setHeaders,renderHome)
+    .get(isLoggedInOptional,setHeaders,renderHome)
     .all(verifyMethods(['GET']));
 
 router.route('/home')
-    .get(setHeaders,renderHomeScreen)
+    .get(isLoggedInOptional,setHeaders,renderHomeScreen)
     .all(verifyMethods(['GET']));
 
 router.route('/search')
-    .get(setHeaders,renderSearch)
+    .get(isLoggedInOptional,setHeaders,renderSearch)
     .post(getMoreResults)
     .all(verifyMethods(['GET','POST']));
 

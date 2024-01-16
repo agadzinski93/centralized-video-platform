@@ -1,15 +1,15 @@
 import express from 'express'
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods.mjs';
 const router = express.Router({ caseSensitive: false, strict: false });
-import { isLoggedIn } from '../utilities/userAuth.mjs';
+import passport from 'passport';
 import { 
     subscribe,
     unsubscribe 
 } from '../controllers/subscriberCont.mjs';
 
 router.route('/')
-    .post(isLoggedIn,subscribe)
-    .delete(isLoggedIn,unsubscribe)
+    .post(passport.authenticate('cookie',{session:false}),subscribe)
+    .delete(passport.authenticate('cookie',{session:false}),unsubscribe)
     .all(verifyMethods(['POST','DELETE']));
 
 export {router};

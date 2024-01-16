@@ -2,6 +2,7 @@ const path = require('path');
 const helmet = require('helmet');
 const cors = require('cors');
 const closeApp = require('./closeApp');
+const passport = require('passport');
 const session = require("express-session");
 const flash = require("connect-flash"); //Dependent on express-session
 const cookieParser = require("cookie-parser");
@@ -77,7 +78,7 @@ const Init = {
               }
             },
         }));
-        app.use(cors());
+        app.use(cors({credentials:true}));
     },
     addRateLimit: (app) => {
         const limiter = rateLimit({
@@ -93,12 +94,12 @@ const Init = {
         app.use(flash());
 
         //Cookie Parser
-        const COOKIE_SECRET = process.env.COOKIE_SECRET;
-        app.use(cookieParser(COOKIE_SECRET));
+        app.use(cookieParser(process.env.COOKIE_SECRET));
 
         //Passport
-        const {default:passport} = await import('../utilities/auth.mjs');
-        const { sessionStore } = await import("./db/mysql-connect.mjs");
+        app.use(passport.initialize());
+        const {pp} = await import('../utilities/ppJwt.mjs');
+        /* const { sessionStore } = await import("./db/mysql-connect.mjs");
         const {flash : flashMessage} = await import("../utilities/flash.mjs");
         app.use(
         //Must occur prior to passport.initialize()
@@ -115,13 +116,14 @@ const Init = {
             secure: (process.env.NODE_ENV === 'production') ? true : false,
             store: sessionStore,
             maxAge: 24*60*60*1000,
-            sameSite:"Lax"
+            sameSite:"Strict"
             },
         })
-        );
-        app.use(passport.initialize());
-        app.use(passport.session());
-        app.use(flashMessage); //Flash messages
+        ); */
+
+        
+        //app.use(passport.session());
+        //app.use(flashMessage); //Flash messages
     }
 }
 module.exports = Init;

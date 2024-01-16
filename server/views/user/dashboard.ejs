@@ -73,8 +73,6 @@
   </div>
   <div class="itemsSelectedContainer" id="itemsSelected"></div>
   <h1 class="dashboardTopicHeader">Topics</h1>
-  <%- include("../partials/flashError.ejs") %> <%-
-  include("../partials/flashSuccess.ejs") %>
   <div class="dashboardTopicList">
     <% if (topics.length > 0) { %> <% for (topic of topics) { %>
     <div class="dashboardTopicWrapper" id="<%=topic.name.replaceAll(' ','-')%>">

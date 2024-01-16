@@ -5,11 +5,10 @@ import { escapeHTML,escapeSQL } from '../utilities/helpers/sanitizers.mjs';
 import { getRecentVideos, searchVideos, getMoreVideos } from '../utilities/helpers/videoHelpers.mjs';
 import { enableHyphens, getRecentTopic } from '../utilities/helpers/topicHelpers.mjs';
 import { getRedisCache, setRedisCache } from '../utilities/db/redisCache.mjs';
-import { getRedisConnection } from '../utilities/db/redis.mjs';
 
 const renderHome = async (req,res,next) => {
     try {
-        req.session.prevUrl = "/";
+        res.locals.prevUrl = "/";
         const pageStyles = `${pathCSS}home.css`;
         const videos = await getRecentVideos();
         for (let video of videos) {

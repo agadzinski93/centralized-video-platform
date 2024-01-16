@@ -2,11 +2,10 @@
   <%- include("./partials/navbar.ejs") %>
   <div id="main" class="loggingFormContainer">
     <h1 class="loggingHeader">Account Login</h1>
-    <%- include("./partials/flashError.ejs") %>
     <form action="/auth/login" method="POST">
       <label class="loggingLabel" for="username">Username</label>
       <input
-        name="reg[username]"
+        name="username"
         id="username"
         type="text"
         placeholder="Enter username"
@@ -15,7 +14,7 @@
       >
       <label class="loggingLabel" for="regpassword">Password</label>
       <input
-        name="reg[password]"
+        name="password"
         id="regpassword"
         type="password"
         placeholder="Enter password"
