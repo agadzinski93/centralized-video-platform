@@ -1,4 +1,4 @@
-import {pp} from '../utilities/ppJwt.mjs'
+import {pp} from '../utilities/ppStrategies.mjs'
 import jwt from 'jsonwebtoken'
 import { pathCSS,pathAssets } from '../utilities/config.mjs';
 import { paramsExist } from '../utilities/validators/paramsExist.mjs';
@@ -59,12 +59,12 @@ const loginUser = async (req, res, next) => {
         res.redirect('/auth/login');
     }
     else {
-        const body = {email:user.email, username:user.username, pic_url:user.pic_url};
+        const body = {user_id:user.user_id, email:user.email, username:user.username, pic_url:user.pic_url};
         const token = jwt.sign(body,process.env.COOKIE_SECRET,{expiresIn:"1hr"});
         res.cookie('token',token,{
             httpOnly:true,
             secure: (process.env.NODE_ENV === 'production') ? true : false,
-            maxAge: Math.floor(Date.now() / 1000) + (60 * 60),
+            maxAge:1000*60*60,
             sameSite:'Strict',
             signed:true
         });
@@ -78,7 +78,6 @@ const loginUser = async (req, res, next) => {
  * @param {*} res
  */
 const logoutUser = (req, res, next) => {
-  //req.logout((err) => {if (err) next(err)});
   res.clearCookie('token');
   res.redirect("/");
 }
@@ -134,7 +133,6 @@ const registerUser = async (req, res, next) => {
     }
 
     if (exists) {
-      req.flash("error", "Username Already Exists");
       res.redirect("/auth/register");
       return;
     }
@@ -151,7 +149,6 @@ const registerUser = async (req, res, next) => {
     }
 
     if (exists) {
-      req.flash("error", "Email Already Exists");
       res.redirect("/auth/register");
       return;
     }
@@ -223,11 +220,9 @@ const registerUser = async (req, res, next) => {
       return next(new AppError(500,'Error Sending Email'));
     }
 
-    req.flash("success","An email was sent with a confirmation link!");
     res.redirect("/");
   }
   else {
-    req.flash("error","Please fill out the form.");
     res.redirect("/");
   }
   
@@ -261,10 +256,8 @@ const verifyEmail = async(req,res,next)=>{
         return next(new AppError(500,`Error Sending Email`));
       }
       
-      req.flash("success","Email successfully validated!");
       res.redirect("/");
     }catch(err){
-      req.flash("error","Error validating email.");
       res.redirect("/");
     }
   }

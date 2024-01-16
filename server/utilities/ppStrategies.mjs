@@ -20,7 +20,7 @@ passport.use(
         async (username,password,done)=>{
             try {
                 const db = await getDatabase();
-                const sql = `SELECT username, email, password, activation_status, pic_url
+                const sql = `SELECT user_id, username, email, password, activation_status, pic_url
                   FROM users 
                   WHERE username = ?`;
                 const values = [username];

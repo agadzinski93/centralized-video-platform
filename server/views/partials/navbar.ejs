@@ -5,7 +5,7 @@
             <input name="q" id="inputSearch" type="text" placeholder="Search Videos (e.g. &quot;Java&quot;, &quot;Linux&quot;, &quot;Variables&quot;)">
         </form>
     </div>
-    <%if (user === undefined || user === null) {%>
+    <%if (user === undefined || user === null || user === {}) {%>
         <div class="loginRegisterContainer">
             <div class="loginButton"><a href="/auth/login">Login</a></div>
             <div class="registerButton"><a href="/auth/register"><span class="txtRegisterButton">Sign Up</span></a></div>

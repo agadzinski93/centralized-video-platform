@@ -506,7 +506,6 @@ const addSwapVideoEvents = async () => {
           });
 
           const data = await result.json();
-          console.log(data);
           if (data.status !== 'error') {
             for (let i = 0; i < videoList.length; i++) {
               if (data.data[i].title !== null) {
@@ -543,6 +542,8 @@ const addSwapVideoEvents = async () => {
         let img = document.createElement('img');
         img.src = e.target.result;
         img.classList.add('streamedTopicImg');
+        const prevImg = document.querySelector('.file-upload img');
+        if (prevImg) prevImg.remove();
         document.getElementById('lblFileUpload').append(img);
         document.querySelector('.file-upload span').classList.add('displayNone');
       }

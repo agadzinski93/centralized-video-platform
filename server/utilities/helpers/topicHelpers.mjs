@@ -1,7 +1,7 @@
 import { getDatabase } from "../db/mysql-connect.mjs";
 import { escapeSQL } from "./sanitizers.mjs";
 import {AppError} from "../AppError.mjs";
-import { cloudinary } from "../cloudinary.mjs";
+import { Cloudinary } from "../cloudinary.mjs";
 
 /**
  * Choose whether topic's title has hyphens or whitespaces
@@ -160,7 +160,7 @@ const removeTopic = async (topic) => {
     topicInfo = topicInfo[0][0].filename;
 
     if (topicInfo) {
-      await cloudinary.uploader.destroy(topicInfo[0][0].filename);
+      await Cloudinary.uploader.destroy(topicInfo[0][0].filename);
     }
 
     const sqlTwo = `DELETE FROM topics WHERE name = ?`;
@@ -188,7 +188,7 @@ const deleteTopicImage = async (topicName) => {
     let topic = result[0].map(o => Object.assign({}, o));
     let filename = topic[0].filename;
     if (filename !== 'null') {
-      await cloudinary.uploader.destroy(filename);
+      await Cloudinary.uploader.destroy(filename);
     }
     
     return null;
@@ -222,7 +222,7 @@ const removeSelectedTopics = async (topics) => {
       selectedTopics = selectedTopics[0];
       
       for (let i = 0;i < selectedTopics.length; i++) {
-        if (selectedTopics[i].filename) await cloudinary.uploader.destroy(selectedTopics[i].filename);
+        if (selectedTopics[i].filename) await Cloudinary.uploader.destroy(selectedTopics[i].filename);
       }
 
       const sqlTwo = `DELETE FROM topics WHERE name IN (${preparedLength})`;

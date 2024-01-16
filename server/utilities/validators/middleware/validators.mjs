@@ -2,7 +2,7 @@ import { ApiResponse } from "../../ApiResponse.mjs";
 import { paramsExist } from "../paramsExist.mjs";
 import registerValidator from "../registerValidator.mjs";
 import topicValidator from "../topicValidator.mjs";
-import { cloudinary } from "../../cloudinary.mjs";
+import { Cloudinary } from "../../cloudinary.mjs";
 
 /**
  * Validates user input in registration form. Returns user to form with flashed error message if unsuccessful.
@@ -25,7 +25,7 @@ const topicValidation = (req, res, next) => {
     let { error } = topicValidator.validate(req.body);
     if (error) {
       if (req.file) {
-        cloudinary.uploader.destroy(req.file.filename);
+        Cloudinary.uploader.destroy(req.file.filename);
       }
       Response.setApiResponse('error',400,error.details[0].message,'/');
     } else {

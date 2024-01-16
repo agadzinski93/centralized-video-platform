@@ -1,10 +1,7 @@
-const path = require('path');
 const helmet = require('helmet');
 const cors = require('cors');
 const closeApp = require('./closeApp');
 const passport = require('passport');
-const session = require("express-session");
-const flash = require("connect-flash"); //Dependent on express-session
 const cookieParser = require("cookie-parser");
 const rateLimit = require('express-rate-limit');
 
@@ -90,40 +87,13 @@ const Init = {
         app.use(limiter);
     },
     initializePassport: async(app) => {
-        //Flash
-        app.use(flash());
 
         //Cookie Parser
         app.use(cookieParser(process.env.COOKIE_SECRET));
 
         //Passport
         app.use(passport.initialize());
-        const {pp} = await import('../utilities/ppJwt.mjs');
-        /* const { sessionStore } = await import("./db/mysql-connect.mjs");
-        const {flash : flashMessage} = await import("../utilities/flash.mjs");
-        app.use(
-        //Must occur prior to passport.initialize()
-        session({
-            secret: process.env.PASSPORT_SECRET,
-            store: sessionStore,
-            resave: false,
-            saveUninitialized: false,
-            cookie: {
-            httpOnly: true,
-            resave: false,
-            saveUninitialized: false,
-            secret: COOKIE_SECRET,
-            secure: (process.env.NODE_ENV === 'production') ? true : false,
-            store: sessionStore,
-            maxAge: 24*60*60*1000,
-            sameSite:"Strict"
-            },
-        })
-        ); */
-
-        
-        //app.use(passport.session());
-        //app.use(flashMessage); //Flash messages
+        const {pp} = await import('./ppStrategies.mjs');
     }
 }
 module.exports = Init;

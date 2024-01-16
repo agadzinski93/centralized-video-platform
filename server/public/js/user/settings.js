@@ -136,6 +136,8 @@ const addBasicInfoEvents = () => {
             img.classList.add('streamedTopicImg');
             img.setAttribute('id','streamedProfilePic');
             img.src = e.target.result;
+            const prevImg = document.querySelector('#lblProfilePicUpload img');
+            if (prevImg) prevImg.remove();
             document.getElementById('lblProfilePicUpload').append(img);
             document.querySelector('#lblProfilePicUpload span').classList.add('displayNone');
         }
@@ -391,6 +393,8 @@ const addBasicInfoEvents = () => {
             img.classList.add('streamedTopicImg');
             img.setAttribute('id','streamedBanner');
             img.src = e.target.result;
+            const prevImg = document.querySelector('#lblBannerUpload img');
+            if (prevImg) prevImg.remove();
             document.getElementById('lblBannerUpload').append(img);
             document.querySelector('#lblBannerUpload span').classList.add('displayNone');
         }

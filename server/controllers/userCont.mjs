@@ -2,7 +2,7 @@ import {AppError} from '../utilities/AppError.mjs';
 import { ApiResponse } from '../utilities/ApiResponse.mjs';
 import { userLogger } from '../utilities/logger.mjs';
 import { pathCSS,pathAssets } from '../utilities/config.mjs';
-import { cloudinary } from '../utilities/cloudinary.mjs';
+import { Cloudinary } from '../utilities/cloudinary.mjs';
 import { escapeHTML,escapeSQL,unescapeSQL } from '../utilities/helpers/sanitizers.mjs';
 import { paramsExist } from '../utilities/validators/paramsExist.mjs';
 import { getUser } from '../utilities/helpers/authHelpers.mjs';
@@ -189,7 +189,7 @@ const updateProfilePic = async (req,res) => {
     
     let error = await deleteImage(user, 'PROFILE PIC');
     if (error instanceof AppError) {
-      await cloudinary.uploader.destroy(filename);
+      await Cloudinary.uploader.destroy(filename);
       Response.setMessage = (process.env.NODE_ENV !== 'production') ? error.message : 'Error deleting profile picture.';
     }
     else {
@@ -202,7 +202,7 @@ const updateProfilePic = async (req,res) => {
       if (data instanceof AppError) {
         userLogger.log('error',`User ID: ${user.user_id} -> ${data.message}`);
         try {
-          await cloudinary.uploader.destroy(filename);
+          await Cloudinary.uploader.destroy(filename);
           Response.setStatus = data.status;
           Response.setMessage = (process.env.NODE_ENV !== 'production') ? data.message : 'Error Uploading New Image';
         } catch (err) {
@@ -284,7 +284,7 @@ const updateBanner = async (req,res) => {
 
     if (error instanceof AppError) {
       userLogger.log('error',`User ID: ${user.user_id} -> ${error.message}`);
-      await cloudinary.uploader.destroy(filename);
+      await Cloudinary.uploader.destroy(filename);
       Response.setStatus = error.status;
       Response.setMessage = 'Error deleting banner.';
     }
@@ -299,7 +299,7 @@ const updateBanner = async (req,res) => {
         userLogger.log('error',`User ID: ${user.user_id} -> ${data.message}`);
         Response.setStatus = data.status;
         try {
-          await cloudinary.uploader.destroy(filename);
+          await Cloudinary.uploader.destroy(filename);
           Response.setMessage = (process.env.NODE_ENV !== 'production') ? data.message : 'Error uploading new image.';
         } catch (err) {
           userLogger.log('error',`User ID: ${user.user_id} -> ${err.message}`);
@@ -385,7 +385,7 @@ const deleteBanner = async (req,res) => {
         userLogger.log('error',`User ID: ${user.user_id} -> ${data.message}`);
         Response.setStatus = data.status;
         try {
-          await cloudinary.uploader.destroy(filename);
+          await Cloudinary.uploader.destroy(filename);
           Response.setMessage = (process.env.NODE_ENV !== 'production') ? data.message : 'Error deleting banner.';
         } catch (err) {
           userLogger.log('error',`User ID: ${user.user_id} -> ${err.message}`);

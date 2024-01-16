@@ -1,9 +1,7 @@
-//const cloudinary = require('cloudinary').v2;
-import cloudinary from 'cloudinary';
-const cloudinaryV2 = cloudinary.v2;
+import {v2 as Cloudinary} from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
-cloudinaryV2.config({
+Cloudinary.config({
     cloud_name:process.env.CLOUDINARY_NAME,
     api_key:process.env.CLOUDINARY_API_KEY,
     api_secret:process.env.CLOUDINARY_SECRET,
@@ -11,10 +9,10 @@ cloudinaryV2.config({
 });
 
 const storage = new CloudinaryStorage({
-    cloudinary:cloudinaryV2,
+    cloudinary:Cloudinary,
     params: {
         folder:'Programminghelp',
     }
 });
 
-export {cloudinaryV2 as cloudinary, storage};
+export {Cloudinary, storage};

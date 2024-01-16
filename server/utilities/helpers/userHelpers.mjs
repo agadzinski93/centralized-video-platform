@@ -1,6 +1,6 @@
 import { getDatabase } from "../db/mysql-connect.mjs";
 import {AppError} from "../AppError.mjs";
-import { cloudinary } from "../cloudinary.mjs";
+import { Cloudinary } from "../cloudinary.mjs";
 import { enableHyphens } from "./topicHelpers.mjs";
 import { setPaginationData,endOfResults } from "./pagination.mjs";
 
@@ -211,7 +211,7 @@ const deleteImage = async (user,target) => {
             case 'PROFILE PIC':
                 filename = user.pic_filename;
                 if (filename !== process.env.DEFAULT_PIC_FILENAME) {
-                    await cloudinary.uploader.destroy(filename);
+                    await Cloudinary.uploader.destroy(filename);
                 }
                 const sql = `UPDATE users SET pic_url = ?, pic_filename = ? WHERE user_id = ?`;
                 const values = [process.env.DEFAULT_PROFILE_PIC,process.env.DEFAULT_PIC_FILENAME,user.user_id];
@@ -222,7 +222,7 @@ const deleteImage = async (user,target) => {
                 break;
             case 'BANNER':
                 filename = user.banner_filename;
-                await cloudinary.uploader.destroy(filename);
+                await Cloudinary.uploader.destroy(filename);
 
                 const sqlTwo = `UPDATE users SET banner_url = null, banner_filename = null WHERE user_id = ?`;
                 const valuesTwo = [user.user_id];

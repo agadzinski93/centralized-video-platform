@@ -1,8 +1,5 @@
 import mysql from 'mysql2/promise'
 import bluebird from 'bluebird';
-import session from 'express-session';
-import MySQLStore from 'express-mysql-session';
-const MySQLStoreSession = MySQLStore(session);
 import { AppError } from '../AppError.mjs';
 
 let db;
@@ -63,12 +60,5 @@ const getDatabase = async () => {
     return new AppError(500, err.message);
   }
 }
-const sessionStore = new MySQLStoreSession({
-  host,
-  port,
-  database,
-  user,
-  password,
-})
 
-export {getDatabase,sessionStore};
+export {getDatabase};

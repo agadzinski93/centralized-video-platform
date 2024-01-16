@@ -2,7 +2,6 @@ import { AppError } from "../../AppError.mjs";
 import { paramsExist } from "../paramsExist.mjs";
 import { escapeHTML } from "../../helpers/sanitizers.mjs";
 import { usernameMatch } from "../../helpers/authHelpers.mjs";
-import {pp} from '../../ppJwt.mjs' 
 import jwt from "jsonwebtoken";
 
 const tokenCookieExtractor = (req) => {
@@ -10,7 +9,10 @@ const tokenCookieExtractor = (req) => {
   if (req && Object.keys(req.signedCookies).length > 0) {
     token = req.signedCookies['token'];
     jwt.verify(token,process.env.COOKIE_SECRET, (err,decoded)=>{
-      if (!err && decoded) {
+      if (err) {
+        token = null;
+      }
+      else if (!err && decoded) {
         token = decoded;
       }
     });
