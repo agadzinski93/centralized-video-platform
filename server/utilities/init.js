@@ -23,6 +23,8 @@ const Init = {
             const {verifyUser} = await import('./validators/middleware/userAuth.mjs');
             app.use(verifyUser); //Middleware to populate req.user if logged in
 
+            
+
             //Routes
             let {router : homeRoutes} = await import('../routes/homeRoutes.mjs');
             app.use("/", homeRoutes);
@@ -62,6 +64,8 @@ const Init = {
                 res.status(status).render("error", { title: `${status} Error`, status, message, pageStyles, pathCSS, pathAssets, user: req.user });
             });
             output = true;
+
+            app.use(cors({credentials:true}));
         } catch (err) {
             console.error(`${new Date().toString()} -> Import Routes Failed: ${err.stack}`);
         }
@@ -78,7 +82,6 @@ const Init = {
               }
             },
         }));
-        app.use(cors({credentials:true}));
     },
     addRateLimit: (app) => {
         const limiter = rateLimit({
