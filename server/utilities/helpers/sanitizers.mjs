@@ -26,10 +26,10 @@ const containsHTML = (input) => {
  * @returns {string} String with special characters escaped
  */
 const escapeSQL = (input) => {
-  return input.replaceAll("'", "\'");
+  return input.replaceAll("'", "\\'");
 }
 const unescapeSQL = (input) => {
-  return input.replaceAll("\'", "'");
+  return input.replaceAll("\\'", "'");
 }
 /**
  * Removes parameters from GET string

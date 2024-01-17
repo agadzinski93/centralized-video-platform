@@ -20,6 +20,9 @@ const Init = {
     addRoutes:async(app)=>{
         let output = false;
         try {
+            const {verifyUser} = await import('./validators/middleware/userAuth.mjs');
+            app.use(verifyUser); //Middleware to populate req.user if logged in
+
             //Routes
             let {router : homeRoutes} = await import('../routes/homeRoutes.mjs');
             app.use("/", homeRoutes);

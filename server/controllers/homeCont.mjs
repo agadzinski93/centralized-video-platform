@@ -1,7 +1,7 @@
 import {AppError} from '../utilities/AppError.mjs';
 import { ApiResponse } from '../utilities/ApiResponse.mjs';
 import { pathCSS,pathAssets } from '../utilities/config.mjs';
-import { escapeHTML,escapeSQL } from '../utilities/helpers/sanitizers.mjs';
+import { escapeHTML } from '../utilities/helpers/sanitizers.mjs';
 import { getRecentVideos, searchVideos, getMoreVideos } from '../utilities/helpers/videoHelpers.mjs';
 import { enableHyphens, getRecentTopic } from '../utilities/helpers/topicHelpers.mjs';
 import { getRedisCache, setRedisCache } from '../utilities/db/redisCache.mjs';
@@ -75,7 +75,7 @@ const renderSearch = async (req,res,next) => {
   try {
     if (Object.keys(req.query).length === 1) {
       if (req.query.q !== '') {
-        searchQuery = escapeSQL(escapeHTML(req.query.q));
+        searchQuery = escapeHTML(req.query.q);
         videos = await searchVideos(searchQuery);
         for (let video of videos) {
           video.topicUrl = enableHyphens(video.topic,true);
@@ -94,7 +94,7 @@ const getMoreResults = async (req,res,next) => {
     output.setMessage = 'Trouble getting more videos';
   }
   else {
-    let searchQuery = escapeSQL(escapeHTML(req.body.searchQuery));
+    let searchQuery = escapeHTML(req.body.searchQuery);
     let pageNumber = req.body.pageNumber;
     let videos;
     try {

@@ -2,6 +2,7 @@ import { AppError } from "../../AppError.mjs";
 import { paramsExist } from "../paramsExist.mjs";
 import { escapeHTML } from "../../helpers/sanitizers.mjs";
 import { usernameMatch } from "../../helpers/authHelpers.mjs";
+import passport from "passport";
 import jwt from "jsonwebtoken";
 
 const tokenCookieExtractor = (req) => {
@@ -20,13 +21,31 @@ const tokenCookieExtractor = (req) => {
   return token;
 }
 
-const isLoggedInOptional = (req,res,next) => {
+/**
+ * Middleware to populate the req.user object if user is logged in. Otherwise, it will be undefined.
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
+const verifyUser = (req,res,next) => {
   const user = tokenCookieExtractor(req);
   if (user) {
       req.user = user;
   }
   next();
 }
+
+const isLoggedIn = (req,res,next) => {
+  passport.authenticate('cookie',{session:false},(err,user,info)=>{
+    if (user) {
+      return next();
+    }
+    else {
+      return next(new AppError(401,"Unauthorized"));
+    }
+  })(req,res,next);
+}
+
 const isAuthor = async (req, res, next) => {
   if (paramsExist([req.user?.username, req.params.username])) {
     const loggedUsername = escapeHTML(req.user.username);
@@ -40,8 +59,8 @@ const isAuthor = async (req, res, next) => {
     }
   }
   else {
-    return next(new AppError(400, "Arguments not provided."));
+    return next(new AppError(422, "Invalid Arguments."));
   }
 }
 
-export {isLoggedInOptional,isAuthor};
+export {isLoggedIn,verifyUser,isAuthor};

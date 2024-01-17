@@ -3,7 +3,7 @@ import { ApiResponse } from '../utilities/ApiResponse.mjs';
 import { userLogger } from '../utilities/logger.mjs';
 import { pathCSS,pathAssets } from '../utilities/config.mjs';
 import { Cloudinary } from '../utilities/cloudinary.mjs';
-import { escapeHTML,escapeSQL,unescapeSQL } from '../utilities/helpers/sanitizers.mjs';
+import { escapeHTML } from '../utilities/helpers/sanitizers.mjs';
 import { paramsExist } from '../utilities/validators/paramsExist.mjs';
 import { getUser } from '../utilities/helpers/authHelpers.mjs';
 import { 
@@ -33,9 +33,9 @@ const getUserContent = async (req,res)=>{
   let Response = new ApiResponse('error',500,'Something went wrong!');
   if (paramsExist([req.params.username])) {
     const username = escapeHTML(req.params.username);
-    let content = (req.query.content) ? (escapeSQL(escapeHTML(req.query.content.toString()))) : 'topics';
-    let all = (req.query.viewAll) ? (escapeSQL(escapeHTML(req.query.viewAll.toString()))) : false;
-    let page = (req.query.page) ? (escapeSQL(escapeHTML(req.query.page.toString()))): 0;
+    let content = (req.query.content) ? (escapeHTML(req.query.content.toString())) : 'topics';
+    let all = (req.query.viewAll) ? (escapeHTML(req.query.viewAll.toString())) : false;
+    let page = (req.query.page) ? (escapeHTML(req.query.page.toString())): 0;
     page = parseInt(page);
     let data = await getUserInfo(username,content,all,page);
     if (data.response === 'success') {
@@ -128,7 +128,7 @@ const updateDisplayName = async (req,res) => {
 
     let {displayName} = req.body;
     
-    let newDisplayName = escapeHTML(escapeSQL(displayName.toString()));
+    let newDisplayName = escapeHTML(displayName.toString());
 
     let result = await updateDisplayNameSetting(user.user_id, newDisplayName);
 
@@ -154,7 +154,7 @@ const updateEmail = async (req,res) => {
     const user = await getUser(username, USER_ID);
     
     let {email} = req.body;
-    let newEmail = escapeHTML(escapeSQL(email.toString()));
+    let newEmail = escapeHTML(email.toString());
     let result = await updateEmailSetting(user.user_id,newEmail);
 
     if (result instanceof AppError) {
@@ -248,11 +248,11 @@ const updateAboutMe = async(req,res)=>{
     const user = await getUser(username, USER_ID);
 
     let {txtAboutMe} = req.body;
-    let aboutMe = escapeSQL(txtAboutMe.toString());
+    let aboutMe = txtAboutMe.toString();
 
     let error = await updateAboutMeSetting(user.user_id,aboutMe);
     if (!(error instanceof AppError)) {
-      Response.setApiResponse('success',200,'Successfully updated your \'About Me\'','/',{aboutMe:unescapeSQL(aboutMe)});
+      Response.setApiResponse('success',200,'Successfully updated your \'About Me\'','/',{aboutMe});
     }
     else {
       userLogger.log('error',`User ID: ${user.user_id} -> ${error.message}`);

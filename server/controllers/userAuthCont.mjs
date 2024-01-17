@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import { pathCSS,pathAssets } from '../utilities/config.mjs';
 import { paramsExist } from '../utilities/validators/paramsExist.mjs';
 import bcrypt from 'bcrypt'
-import { containsHTML,escapeSQL } from '../utilities/helpers/sanitizers.mjs';
+import { containsHTML } from '../utilities/helpers/sanitizers.mjs';
 import {v4 as uuidv4} from 'uuid';
 import {AppError} from '../utilities/AppError.mjs';
 import { getDatabase } from '../utilities/db/mysql-connect.mjs';
@@ -233,8 +233,8 @@ const verifyEmail = async(req,res,next)=>{
     req.params.key
   ]);
   if (exist) {
-    const userId = escapeSQL(req.params.userId.toString());
-    const key = escapeSQL(req.params.key.toString());
+    const userId = req.params.userId.toString();
+    const key = req.params.key.toString();
     
     try{
       const db = await getDatabase();

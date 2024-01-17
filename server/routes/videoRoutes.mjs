@@ -1,8 +1,7 @@
 import express from 'express'
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods.mjs';
-import passport from 'passport';
 const router = express.Router();
-import { isAuthor } from '../utilities/validators/middleware/userAuth.mjs';
+import { isLoggedIn,isAuthor } from '../utilities/validators/middleware/userAuth.mjs';
 import { 
     createVideo,
     editVideo,
@@ -13,27 +12,27 @@ import {
 } from '../controllers/videosCont.mjs';
 
 router.route('/:username/:topic/create')
-    .post(passport.authenticate('cookie',{session:false}),isAuthor,createVideo)
+    .post(isLoggedIn,isAuthor,createVideo)
     .all(verifyMethods(['POST']));
 
 router.route('/:username/:topic/:video/edit')
-    .put(passport.authenticate('cookie',{session:false}),isAuthor,editVideo)
+    .put(isLoggedIn,isAuthor,editVideo)
     .all(verifyMethods(['PUT']));
 
 router.route('/:username/swapVideos')
-    .put(passport.authenticate('cookie',{session:false}),isAuthor,swapVideos)
+    .put(isLoggedIn,isAuthor,swapVideos)
     .all(verifyMethods(['PUT']));
 
 router.route('/:username/refreshMetadata')
-    .put(passport.authenticate('cookie',{session:false}),isAuthor,refreshMetadata)
+    .put(isLoggedIn,isAuthor,refreshMetadata)
     .all(verifyMethods(['PUT']));
 
 router.route('/:username/:topic/:video/delete')
-    .delete(passport.authenticate('cookie',{session:false}),isAuthor,deleteVideo)
+    .delete(isLoggedIn,isAuthor,deleteVideo)
     .all(verifyMethods(['DELETE']));
 
 router.route('/:username/deleteSelected')
-    .delete(passport.authenticate('cookie',{session:false}),isAuthor,deleteSelectedVideos)
+    .delete(isLoggedIn,isAuthor,deleteSelectedVideos)
     .all(verifyMethods(['DELETE']));
 
 export {router};

@@ -78,7 +78,6 @@ const getUserInfo = async (username,content,getAll=false,page=0) => {
             }
         }
     } catch (err) {
-        console.log(err.message);
         data = {response:'error',message:`Error: ${err.message}`};
     }
     return data;
