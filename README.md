@@ -23,12 +23,16 @@ This is a long-term project that will be ongoing.
 * This web app uses BCrypt which requires either an internet connection or a C++ compiler that supports C++17 installed on your system during `npm install`
 
 ## Database Setup
+### MySQL
 1. Open your RDBMS software (e.g. MySQL Workbench/phpMyAdmin)
 2. Open the script found in `server/utilities/db/create-db.sql`
 3. (Optional) In the first 3 lines of the SQL script, you may rename the database as you see fit
 4. Run the script
 5. Set the system variable `innodb_autoinc_lock_mode = 1`
 6. For #5 to take effect, restart the MySQL service in `services.msc` in Windows or using `systemd` in Linux
+
+### Redis (Optional)
+Redis is optional. The application will still run without it. Make sure the env variable `REDIS_ENABLED` is set to `false` otherwise the web app will try to connect to it for some routes. It won't cause a crash, but will go through the 10-second connection timeout process before continuing through the code.
 
 ## Additional Setup
 1. To satisfy the environemnt variables below, you will need to create a Cloudinary account and get an account name, API key, and secret.
