@@ -30,9 +30,14 @@ const sendOptionsResponse = (methods,res) => {
  */
 const verifyMethods = (methods) => {
     return async (req,res,next) => {
+        const origin = req.get('HOST') ? req.get('HOST') : '*';
         const options = sendOptionsResponse(methods,res);
         if (req.method === 'OPTIONS') {
-            return res.status(200).send(options);
+            res.set('Access-Control-Allow-Origin',origin);
+            res.set('Access-Control-Allow-Methods',options);
+            res.set('Access-Control-Allow-Headers','Content-Type');
+            res.set('Access-Control-Max-Age',3600);
+            return res.status(204).send();
         }
         else {
             return next(new AppError(405,`${req.method} method not allowed`));

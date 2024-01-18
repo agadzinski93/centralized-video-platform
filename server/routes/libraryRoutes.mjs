@@ -1,6 +1,6 @@
 import express from 'express'
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods.mjs';
-import { setHeaders } from '../utilities/validators/middleware/setHeaders.mjs';
+import { setCache,setCors } from '../utilities/validators/middleware/setHeaders.mjs';
 const router = express.Router({ caseSensitive: false, strict: false });
 import {
   renderLibaryTopic,
@@ -8,11 +8,11 @@ import {
 } from '../controllers/libraryCont.mjs';
 
 router.route('/:topic')
-  .get(setHeaders,renderLibaryTopic)
+  .get(setCors(),setCache,renderLibaryTopic)
   .all(verifyMethods(['GET']));
 
 router.route('/:topic/:video')
-  .get(setHeaders,renderVideoPage)
+  .get(setCors(),setCache,renderVideoPage)
   .all(verifyMethods(['GET']))
 
 export {router};

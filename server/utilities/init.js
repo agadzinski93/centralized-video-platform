@@ -1,5 +1,4 @@
 const helmet = require('helmet');
-const cors = require('cors');
 const closeApp = require('./closeApp');
 const passport = require('passport');
 const cookieParser = require("cookie-parser");
@@ -21,9 +20,7 @@ const Init = {
         let output = false;
         try {
             const {verifyUser} = await import('./validators/middleware/userAuth.mjs');
-            app.use(verifyUser); //Middleware to populate req.user if logged in
-
-            
+            app.use(verifyUser); //Middleware to populate req.user if logged in         
 
             //Routes
             let {router : homeRoutes} = await import('../routes/homeRoutes.mjs');
@@ -64,8 +61,6 @@ const Init = {
                 res.status(status).render("error", { title: `${status} Error`, status, message, pageStyles, pathCSS, pathAssets, user: req.user });
             });
             output = true;
-
-            app.use(cors({credentials:true}));
         } catch (err) {
             console.error(`${new Date().toString()} -> Import Routes Failed: ${err.stack}`);
         }

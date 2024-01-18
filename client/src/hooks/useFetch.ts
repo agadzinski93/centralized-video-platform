@@ -1,39 +1,13 @@
 import { useState, useEffect } from 'react'
 
-type RequestOptions = {
-  method: string,
-  body?: object,
-  cache?: string,
-  credentials?: string,
-  headers?: {
-    Authorization?: string,
-    ContentType?: string
-  },
-  mode?: string,
-  redirect?: string,
-  referrerPolicy?: string
-};
-
-const useFetch = <ResponseType>(url: string, { body, method }: RequestOptions) => {
+const useFetch = <ResponseType>(url: string, options: RequestInit) => {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<ResponseType>();
   const [error, setError] = useState<Error>();
 
   useEffect(() => {
-    let req = null;
-    if (body) {
-      req = {
-        method: method,
-        body: JSON.stringify(body)
-      };
-    }
-    else {
-      req = {
-        method: method
-      };
-    }
 
-    fetch(url, req)
+    fetch(url, options)
       .then((result) => {
         result
           .json()

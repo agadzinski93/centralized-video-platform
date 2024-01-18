@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router({ caseSensitive: false, strict: false });
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods.mjs';
-import { setHeaders } from '../utilities/validators/middleware/setHeaders.mjs';
+import { setCache,setCors } from '../utilities/validators/middleware/setHeaders.mjs';
 import multer from 'multer';
 import { storage } from '../utilities/cloudinary.mjs';
 import {filter} from '../utilities/validators/fileValidator.mjs';
@@ -27,7 +27,7 @@ import {
 } from '../controllers/userCont.mjs';
 
 router.route('/:username')
-  .get(setHeaders,renderUserPage)
+  .get(setCors(),setCache,renderUserPage)
   .all(verifyMethods(['GET']));
 
 router.route('/:username/getUserContent')
@@ -35,7 +35,7 @@ router.route('/:username/getUserContent')
   .all(verifyMethods(['GET']));
 
 router.route('/:username/settings')
-  .get(setHeaders,isLoggedIn,isAuthor,renderUserSettings)
+  .get(setCors(),setCache,isLoggedIn,isAuthor,renderUserSettings)
   .all(verifyMethods(['GET']));
 
 router.route('/:username/settings/updateRefreshMetadata')
@@ -64,7 +64,7 @@ router.route('/:username/settings/updateBanner')
   .all(verifyMethods(['PATCH']));
 
 router.route('/:username/dashboard')
-  .get(setHeaders,isLoggedIn,isAuthor,renderUserDashboard)
+  .get(setCors(),setCache,isLoggedIn,isAuthor,renderUserDashboard)
   .all(verifyMethods(['GET']));
 
 router.route('/:username/dashboard/:topic')
