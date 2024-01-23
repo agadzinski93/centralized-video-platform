@@ -7,7 +7,7 @@ This is a long-term project that will be ongoing.
 ## To do List
 
 ### Soon
-- [ ] Redo Dashboard UI to accomodate multiple platforms
+- [ ] Redo Dashboard UI to accommodate multiple platforms
 - [ ] Utilize the Drag and Drop API to ease the reordering process for videos
 - [ ] Utilize the Server Sent API to handle live updates
 
@@ -36,7 +36,7 @@ Redis is optional. The application will still run without it. Make sure the env 
 
 ## Additional Setup
 1. To satisfy the environemnt variables below, you will need to create a Cloudinary account and get an account name, API key, and secret.
-2. This app uses Nodemailer for sending emails to new users. Make sure you have some sort of email server set up. It doesn't need to be remote. You can set up something like XAMPP locally on your machine to handle this requirement.
+2. This app uses Nodemailer for sending emails to new users. Make sure you have some sort of email server set up. It doesn't need to be remote. You can set up something like Mercury included in [XAMPP](https://www.apachefriends.org/download.html) locally on your machine to handle this requirement.
 
 ## Environment Variables
 Create the `.env` file in the root of the project.
