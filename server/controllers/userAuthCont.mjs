@@ -1,3 +1,4 @@
+import { ApiResponse } from '../utilities/ApiResponse.mjs';
 import {pp} from '../utilities/ppStrategies.mjs'
 import jwt from 'jsonwebtoken'
 import { pathCSS,pathAssets } from '../utilities/config.mjs';
@@ -42,6 +43,37 @@ const renderLogin = (req, res) => {
     pathAssets, 
     user: req.user
   });
+}
+/**
+ * Logs in the user using Passport. If successful, returns token data to client app
+ * @param {*} req
+ * @param {*} res
+ * @param next
+ */
+const login = async (req, res, next) => {
+  const Response = new ApiResponse('error',500,'Something went wrong');
+  let url = "/";
+  pp.authenticate('login', async (err,user,info) => {
+    if (err) {
+        Response.setMessage = `Login Error: ${err.message}`;
+    }
+    else if (!user) {
+      Response.setMessage = 'No applicable user.';
+    }
+    else {
+        const body = {user_id:user.user_id, email:user.email, username:user.username, pic_url:user.pic_url};
+        const token = jwt.sign(body,process.env.COOKIE_SECRET,{expiresIn:"1hr"});
+        res.cookie('token',token,{
+            httpOnly:true,
+            secure: (process.env.NODE_ENV === 'production') ? true : false,
+            maxAge:1000*60*60,
+            sameSite:'Strict',
+            signed:true
+        });
+        Response.setApiResponse('success',200,'Successfully logged in.',url,body);
+    }
+    res.status(Response.getStatus).json(Response.getApiResponse());
+  })(req,res,next);
 }
 /**
  * Logs in the user using Passport. If successful, redirect to originally requested URL
@@ -265,4 +297,12 @@ const verifyEmail = async(req,res,next)=>{
     res.json({response:'error',message:'Arguments not provided.'});
   }
 }
-export {renderLogin,loginUser,logoutUser,renderRegistration,registerUser,verifyEmail};
+export {
+  renderLogin,
+  login,
+  loginUser,
+  logoutUser,
+  renderRegistration,
+  registerUser,
+  verifyEmail
+};

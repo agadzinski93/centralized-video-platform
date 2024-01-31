@@ -4,7 +4,9 @@ const router = express.Router({ caseSensitive: false, strict: false });
 import { registrationValidation } from '../utilities/validators/middleware/validators.mjs';
 import { 
   renderLogin,
+  login,
   loginUser,
+  //logout,
   logoutUser,
   renderRegistration,
   registerUser,
@@ -16,9 +18,17 @@ router.route('/login')
   .post(loginUser)
   .all(verifyMethods(['GET','POST']));
 
+router.route('/loginUser')
+  .post(login)
+  .all(verifyMethods(['POST']))
+
 router.route('/logout')
   .get(logoutUser)
   .all(verifyMethods(['GET']));
+
+/* router.route('/logoutUser')
+  .post([logout])
+  .all(verifyMethods(['POST'])); */
 
 router.route('/register')
   .get(renderRegistration)

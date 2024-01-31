@@ -1,25 +1,15 @@
-import { useFetch } from "./hooks/useFetch";
-
-import type { ApiResponse } from "./types";
-
-import "./App.scss";
-
-const API_TARGET = `/api/v1/home`;
+import { Outlet } from "react-router-dom";
+import NavBar from "./components/NavBar";
 
 function App() {
-  const { isLoading, data, error } = useFetch<ApiResponse>(API_TARGET, {
-    method: "GET",
-  });
-
-  const errorOutput = <div>{error && error.message}</div>;
-  const dataOutput = (
-    <div>{isLoading ? "Loading..." : data && data.message}</div>
-  );
-
   return (
     <>
-      {errorOutput}
-      {dataOutput}
+      <header>
+        <NavBar />
+      </header>
+      <main>
+        <Outlet />
+      </main>
     </>
   );
 }

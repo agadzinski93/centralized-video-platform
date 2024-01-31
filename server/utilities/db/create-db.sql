@@ -266,7 +266,7 @@ DO BEGIN
 			SET sql_error = TRUE;
 		START TRANSACTION;
 		DELETE FROM users WHERE id IN (SELECT userId FROM registration WHERE NOW() > expiration) AND account_status = 'pending';
-        DELETE FROM flashcards.registration WHERE NOW() > expiration;
+        DELETE FROM registration WHERE NOW() > expiration;
     END;
     IF sql_error = TRUE THEN
 		ROLLBACK;
