@@ -1,14 +1,9 @@
 import { api } from "./api";
+
+import type { ApiResponse } from "../../types/types";
+
 const AUTH_PATH = '/auth';
-type ApiResponse = {
-    response: string,
-    status: number,
-    message: string,
-    prevPath: string,
-    data?: {
-        token: string
-    }
-};
+
 type registerData = {
     username: string,
     email: string,
