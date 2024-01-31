@@ -19,7 +19,6 @@ passport.use(
         { usernameField: "username", passwordField: "password" },
         async (username,password,done)=>{
             try {
-                console.log(`Username: ${username}`);
                 const db = await getDatabase();
                 const sql = `SELECT user_id, username, email, password, activation_status, pic_url
                   FROM users 

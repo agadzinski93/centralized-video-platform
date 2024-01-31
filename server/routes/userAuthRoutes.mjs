@@ -6,7 +6,7 @@ import {
   renderLogin,
   login,
   loginUser,
-  //logout,
+  logout,
   logoutUser,
   renderRegistration,
   registerUser,
@@ -26,9 +26,9 @@ router.route('/logout')
   .get(logoutUser)
   .all(verifyMethods(['GET']));
 
-/* router.route('/logoutUser')
+router.route('/logoutUser')
   .post([logout])
-  .all(verifyMethods(['POST'])); */
+  .all(verifyMethods(['POST']));
 
 router.route('/register')
   .get(renderRegistration)

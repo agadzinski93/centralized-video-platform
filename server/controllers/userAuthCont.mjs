@@ -114,6 +114,23 @@ const logoutUser = (req, res, next) => {
   res.redirect("/");
 }
 /**
+ * Logs the user out
+ * @param {*} req
+ * @param {*} res
+ */
+const logout = (req, res, next) => {
+  const Response = new ApiResponse('error',500,'Something went wrong.');
+  try {
+    res.clearCookie('token');
+    Response.setApiResponse('success',200,'Successfully logged out.','/');
+  }
+  catch(err) {
+    Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error logging out.';
+  }
+  
+  res.status(Response.getStatus).json(Response.getApiResponse());
+}
+/**
  * Renders the Registration Page
  * @param {*} req
  * @param {*} res
@@ -302,6 +319,7 @@ export {
   login,
   loginUser,
   logoutUser,
+  logout,
   renderRegistration,
   registerUser,
   verifyEmail
