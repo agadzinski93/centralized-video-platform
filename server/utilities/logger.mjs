@@ -1,4 +1,5 @@
 import { createLogger,transports,format } from "winston";
+import { NODE_ENV } from "./config.mjs";
 
 const timeZone = () => {
     return new Date().toLocaleString('en-US',{timeZone:'America/Los_Angeles'});
@@ -11,8 +12,13 @@ const ConsoleLog = new transports.Console({
 const logger = createLogger({
     transports:[
         new transports.File({
-            filename:'error.log',
+            filename:'general.log',
             level:'error',
+            format:format.combine(format.timestamp({format:timeZone}),format.json())
+        }),
+        new transports.File({
+            filename:'general.log',
+            level:'info',
             format:format.combine(format.timestamp({format:timeZone}),format.json())
         })
     ]
@@ -21,7 +27,7 @@ const logger = createLogger({
 const topicLogger = createLogger({
     transports:[
         new transports.File({
-            filename:'topic-error.log',
+            filename:'topic.log',
             level:'error',
             format:format.combine(format.timestamp({format:timeZone}),format.json())
         })
@@ -31,7 +37,7 @@ const topicLogger = createLogger({
 const userLogger = createLogger({
     transports:[
         new transports.File({
-            filename:'user-error.log',
+            filename:'user.log',
             level:'error',
             format:format.combine(format.timestamp({format:timeZone}),format.json())
         })
@@ -41,14 +47,14 @@ const userLogger = createLogger({
 const videoLogger = createLogger({
     transports:[
         new transports.File({
-            filename:'video-error.log',
+            filename:'video.log',
             level:'error',
             format:format.combine(format.timestamp({format:timeZone}),format.json())
         })
     ]
 });
 
-if (process.env.NODE_ENV !== 'production') {
+if (NODE_ENV !== 'production') {
     logger.add(ConsoleLog);
     topicLogger.add(ConsoleLog);
     userLogger.add(ConsoleLog);

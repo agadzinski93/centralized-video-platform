@@ -71,7 +71,7 @@ const createVideo = async (req, res, next) => {
                     }
                     catch (err) {
                         videoLogger.log('error',err.message);
-                        Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error Inserting Video';
+                        Response.applyMessage(err.message,'Error inserting video.');
                     }
                 }
             }
@@ -127,7 +127,7 @@ const editVideo = async (req,res,next) => {
             }
         } catch (err) {
             videoLogger.log('error',err.message);
-            Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error Editing Video';
+            Response.applyMessage(err.message,'Error editing video.');
         }
     }
     else {
@@ -149,7 +149,7 @@ const swapVideos = async (req, res, next) => {
                 if (result instanceof AppError) throw new AppError(result.status,result.message);
             } catch(err) {
                 videoLogger.log('error',err.message);
-                Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error swapping videos.';
+                Response.applyMessage(err.message,'Error swapping videos.');
             }
             Response.setApiResponse('success',200,'Successfully swapped videos.','/',result);
         }
@@ -273,7 +273,7 @@ const refreshMetadata = async (req,res,next) => {
         else {
             videoLogger.log('error',result.message);
             Response.setStatus = result.status;
-            Response.setMessage = (process.env.NODE_ENV !== 'production') ? result.message : 'Error updating metadata.';
+            Response.applyMessage(result.message,'Error updating metadata.');
         }
     }
     else {
@@ -296,7 +296,7 @@ const deleteVideo = async (req, res, next) => {
                 if (result instanceof AppError) throw new AppError(result.status,result.message);
             } catch(err) {
                 videoLogger.log('error',err.message);
-                Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error Removing Video';
+                Response.applyMessage(err.message,'Error removing video.');
             }
             
             Response.setApiResponse('success',200,'Video Deleted','/');
@@ -326,7 +326,7 @@ const deleteSelectedVideos = async (req, res, next) => {
             Response.setApiResponse('success',200,'Successfully deleted videos.','/',result);
         } catch(err) {
             videoLogger.log('error',err.message);
-            Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error Removing Videos';
+            Response.applyMessage(err.message,'Error removing videos.');
         }
         
     } else {

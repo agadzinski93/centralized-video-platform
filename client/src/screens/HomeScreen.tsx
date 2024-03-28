@@ -1,6 +1,6 @@
 import { useFetch } from "../hooks/useFetch";
 
-import type { ApiResponse } from "../types";
+import type { ApiResponse } from "../types/types";
 
 const API_TARGET = `/api/v1/home`;
 

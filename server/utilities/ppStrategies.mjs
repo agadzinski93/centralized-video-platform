@@ -4,6 +4,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { getDatabase } from "./db/mysql-connect.mjs";
+import { COOKIE_SECRET } from "./config.mjs";
 
 const cookieExtractor = (req) => {
     let token = null;
@@ -62,7 +63,7 @@ passport.use(
     'bearer',
     new JwtStrategy(
         {
-            secretOrKey:process.env.COOKIE_SECRET,
+            secretOrKey:COOKIE_SECRET,
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken
         },
         async (token,done) => {
@@ -75,7 +76,7 @@ passport.use(
     'cookie',
     new JwtStrategy(
         {
-            secretOrKey:process.env.COOKIE_SECRET,
+            secretOrKey:COOKIE_SECRET,
             jwtFromRequest: cookieExtractor
         },
         (token,done) => {

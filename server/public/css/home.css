@@ -27,6 +27,11 @@
       height:0;
     }
   }
+.noRecentContent {
+    margin:1rem auto 0 auto;
+    text-align:center;
+    font-weight:bold;
+}
 .recentVideosHeader {
     margin-top:calc(50px + 1rem);
     margin-left:2.5vw;

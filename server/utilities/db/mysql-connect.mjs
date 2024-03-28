@@ -1,6 +1,13 @@
 import mysql from 'mysql2/promise'
 import bluebird from 'bluebird';
 import { AppError } from '../AppError.mjs';
+import { 
+  NODE_ENV,
+  USE_DOCKER,
+  DB_DOCKER_HOST,DB_DOCKER_PORT,DB_DOCKER_USER,DB_DOCKER_PASS,DB_DOCKER_DATABASE,
+  DB_DEV_HOST,DB_DEV_PORT,DB_DEV_USER,DB_DEV_PASS,DB_DEV_DATABASE,
+  DB_PRO_HOST,DB_PRO_PORT,DB_PRO_USER,DB_PRO_PASS,DB_PRO_DATABASE
+} from '../config.mjs';
 
 let db;
 let host,
@@ -9,19 +16,28 @@ let host,
     password,
     database;
 
-if (process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'Development') {
-  host = process.env.MYSQL_HOST;
-  port = process.env.MYSQL_PORT;
-  user = process.env.MYSQL_USER;
-  password = process.env.MYSQL_PASS;
-  database = process.env.MYSQL_DATABASE;
+if (NODE_ENV == 'development' || NODE_ENV == 'Development') {
+  if (USE_DOCKER === 'true') {
+    host = DB_DOCKER_HOST;
+    port = DB_DOCKER_PORT;
+    user = DB_DOCKER_USER;
+    password = DB_DOCKER_PASS;
+    database = DB_DOCKER_DATABASE;
+  }
+  else {
+    host = DB_DEV_HOST;
+    port = DB_DEV_PORT;
+    user = DB_DEV_USER;
+    password = DB_DEV_PASS;
+    database = DB_DEV_DATABASE;
+  }
 }
 else {
-  host = process.env.PHP_MY_ADMIN_HOST;
-  port = process.env.PHP_MY_ADMIN_POST;
-  user = process.env.PHP_MY_ADMIN_USER;
-  password = process.env.PHP_MY_ADMIN_PASS;
-  database = process.env.PHP_MY_ADMIN_DATABASE;
+  host = DB_PRO_HOST;
+  port = DB_PRO_PORT;
+  user = DB_PRO_USER;
+  password = DB_PRO_PASS;
+  database = DB_PRO_DATABASE;
 }
 
 /**

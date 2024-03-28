@@ -19,17 +19,14 @@ router.route('/:username/create')
   .post(isLoggedIn,isAuthor,parser.single('topic[file]'),topicValidation,createTopic)
   .all(verifyMethods(['POST']));
 
-router.route('/:username/edit/:topic')
+router.route('/:username/:topic')
   .put(isLoggedIn,isAuthor,topicValidation,editTopic)
-  .all(verifyMethods(['PUT']));
+  .delete(isLoggedIn, isAuthor, deleteTopic)
+  .all(verifyMethods(['PUT,DELETE']));
 
-router.route('/:username/editImage/:topic')
+router.route('/:username/:topic/image')
   .post(isLoggedIn,isAuthor,parser.single('topic[file]'), editTopicImage)
   .all(verifyMethods(['POST']));
-
-router.route('/:username/delete/:topic')
-  .delete(isLoggedIn, isAuthor, deleteTopic)
-  .all(verifyMethods(['DELETE']));
 
 router.route('/:username/deleteSelected')
   .delete(isLoggedIn, isAuthor, deleteSelectedTopics)

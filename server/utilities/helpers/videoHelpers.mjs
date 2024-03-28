@@ -1,6 +1,7 @@
 import { getDatabase } from "../db/mysql-connect.mjs";
 import { escapeSQL,prepareLikeStatement } from "./sanitizers.mjs";
 import {AppError} from "../AppError.mjs";
+import { YOUTUBE_KEY } from "../config.mjs";
 
   const getTopicVideos = async (topic) => {
     try {
@@ -122,7 +123,7 @@ import {AppError} from "../AppError.mjs";
       const query = prepareLikeStatement(q);
 
       const sql = `SELECT * FROM search_videos WHERE title LIKE ? LIMIT 20`;
-      const values = [query+'%'];
+      const values = ['%'+query+'%'];
 
       let videos = await db.execute(sql,values);
       return videos[0];
@@ -152,7 +153,7 @@ import {AppError} from "../AppError.mjs";
     let result;
 
     try {
-      const data = await fetch(`https://www.googleapis.com/youtube/v3/videos?id=${vidId}&key=${process.env.YOUTUBE_KEY}
+      const data = await fetch(`https://www.googleapis.com/youtube/v3/videos?id=${vidId}&key=${YOUTUBE_KEY}
         &part=snippet,statistics&fields=items(id,snippet,statistics)`,
         {
           method:'GET'
@@ -179,7 +180,7 @@ import {AppError} from "../AppError.mjs";
     const resultsPerPage = 50; //Max allowed by YouTube API
 
     try {
-      const data = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=${process.env.YOUTUBE_KEY}
+      const data = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=${YOUTUBE_KEY}
         &part=snippet`,
         {
           method:'GET'
@@ -209,7 +210,7 @@ import {AppError} from "../AppError.mjs";
       if (i === 0) {
 
         try {
-          const data = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=${process.env.YOUTUBE_KEY}
+          const data = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=${YOUTUBE_KEY}
             &part=snippet&maxResults=${resultsPerPage}`);
           const yt = await data.json();
           nextPageToken = yt.nextPageToken;
@@ -229,7 +230,7 @@ import {AppError} from "../AppError.mjs";
 
       } else {
       try {
-        const data = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=${process.env.YOUTUBE_KEY}
+        const data = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?playlistId=${playlistId}&key=${YOUTUBE_KEY}
           &part=snippet&maxResults=${resultsPerPage}&pageToken=${nextPageToken}`);
         const yt = await data.json();
 
@@ -354,7 +355,6 @@ import {AppError} from "../AppError.mjs";
         addedVideos:addedVideos[0]
       };
     } catch(err) {
-      console.log(err.message);
       return new AppError(500, `Error Adding Videos: ${err.message}`);
     }
   }
@@ -488,7 +488,6 @@ import {AppError} from "../AppError.mjs";
 
       return output;
     } catch(err) {
-      console.log(err.message);
       return new AppError(500, "Error Deleting Videos");
     }
   }

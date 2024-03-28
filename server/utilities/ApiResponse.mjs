@@ -1,3 +1,5 @@
+import { NODE_ENV } from "./config.mjs";
+
 export class ApiResponse {
     #response;
     #status;
@@ -21,6 +23,15 @@ export class ApiResponse {
     set setPrevPath(prevPath) {this.#prevPath = prevPath;}
     get getData() {return this.#data;}
     set setData(data) {this.#data = data;}
+
+    /**
+     * Set the message for the API response
+     * @param {string} devMessage - API Response message when not in production
+     * @param {string} publicMessage - API Response message when in production
+     */
+    applyMessage(devMessage,publicMessage) {
+        this.#message = (NODE_ENV !== 'production') ? devMessage : publicMessage;
+    }
 
     setApiResponse(response, status, message, prevPath = '/', data = {}) {
         this.#response = response;

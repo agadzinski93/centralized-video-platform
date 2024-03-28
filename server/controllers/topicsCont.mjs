@@ -3,6 +3,7 @@ import { topicLogger } from "../utilities/logger.mjs";
 import { paramsExist } from "../utilities/validators/paramsExist.mjs";
 import {AppError} from "../utilities/AppError.mjs";
 import { escapeHTML } from "../utilities/helpers/sanitizers.mjs";
+import { Cloudinary } from "../utilities/cloudinary.mjs";
 import { 
   topicExists,
   insertTopic,
@@ -35,7 +36,7 @@ const createTopic = async (req, res, next) => {
     if (exists instanceof AppError) {
       topicLogger.log('error',exists.message);
       Response.setStatus = exists.status;
-      Response.setMessage = (process.env.NODE_ENV !== 'production') ? exists.message : 'Error verifying topic\'s existence.';
+      Response.applyMessage(exists.message,'Error verifying topic\'s existence.');
     }
     else if (exists !== 0) {
       topicLogger.log('error',`Topic of name '${topicName}' already exists`);
@@ -53,7 +54,7 @@ const createTopic = async (req, res, next) => {
       if (topic instanceof AppError) {
         topicLogger.log('error',topic.message);
         Response.setStatus = topic.status;
-        Response.setMessage = (process.env.NODE_ENV !== 'production') ? topic.message : 'Error inserting topic.';
+        Response.applyMessage(topic.message,'Error inserting topic.');
       }
       else {
         Response.setApiResponse('success',201,'Topic created.','/',topic);
@@ -83,7 +84,7 @@ const editTopic = async (req, res) => {
     if (result instanceof AppError) {
       topicLogger.log('error',result.message);
       Response.setStatus = result.status;
-      Response.setMessage = (process.env.NODE_ENV !== 'production') ? result.message : 'Error updating topic.';
+      Response.applyMessage(result.message,'Error updating topic.');
     }
     else {
       Response.setApiResponse('success',200,'Topic updated.','/');
@@ -97,18 +98,19 @@ const editTopic = async (req, res) => {
 }
 const editTopicImage = async (req,res) => {
   const Response = new ApiResponse('error',500,'Something went wrong.','/');
+  let filename = null;
   if (paramsExist([req.params.topic,req.file])) {
     const topicName = enableHyphens(escapeHTML(req.params.topic),false);
     let newImgUrl = null;
 
-    let topicImage = req.file.path,
-        filename = req.file.filename;
+    let topicImage = req.file.path
+    filename = req.file.filename;
 
     const exists = await topicExists(topicName);
     if (exists instanceof AppError) {
       topicLogger.log('error',exists.message);
       Response.setStatus = exists.status;
-      Response.setMessage = (process.env.NODE_ENV !== 'production') ? exists.message : 'Error validating topic.';
+      Response.applyMessage(exists.message,'Error validating topic.');
     }
     else if (exists === 0) {
       topicLogger.log('error','Topic does not exist.');
@@ -120,7 +122,7 @@ const editTopicImage = async (req,res) => {
       if (error instanceof AppError) {
         topicLogger.log('error',error.message);
         Response.setStatus = error.status;
-        Response.setMessage = (process.env.NODE_ENV !== 'production') ? error.message : 'Error deleting topic image.';
+        Response.applyMessage(error.message,'Error deleting topic image.');
       }
       else {
         newImgUrl = await modifyTopicImage(
@@ -131,7 +133,7 @@ const editTopicImage = async (req,res) => {
         if (newImgUrl instanceof AppError) {
           topicLogger.log('error',newImgUrl.message);
           Response.setStatus = newImgUrl.status;
-          Response.setMessage = (process.env.NODE_ENV !== 'production') ? newImgUrl.message : 'Error uploading new image.';
+          Response.applyMessage(newImgUrl.message,'Error uploading new image.');
         }
         else {
           Response.setApiResponse('success',200,'Successfully updated topic image.','/',newImgUrl);
@@ -143,6 +145,7 @@ const editTopicImage = async (req,res) => {
     topicLogger.log('error','Invalid Arguments');
     Response.setApiResponse('error',422,'Invalid Arguments');
   }
+  if (Response.getResponse === 'error' && filename) Cloudinary.uploader.destroy(filename);
   res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const deleteTopic = async (req, res) => {
@@ -153,7 +156,7 @@ const deleteTopic = async (req, res) => {
     if (result instanceof AppError) {
       topicLogger.log('error',result.message);
       Response.setStatus = result.status;
-      Response.setMessage = (process.env.NODE_ENV !== 'production') ? result.message : 'Error deleting topic.';
+      Response.applyMessage(result.message,'Error deleting topic.');
     }
     else {
       Response.setApiResponse('success',200,'Topic deleted.','/');
@@ -174,7 +177,7 @@ const deleteSelectedTopics = async (req,res) => {
     if (result instanceof AppError) {
       topicLogger.log('error',result.message);
       Response.setStatus = result.status;
-      Response.setMessage = (process.env.NODE_ENV !== 'production') ? result.message : 'Error deleting topics.';
+      Response.applyMessage(result.message,'Error deleting topics.');
     }
     else {
       if (topics.length === 1) {

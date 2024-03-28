@@ -3,6 +3,7 @@ import {AppError} from "../AppError.mjs";
 import { Cloudinary } from "../cloudinary.mjs";
 import { enableHyphens } from "./topicHelpers.mjs";
 import { setPaginationData,endOfResults } from "./pagination.mjs";
+import { DEFAULT_PROFILE_PIC, DEFAULT_PIC_FILENAME } from "../config.mjs";
 
 /**
  * 
@@ -192,7 +193,6 @@ const updateAboutMeSetting = async (userId,newAboutMe) => {
         const db = await getDatabase();
         const sql = `UPDATE users SET about_me = ? WHERE user_id = ?`;
         const values = [newAboutMe,userId];
-
         result = await db.execute(sql,values);
     } catch(err) {
         result = new AppError(500,err.message);
@@ -209,15 +209,15 @@ const deleteImage = async (user,target) => {
         switch(target) {
             case 'PROFILE PIC':
                 filename = user.pic_filename;
-                if (filename !== process.env.DEFAULT_PIC_FILENAME) {
+                if (filename !== DEFAULT_PIC_FILENAME) {
                     await Cloudinary.uploader.destroy(filename);
                 }
                 const sql = `UPDATE users SET pic_url = ?, pic_filename = ? WHERE user_id = ?`;
-                const values = [process.env.DEFAULT_PROFILE_PIC,process.env.DEFAULT_PIC_FILENAME,user.user_id];
+                const values = [DEFAULT_PROFILE_PIC,DEFAULT_PIC_FILENAME,user.user_id];
 
                 await db.execute(sql,values);
-                path = process.env.DEFAULT_PROFILE_PIC;
-                filename = process.env.DEFAULT_PIC_FILENAME;
+                path = DEFAULT_PROFILE_PIC;
+                filename = DEFAULT_PIC_FILENAME;
                 break;
             case 'BANNER':
                 filename = user.banner_filename;

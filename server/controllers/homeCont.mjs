@@ -1,6 +1,6 @@
 import {AppError} from '../utilities/AppError.mjs';
 import { ApiResponse } from '../utilities/ApiResponse.mjs';
-import { pathCSS,pathAssets } from '../utilities/config.mjs';
+import { pathCSS,pathAssets } from '../utilities/publicPath.mjs';
 import { escapeHTML } from '../utilities/helpers/sanitizers.mjs';
 import { getRecentVideos, searchVideos, getMoreVideos } from '../utilities/helpers/videoHelpers.mjs';
 import { enableHyphens, getRecentTopic } from '../utilities/helpers/topicHelpers.mjs';
@@ -37,7 +37,7 @@ const renderHomeScreen = async (req,res,next) => {
       const videos = await getRecentVideos();
       if (videos instanceof AppError) {
         Response.setStatus = videos.status;
-        Response.setMessage = (process.env.NODE_ENV !== 'production') ? videos.message : 'Error retrieving recent videos.';
+        Response.applyMessage(videos.message,'Error retrieving recent videos.');
       }
       else {
         for (let video of videos) {
@@ -46,7 +46,7 @@ const renderHomeScreen = async (req,res,next) => {
         const topics = await getRecentTopic();
         if (topics instanceof AppError) {
           Response.setStatus = topics.status;
-          Response.setMessage = (process.env.NODE_ENV !== 'production') ? topics.message : 'Error retrieving recent videos.';
+          Response.applyMessage(topics.message,'Error retrieving recent topics.');
         }
         else {
           for (let topic of topics) {

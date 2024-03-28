@@ -145,7 +145,7 @@ const modifyTopicImage = async (topicName, topicImage, filename) => {
     
     return topic[0].imageUrl;
   } catch(err) {
-    return new AppError(500, "Error Updating Topic Image");
+    return new AppError(500, err.message);
   }
 }
 const removeTopic = async (topic) => {
@@ -160,7 +160,7 @@ const removeTopic = async (topic) => {
     topicInfo = topicInfo[0][0].filename;
 
     if (topicInfo) {
-      await Cloudinary.uploader.destroy(topicInfo[0][0].filename);
+      await Cloudinary.uploader.destroy(topicInfo);
     }
 
     const sqlTwo = `DELETE FROM topics WHERE name = ?`;
@@ -187,13 +187,14 @@ const deleteTopicImage = async (topicName) => {
     let result = await db.execute(sql,values);
     let topic = result[0].map(o => Object.assign({}, o));
     let filename = topic[0].filename;
-    if (filename !== 'null') {
+    
+    if (filename !== null) {
       await Cloudinary.uploader.destroy(filename);
     }
     
     return null;
   } catch(err) {
-    return new AppError(500, "Error Updating Topic Image");
+    return new AppError(500, err.message);
   }
 }
 const removeSelectedTopics = async (topics) => {

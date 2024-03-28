@@ -1,5 +1,5 @@
 import {AppError} from '../utilities/AppError.mjs';
-import { pathCSS,pathAssets } from '../utilities/config.mjs';
+import { pathCSS,pathAssets } from '../utilities/publicPath.mjs';
 import { escapeHTML, removeParams } from '../utilities/helpers/sanitizers.mjs';
 import { enableHyphens } from '../utilities/helpers/topicHelpers.mjs';
 import { getTopic } from '../utilities/helpers/topicHelpers.mjs';

@@ -1,5 +1,6 @@
 import { logger } from "../logger.mjs";
 import { getRedisConnection } from "./redis.mjs";
+import { REDIS_ENABLED } from "../config.mjs";
 
 /**
  * Check if key exists in Redis, return false if it doesn't exist or no active Redis connection
@@ -8,7 +9,7 @@ import { getRedisConnection } from "./redis.mjs";
  */
 const getRedisCache = async (key) => {
     let cache = false;
-    if (process.env.REDIS_ENABLED === 'true') {
+    if (REDIS_ENABLED === 'true') {
         try {
             const client = await getRedisConnection();
             const value = await client.get(key);
@@ -30,7 +31,7 @@ const getRedisCache = async (key) => {
  * @param {object} options - Options for redis.set command
  */
 const setRedisCache = async (key,value,options) => {
-    if (process.env.REDIS_ENABLED === 'true') {
+    if (REDIS_ENABLED === 'true') {
         try {
             const client = await getRedisConnection();
             await client.set(key,value,options);

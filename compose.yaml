@@ -1,0 +1,109 @@
+version: "3.8"
+services:
+  db-server:
+    image: mariadb:10.11.7
+    container_name: mariadb-server
+    ports:
+      - 3308:3306
+    environment:
+      MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      MARIADB_DATABASE: cvp
+      MARIADB_USER_FILE: /run/secrets/db_user
+      MARIADB_PASSWORD_FILE: /run/secrets/db_password
+    healthcheck:
+      test: [
+        "CMD",
+        "healthcheck.sh",
+        "--su-mysql",
+        "--connect",
+        "--innodb_initialized"
+      ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./server/utilities/db/create-db.sql:/docker-entrypoint-initdb.d/create-db.sql
+    networks:
+      - cvp-network
+    secrets:
+      - db_root_password
+      - db_user
+      - db_password
+  db-client:
+    image: phpmyadmin:latest
+    container_name: mariadb-client
+    ports: 
+      - 8080:80
+    environment:
+      PMA_HOST: db-server
+    networks:
+      - cvp-network
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    restart: on-failure
+    command: redis-server --save 60 1 --loglevel warning
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-cache:/data
+    networks:
+      - cvp-network
+  server:
+    depends_on:
+      db-server:
+        condition: service_started
+      redis:
+        condition: service_started
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: cvp-server
+    ports:
+      - 5000:5000
+    volumes:
+      - "./server:/usr/src/app/server"
+    env_file:
+      - .env
+    networks:
+      - cvp-network
+  client:
+    depends_on:
+      - server
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    container_name: cvp-client
+    ports:
+      - 3000:3000
+    env_file:
+      - ./client/.env
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - "./client/src:/usr/src/app/src"
+      - "./client/tests:/usr/src/app/tests"
+      - "./client/index.html:/usr/src/app/index.html"
+      - "./client/package-lock.json:/usr/src/app/package-lock.json"
+      - "./client/package.json:/usr/src/app/package.json"
+      - "./client/tsconfig.json:/usr/src/app/tsconfig.json"
+      - "./client/tsconfig.node.json:/usr/src/app/tsconfig.node.json"
+      - "./client/vite.config.ts:/usr/src/app/vite.config.ts"
+    networks:
+      - cvp-network
+secrets:
+  db_root_password:
+    file: ./server/utilities/db/db_root_password.txt
+  db_user:
+    file: ./server/utilities/db/db_user.txt
+  db_password:
+    file: ./server/utilities/db/db_password.txt
+volumes:
+  db-data:
+    driver: local
+  redis-cache:
+    driver: local
+networks:
+  cvp-network:
+    name: cvp-network

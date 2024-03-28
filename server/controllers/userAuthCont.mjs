@@ -1,7 +1,7 @@
 import { ApiResponse } from '../utilities/ApiResponse.mjs';
 import {pp} from '../utilities/ppStrategies.mjs'
 import jwt from 'jsonwebtoken'
-import { pathCSS,pathAssets } from '../utilities/config.mjs';
+import { pathCSS,pathAssets } from '../utilities/publicPath.mjs';
 import { paramsExist } from '../utilities/validators/paramsExist.mjs';
 import bcrypt from 'bcrypt'
 import { containsHTML } from '../utilities/helpers/sanitizers.mjs';
@@ -12,6 +12,15 @@ import { getUserById } from '../utilities/helpers/authHelpers.mjs';
 import { createEmail,sendEmail } from '../utilities/email/Email.mjs';
 import { USER_COLS } from '../utilities/globals/user.mjs';
 const {USERNAME,EMAIL,concat_user_columns} = USER_COLS;
+import { 
+  NODE_ENV, 
+  PORT,
+  COOKIE_SECRET,
+  DEFAULT_PROFILE_PIC,
+  DEFAULT_PIC_FILENAME,
+  DOMAIN_PUBLIC,
+  DOMAIN_PRIVATE
+} from '../utilities/config.mjs';
 
 /**
  * Hashes the password submitted by user
@@ -62,10 +71,10 @@ const login = async (req, res, next) => {
     }
     else {
         const body = {user_id:user.user_id, email:user.email, username:user.username, pic_url:user.pic_url};
-        const token = jwt.sign(body,process.env.COOKIE_SECRET,{expiresIn:"1hr"});
+        const token = jwt.sign(body,COOKIE_SECRET,{expiresIn:"1hr"});
         res.cookie('token',token,{
             httpOnly:true,
-            secure: (process.env.NODE_ENV === 'production') ? true : false,
+            secure: (NODE_ENV === 'production') ? true : false,
             maxAge:1000*60*60,
             sameSite:'Strict',
             signed:true
@@ -92,10 +101,10 @@ const loginUser = async (req, res, next) => {
     }
     else {
         const body = {user_id:user.user_id, email:user.email, username:user.username, pic_url:user.pic_url};
-        const token = jwt.sign(body,process.env.COOKIE_SECRET,{expiresIn:"1hr"});
+        const token = jwt.sign(body,COOKIE_SECRET,{expiresIn:"1hr"});
         res.cookie('token',token,{
             httpOnly:true,
-            secure: (process.env.NODE_ENV === 'production') ? true : false,
+            secure: (NODE_ENV === 'production') ? true : false,
             maxAge:1000*60*60,
             sameSite:'Strict',
             signed:true
@@ -125,7 +134,7 @@ const logout = (req, res, next) => {
     Response.setApiResponse('success',200,'Successfully logged out.','/');
   }
   catch(err) {
-    Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error logging out.';
+    Response.applyMessage(err.message,'Error logging out.');
   }
   
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -238,8 +247,8 @@ const registerUser = async (req, res, next) => {
       username:req.body.username,
       email:req.body.email,
       pass:pw,
-      profile_pic:process.env.DEFAULT_PROFILE_PIC,
-      pic_filename:process.env.DEFAULT_PIC_FILENAME,
+      profile_pic:DEFAULT_PROFILE_PIC,
+      pic_filename:DEFAULT_PIC_FILENAME,
       key:key
     }
 
@@ -254,9 +263,9 @@ const registerUser = async (req, res, next) => {
       );
     }
     
-    let domain = `https://${process.env.DOMAIN_PUBLIC}`;
-    if (process.env.NODE_ENV == 'development') {
-      domain = `http://${process.env.DOMAIN_PRIVATE}:${process.env.PORT}`
+    let domain = `https://${DOMAIN_PUBLIC}`;
+    if (NODE_ENV == 'development') {
+      domain = `http://${DOMAIN_PRIVATE}:${PORT}`
     }
 
     const subject = `Email Verification`;

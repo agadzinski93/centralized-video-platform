@@ -407,7 +407,7 @@ const addCreateTopicEvent = () => {
     const id = e.target.parentElement.getAttribute('id').substring(14);
     const fetchId = document.querySelector(`#${id} p#topicNameTitle`).textContent.replaceAll(' ','-');
     try {
-      const result = await fetch(`/topics/${USERNAME}/delete/${fetchId.replaceAll(' ','-')}`,{
+      const result = await fetch(`/topics/${USERNAME}/${fetchId.replaceAll(' ','-')}`,{
         method:'DELETE'
       });
       const data = await result.json();
@@ -443,7 +443,7 @@ const addCreateTopicEvent = () => {
         body[k] = v;
       });
 
-      const result = await fetch(`/topics/${USERNAME}/edit/${fetchId}`,{
+      const result = await fetch(`/topics/${USERNAME}/${fetchId}`,{
         method:'PUT',
         headers:{
           'Content-Type':'application/json'

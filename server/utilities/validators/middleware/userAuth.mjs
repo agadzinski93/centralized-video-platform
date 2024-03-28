@@ -4,12 +4,13 @@ import { escapeHTML } from "../../helpers/sanitizers.mjs";
 import { usernameMatch } from "../../helpers/authHelpers.mjs";
 import passport from "passport";
 import jwt from "jsonwebtoken";
+import { COOKIE_SECRET } from "../../config.mjs";
 
 const tokenCookieExtractor = (req) => {
   let token = null;
   if (req && Object.keys(req.signedCookies).length > 0) {
     token = req.signedCookies['token'];
-    jwt.verify(token,process.env.COOKIE_SECRET, (err,decoded)=>{
+    jwt.verify(token,COOKIE_SECRET, (err,decoded)=>{
       if (err) {
         token = null;
       }
@@ -54,7 +55,7 @@ const isAuthor = async (req, res, next) => {
     if (loggedUsername && urlUsername) {
       const match = await usernameMatch(loggedUsername, urlUsername);
       if (match instanceof AppError) return next(match);
-
+      
       return next();
     }
   }

@@ -1,5 +1,7 @@
 import { getDatabase } from "../db/mysql-connect.mjs";
 import {AppError} from "../AppError.mjs";
+import jwt from 'jsonwebtoken';
+import { NODE_ENV, COOKIE_SECRET } from "../config.mjs";
 
 /**
  * Retrieve all columns for a user
@@ -82,5 +84,23 @@ const usernameMatch = async (loggedUsername, urlUsername) => {
     return new AppError(500, err.message);
   }
 }
+/**
+ * 
+ * @param {object} res - response object from Express (necessary to access res.cookie)
+ * @param {object} user - user profile to update (must include user_id, username, email, and pic_url)
+ * @param {object} options - property and value to update on user profile
+ */
+const updateAuthToken = (res,user,{property,value}) => {
+  const body = {...user, [property]:value};
+  const token = jwt.sign(body,COOKIE_SECRET,{expiresIn:"1hr"});
+  res.cookie('token',token,{
+      httpOnly:true,
+      secure: (NODE_ENV === 'production') ? true : false,
+      maxAge:1000*60*60,
+      sameSite:'Strict',
+      signed:true,
+      overwrite:true
+  });
+}
 
-export {getUser,getUserById,usernameMatch};
+export {getUser,getUserById,usernameMatch,updateAuthToken};

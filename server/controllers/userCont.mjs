@@ -1,11 +1,11 @@
 import {AppError} from '../utilities/AppError.mjs';
 import { ApiResponse } from '../utilities/ApiResponse.mjs';
 import { userLogger } from '../utilities/logger.mjs';
-import { pathCSS,pathAssets } from '../utilities/config.mjs';
+import { pathCSS,pathAssets } from '../utilities/publicPath.mjs';
 import { Cloudinary } from '../utilities/cloudinary.mjs';
 import { escapeHTML } from '../utilities/helpers/sanitizers.mjs';
 import { paramsExist } from '../utilities/validators/paramsExist.mjs';
-import { getUser } from '../utilities/helpers/authHelpers.mjs';
+import { getUser, updateAuthToken } from '../utilities/helpers/authHelpers.mjs';
 import { 
   getUserInfo,
   modifyImage,
@@ -20,11 +20,15 @@ import { enableHyphens } from '../utilities/helpers/topicHelpers.mjs';
 import { USER_COLS } from '../utilities/globals/user.mjs';
 const { 
   USER_ID,
+  USERNAME,
+  EMAIL,
   PIC_FILENAME,
   BANNER_URL,
   BANNER_FILENAME,
   concat_user_columns
 } = USER_COLS;
+
+import { DEFAULT_PROFILE_PIC,DEFAULT_PIC_FILENAME } from '../utilities/config.mjs';
 
 import { getUserTopics, getTopic } from '../utilities/helpers/topicHelpers.mjs';
 import { getTopicVideos } from '../utilities/helpers/videoHelpers.mjs';
@@ -57,7 +61,7 @@ const renderUserPage = async (req, res, next) => {
   if (req.user) {
     user = req.user;
   }
-
+  
   let pageStyles = `${pathCSS}user/page.css`;
 
   res.render(`user/userPage`, {
@@ -76,7 +80,7 @@ const renderUserSettings = async (req, res) => {
   if (user instanceof AppError) return next(user);
   
   let usingDefaultProfilePic = false;
-  if (user.pic_filename === process.env.DEFAULT_PIC_FILENAME) {
+  if (user.pic_filename === DEFAULT_PIC_FILENAME) {
     usingDefaultProfilePic = true;
   }
 
@@ -138,7 +142,7 @@ const updateDisplayName = async (req,res) => {
     else {
       userLogger.log('error',`User ID: ${user.user_id} -> ${result.message}`);
       Response.setStatus = result.status;
-      Response.setMessage = (process.env.NODE_ENV !== 'production') ? result.message : 'Error updating display name.';
+      Response.applyMessage(result.message,'Error updating display name.');
     }
   }
   else {
@@ -164,7 +168,7 @@ const updateEmail = async (req,res) => {
       else {
         userLogger.log('error',`User ID: ${user.user_id} -> ${result.message}`);
         Response.setStatus = result.status;
-        Response.setMessage = (process.env.NODE_ENV !== 'production') ? result.message : 'Error updating email.';
+        Response.applyMessage(result.message,'Error updating email.');
       }
     }
     else {
@@ -181,7 +185,7 @@ const updateProfilePic = async (req,res) => {
   const Response = new ApiResponse('error',500,'Something went wrong.','/');
   if (paramsExist([req.params.username,req.file])) {
     const username = escapeHTML(req.params.username);
-    const user_cols = concat_user_columns([USER_ID,PIC_FILENAME]);
+    const user_cols = concat_user_columns([USER_ID,USERNAME,EMAIL,PIC_FILENAME]);
     const user = await getUser(username, user_cols);
 
     let picUrl = req.file.path,
@@ -190,7 +194,7 @@ const updateProfilePic = async (req,res) => {
     let error = await deleteImage(user, 'PROFILE PIC');
     if (error instanceof AppError) {
       await Cloudinary.uploader.destroy(filename);
-      Response.setMessage = (process.env.NODE_ENV !== 'production') ? error.message : 'Error deleting profile picture.';
+      Response.applyMessage(error.message,'Error deleting profile picture.');
     }
     else {
       let data = await modifyImage(
@@ -204,12 +208,13 @@ const updateProfilePic = async (req,res) => {
         try {
           await Cloudinary.uploader.destroy(filename);
           Response.setStatus = data.status;
-          Response.setMessage = (process.env.NODE_ENV !== 'production') ? data.message : 'Error Uploading New Image';
+          Response.applyMessage(data.message,'Error uploading new image.');
         } catch (err) {
           userLogger.log('error',`User ID: ${user.user_id} -> ${err.message}`);
-          Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error communicating with file host.'; 
+          Response.applyMessage(err.message,'Error communicating with file host.');
         }
-      } 
+      }
+      updateAuthToken(res,user,{property:'pic_url',value:picUrl});
       Response.setApiResponse('success',200,'Successfully updated profile picture.','/', data);
     }
   }
@@ -227,6 +232,7 @@ const deleteProfilePic = async(req,res) => {
 
     let data = await deleteImage(user, 'PROFILE PIC');
     if (!(data instanceof AppError)) {
+      updateAuthToken(res,user,{property:'pic_url',value:DEFAULT_PROFILE_PIC});
       Response.setApiResponse('success',200,'Successfully deleted profile picture.','/',data);
     }
     else {
@@ -243,11 +249,11 @@ const deleteProfilePic = async(req,res) => {
 }
 const updateAboutMe = async(req,res)=>{
   const Response = new ApiResponse('error',500,'Something went wrong.','/');
-  if (paramsExist([req.params.username,req.body.txtAboutMe])) {
+  let txtAboutMe = (req.body.txtAboutMe) ? req.body.txtAboutMe : '';
+  if (paramsExist([req.params.username])) {
     const username = escapeHTML(req.params.username);
     const user = await getUser(username, USER_ID);
 
-    let {txtAboutMe} = req.body;
     let aboutMe = txtAboutMe.toString();
 
     let error = await updateAboutMeSetting(user.user_id,aboutMe);
@@ -257,11 +263,11 @@ const updateAboutMe = async(req,res)=>{
     else {
       userLogger.log('error',`User ID: ${user.user_id} -> ${error.message}`);
       Response.setStatus = error.status;
-      Response.setMessage = (process.env.NODE_ENV !== 'production') ? error.message : 'Error updating email.';
+      Response.applyMessage(error.message,'Error updating email.');
     }
   }
   else {
-    userLogger.log('error',`User ID: ${user.user_id} -> Invalid Arguments.`);
+    userLogger.log('error',`User ID: ${req.params?.username} -> Invalid Arguments.`);
     Response.setApiResponse('error',422,'Invalid Arguments.','/');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
@@ -300,10 +306,10 @@ const updateBanner = async (req,res) => {
         Response.setStatus = data.status;
         try {
           await Cloudinary.uploader.destroy(filename);
-          Response.setMessage = (process.env.NODE_ENV !== 'production') ? data.message : 'Error uploading new image.';
+          Response.applyMessage(data.message,'Error uploading new image.');
         } catch (err) {
           userLogger.log('error',`User ID: ${user.user_id} -> ${err.message}`);
-          Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error communicating with file host.'; 
+          Response.applyMessage(err.message,'Error communicating with file host.');
         }
       }
       else {
@@ -386,10 +392,10 @@ const deleteBanner = async (req,res) => {
         Response.setStatus = data.status;
         try {
           await Cloudinary.uploader.destroy(filename);
-          Response.setMessage = (process.env.NODE_ENV !== 'production') ? data.message : 'Error deleting banner.';
+          Response.applyMessage(data.message,'Error deleting banner.');
         } catch (err) {
           userLogger.log('error',`User ID: ${user.user_id} -> ${err.message}`);
-          Response.setMessage = (process.env.NODE_ENV !== 'production') ? err.message : 'Error communicating with file host.'; 
+          Response.applyMessage(err.message,'Error communicating with file host.');
         }
       }
     }

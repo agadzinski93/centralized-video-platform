@@ -1,10 +1,8 @@
-DROP DATABASE IF EXISTS programminghelporg2;
-CREATE DATABASE programminghelporg2;
+CREATE DATABASE IF NOT EXISTS cvp;
+USE cvp;
 
-USE programminghelporg2;
-
-CREATE TABLE users(
-    user_id VARCHAR(24) PRIMARY KEY NOT NULL,
+CREATE TABLE IF NOT EXISTS users(
+    user_id VARCHAR(45) PRIMARY KEY NOT NULL,
     username VARCHAR(24) NOT NULL UNIQUE,
     display_name VARCHAR(24) DEFAULT NULL,
     email VARCHAR(45) NOT NULL UNIQUE,
@@ -24,7 +22,7 @@ CREATE TABLE users(
     subscriptions INT NOT NULL DEFAULT 0
 )ENGINE=InnoDB CHAR SET 'utf8mb4';
 
-CREATE TABLE topics(
+CREATE TABLE IF NOT EXISTS topics(
     name VARCHAR(45) PRIMARY KEY NOT NULL,
     description VARCHAR(512) NOT NULL,
     difficulty ENUM('Beginner','Intermediate','Advanced'),
@@ -35,10 +33,10 @@ CREATE TABLE topics(
     FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 )ENGINE=InnoDB CHAR SET 'utf8mb4';
 
-CREATE TABLE videos(
+CREATE TABLE IF NOT EXISTS videos(
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     title VARCHAR(105) NOT NULL,
-    url VARCHAR(90) DEFAULT NULL,
+    url VARCHAR(90) NOT NULL,
     description VARCHAR(2048) DEFAULT NULL,
     views VARCHAR(12) DEFAULT NULL,
     thumbnail VARCHAR(90) DEFAULT NULL,
@@ -46,10 +44,11 @@ CREATE TABLE videos(
     username VARCHAR(24) NOT NULL,
     timeCreated DATETIME NOT NULL DEFAULT NOW(),
     FOREIGN KEY (topic) REFERENCES topics(name) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
+    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE,
+    CONSTRAINT uniqueVideoInTopic UNIQUE (url,topic)
 )ENGINE=InnoDB CHAR SET 'utf8mb4';
 
-CREATE TABLE registration(
+CREATE TABLE IF NOT EXISTS registration(
     user_id VARCHAR(45) PRIMARY KEY NOT NULL,
     activation_key VARCHAR(45) NOT NULL,
     timeJoined DATETIME NOT NULL DEFAULT NOW(),
@@ -58,7 +57,7 @@ CREATE TABLE registration(
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE
 )ENGINE=InnoDB CHAR SET 'utf8mb4';
 
-CREATE TABLE subscribers(
+CREATE TABLE IF NOT EXISTS subscribers(
     user_id VARCHAR(45) NOT NULL,
     subscriber_id VARCHAR(45) NOT NULL,
     PRIMARY KEY(user_id,subscriber_id),
@@ -166,8 +165,13 @@ BEGIN
 	BEGIN
 		DECLARE EXIT HANDLER FOR SQLEXCEPTION SET sql_error = TRUE;
 		START TRANSACTION;
-		INSERT INTO users(user_id,username,email,password,pic_url,pic_filename) VALUES(user_id,username,email,pass,pic_url,pic_filename);
-		INSERT INTO registration(user_id,activation_key) VALUES(user_id,activation_key);
+        IF (SELECT count(*) AS user_count FROM (SELECT 1 FROM users LIMIT 1) AS users) > 0 THEN
+            INSERT INTO users(user_id,username,email,password,pic_url,pic_filename) VALUES(user_id,username,email,pass,pic_url,pic_filename);
+        ELSE
+            INSERT INTO users(user_id,username,email,password,account_type,pic_url,pic_filename) VALUES(user_id,username,email,pass,'admin',pic_url,pic_filename);
+        END IF;
+
+        INSERT INTO registration(user_id,activation_key) VALUES(user_id,activation_key);
 	END;
     IF sql_error = TRUE THEN
 		ROLLBACK;
