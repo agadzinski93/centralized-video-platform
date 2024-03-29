@@ -8,12 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to cPanel
-        uses: pinkasey/cpanel-deploy-action@v1.1.2
+        uses: pinkasey/cpanel-deploy-action@v1.2.0
         with:
           hostname: "${{ secrets.CPANEL_HOSTNAME }}"
           repository_root: "${{ secrets.CPANEL_REPO_ROOT }}"
-          branch: "$GIT_BRANCH"
+          branch: "$GITHUB_BRANCH"
           cpanel_username: "${{ secrets.CPANEL_USERNAME }}"
           cpanel_token: "${{ secrets.CPANEL_TOKEN }}"
 env:
-    GITHUB_BRANCH: "${{ github.ref_name }}"
+    GITHUB_BRANCH: ${{ github.ref_name }}
