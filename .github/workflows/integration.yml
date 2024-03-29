@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to cPanel
-        uses: pinkasey/cpanel-deploy-action@v1.1.3
+        uses: pinkasey/cpanel-deploy-action@v1.1.2
         with:
           hostname: "${{ secrets.CPANEL_HOSTNAME }}"
           repository_root: "${{ secrets.CPANEL_REPO_ROOT }}"
