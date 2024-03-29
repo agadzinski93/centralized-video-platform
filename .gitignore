@@ -4,6 +4,7 @@
 .npmrc
 .htaccess
 .bak
+*.sh
 /assets
 /node_modules
 /public/assets

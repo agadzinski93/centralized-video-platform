@@ -69,7 +69,7 @@ By default the server should be running on localhost:5000, the client on localho
 #### MySQL
 1. Open your RDBMS software (e.g. MySQL Workbench/phpMyAdmin)
 2. Open the script found in `server/utilities/db/create-db.sql`
-3. (Optional) In the first 3 lines of the SQL script, you may rename the database as you see fit
+3. (Optional) In the first 2 lines of the SQL script, you may rename the database as you see fit
 4. Run the script
 5. Set the system variable `innodb_autoinc_lock_mode = 1`
 6. For #5 to take effect, restart the MySQL service in `services.msc` in Windows or using `systemd` in Linux
@@ -136,11 +136,11 @@ You are only required to provide details based on whether your environment will 
 
 1. `DB_DOCKER_HOST`
     * Default: localhost
-    * local hostname for database (you'll likely need to use the service name for the database server in the compose YAML file)
+    * Local hostname for database (you'll likely need to use the service name for the database server in the compose YAML file)
 
 2. `DB_DOCKER_PORT`
     * Default: 3306
-    * local port for database
+    * Local port for database
 
 3. `DB_DOCKER_USER`
     * Username to access your local DB
@@ -170,7 +170,7 @@ You are only required to provide details based on whether your environment will 
 
 5. `DB_DEV_DATABASE`
     * Default: cvp
-    * name of MySQL DB
+    * Name of MySQL DB
 
 #### DB in Production
 
@@ -245,6 +245,7 @@ These variables are only required if you wish to use Redis.
     * Port to redis database
 
 ## React Environment Variables
+Create the `.env`  file in `./client`.
 
 1. `VITE_PROXY_TARGET_HOST`
     * Target hostname (service/IP/domain name). Do NOT include protocol or port number. When in development via Docker, this will be the service name found in the compose YAML file (e.g. server). If not in Docker, this value will likely be localhost.
