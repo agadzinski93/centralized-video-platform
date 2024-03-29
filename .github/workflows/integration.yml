@@ -16,4 +16,4 @@ jobs:
           cpanel_username: "${{ secrets.CPANEL_USERNAME }}"
           cpanel_token: "${{ secrets.CPANEL_TOKEN }}"
 env:
-    GITHUB_BRANCH: ${{ github.ref_name }}
+    GITHUB_BRANCH: "${{ github.ref_name }}"
