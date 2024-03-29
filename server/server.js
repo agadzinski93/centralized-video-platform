@@ -13,6 +13,12 @@ const {
   initializePassport
 } = require('./utilities/init');
 
+//Set proxy
+app.set('trust proxy', (ip) => {
+  if (ip === '127.0.0.1' || ip === '123.123.123.123') return true
+  else return false
+})
+
 //EJS and Templates
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
