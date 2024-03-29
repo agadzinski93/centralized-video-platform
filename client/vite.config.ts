@@ -19,7 +19,8 @@ export default defineConfig(({ mode }) => {
       proxy: {
         "/api/v1": {
           // Env value must either be docker service name OR hostname/IP (e.g. localhost)
-          target: `http://${env.VITE_PROXY_TARGET_HOST}:5000`,
+          target: (process.env.NODE_ENV === 'production') ?
+            'http://localhost:5000' : `http://${env.VITE_PROXY_TARGET_HOST}:5000`,
           secure: (process.env.NODE_ENV === 'production') ? true : false,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api\/v1/, ''),
