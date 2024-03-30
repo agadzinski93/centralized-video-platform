@@ -22,27 +22,10 @@ const Init = {
             const {verifyUser} = await import('./validators/middleware/userAuth.mjs');
             app.use(verifyUser); //Middleware to populate req.user if logged in         
 
-            //Routes
-            let {router : homeRoutes} = await import('../routes/homeRoutes.mjs');
-            app.use("/", homeRoutes);
+            const apiPath = (process.env.NODE_ENV === 'production') ? '/api/v1' : '/';
 
-            let {router : userAuthRouter} = await import('../routes/userAuthRoutes.mjs');
-            app.use("/auth",userAuthRouter);
-            
-            let {router : libraryRoutes} = await import('../routes/libraryRoutes.mjs');
-            app.use("/lib",libraryRoutes);
-            
-            let {router : userRoutes} = await import('../routes/userRoutes.mjs');
-            app.use("/user",userRoutes);
-            
-            let {router : topicRoutes} = await import('../routes/topicsRoutes.mjs');
-            app.use("/topics",topicRoutes);
-            
-            let {router : videoRoutes} = await import('../routes/videoRoutes.mjs');
-            app.use("/video",videoRoutes);
-
-            let {router : subscriberRoutes} = await import('../routes/subscriberRoutes.mjs');
-            app.use("/subscribe",subscriberRoutes);
+            let {apiRouter} = await import('../routes/apiRoute.mjs');
+            app.use(apiPath, apiRouter);
 
             const {AppError} = await import('./AppError.mjs');
             app.all("*", (req, res, next) => {

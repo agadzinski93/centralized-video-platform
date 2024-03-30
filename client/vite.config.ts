@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
             'http://localhost:5000' : `http://${env.VITE_PROXY_TARGET_HOST}:5000`,
           secure: (process.env.NODE_ENV === 'production') ? true : false,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api\/v1/, ''),
+          //rewrite: (path) => path.replace(/\/api\/v1/, ''),
           configure: proxy => {
             proxy.on('error', err => {
               console.error(`Proxy Error Message: ${err}`);
@@ -31,6 +31,7 @@ export default defineConfig(({ mode }) => {
           }
         }
       }
-    }
+    },
+    base: './'
   }
 })
