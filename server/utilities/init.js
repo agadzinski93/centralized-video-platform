@@ -27,10 +27,12 @@ const Init = {
             let {apiRouter} = await import('../routes/apiRoute.mjs');
             app.use(apiPath, apiRouter);
 
-            const {AppError} = await import('./AppError.mjs');
-            app.all("*", (req, res, next) => {
-                return next(new AppError(404, "Page Not Found"));
-            });
+            if (process.env.NODE_ENV !== 'production') {
+                const {AppError} = await import('./AppError.mjs');
+                app.all("*", (req, res, next) => {
+                    return next(new AppError(404, "Page Not Found"));
+                });
+            }
 
             const {pathCSS,pathAssets} = await import('./publicPath.mjs');
 

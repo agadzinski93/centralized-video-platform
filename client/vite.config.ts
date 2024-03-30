@@ -5,9 +5,11 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => {
 
   const env = loadEnv(mode, process.cwd(), '');
+  const overwritePath = (process.env.NODE_ENV !== 'production') ? /\/api\/v1/ : '';
 
   return {
     plugins: [react()],
+    base: '/',
     test: {
       environment: 'jsdom',
       globals: true,
@@ -23,7 +25,7 @@ export default defineConfig(({ mode }) => {
             'http://localhost:5000' : `http://${env.VITE_PROXY_TARGET_HOST}:5000`,
           secure: (process.env.NODE_ENV === 'production') ? true : false,
           changeOrigin: true,
-          //rewrite: (path) => path.replace(/\/api\/v1/, ''),
+          rewrite: (path) => path.replace(overwritePath, ''),
           configure: proxy => {
             proxy.on('error', err => {
               console.error(`Proxy Error Message: ${err}`);
@@ -31,7 +33,6 @@ export default defineConfig(({ mode }) => {
           }
         }
       }
-    },
-    base: './'
+    }
   }
 })

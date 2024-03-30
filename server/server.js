@@ -42,6 +42,14 @@ let routesLoaded = false;
     
     routesLoaded = await addRoutes(app);
 
+    if (process.env.NODE_ENV === 'production'){
+      const __dirname = path.resolve();
+      app.use(express.static(path.join(__dirname,'client/dist')));
+      app.get('*',(req,res)=>{
+          res.sendFile(path.resolve(__dirname,'client','dist','index.html'));
+      });
+    }
+
   } catch(err) {
     console.error(`${new Date().toString()} -> App Init Failure: ${err.stack}`);
     process.exit(1);
@@ -69,14 +77,6 @@ app.use(function(req,res,next){
 app.get("/_health",(req,res)=>{
   res.status(200).send('App is running.');
 });
-
-if (process.env.NODE_ENV === 'production'){
-  const __dirname = path.resolve();
-  app.use(express.static(path.join(__dirname,'client/dist')));
-  app.get('*',(req,res)=>{
-      res.sendFile(path.resolve(__dirname,'client','dist','index.html'));
-  });
-}
 
 //Port
 const server = app.listen(PORT);
