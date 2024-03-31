@@ -1,4 +1,4 @@
-//Globals Required:<%=searchQuery%>
+//Globals Required:searchQuery and API_PATH
 const appendNewResults = (videos,pageNumber) => {
     let list = document.getElementById('searchListContainer');
     let newVidLink,
@@ -13,7 +13,7 @@ const appendNewResults = (videos,pageNumber) => {
         //Create New Link Block Element
         newVidLink = document.createElement('a');
         newVidLink.setAttribute('id', 'result' + (pageNumber * 20 + i + 1));
-        newVidLink.setAttribute('href', `/lib/${videos[0].topicUrl}/${videos[i].url.substring(20)}`);
+        newVidLink.setAttribute('href', `${API_PATH}/lib/${videos[0].topicUrl}/${videos[i].url.substring(20)}`);
 
         //Create DIV For Vid Link
         newVid = document.createElement('div');
@@ -75,7 +75,7 @@ const addPullMoreResultsEvent = () => {
             if (lastResult !== undefined && lastResult !== null && !wait) {
                 wait = true;
                 if (window.innerHeight - lastResult.getBoundingClientRect().top > 0) {
-                    let videos = await fetch('/search', {
+                    let videos = await fetch(`${API_PATH}/search`, {
                         method:'POST',
                         headers: {
                             'Content-Type':'application/json'
