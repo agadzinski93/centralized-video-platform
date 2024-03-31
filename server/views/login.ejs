@@ -2,7 +2,7 @@
   <%- include("./partials/navbar.ejs") %>
   <div id="main" class="loggingFormContainer">
     <h1 class="loggingHeader">Account Login</h1>
-    <form action="/auth/login" method="POST">
+    <form action="<%=API_PATH%>/auth/login" method="POST">
       <label class="loggingLabel" for="username">Username</label>
       <input
         name="username"
@@ -25,6 +25,6 @@
     </form>
   </div>
   <div class="signUpContainer">
-    <a href="/auth/register">Need an account? Sign up</a>
+    <a href="<%=API_PATH%>/auth/register">Need an account? Sign up</a>
   </div>
 </div>

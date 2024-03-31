@@ -8,11 +8,11 @@
         <%for (let i = 0; i < videos.length; i++) {%>
           <%if (i>11){%>
             <div class="recentVideo long2">
-              <a class="recentVideoLink" href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
+              <a class="recentVideoLink" href="<%=API_PATH%>/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
                 <div class="recentVideoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>
                 <p class="videoTitle"><%=videos[i].title%></p>
               </a>
-              <a href="/user/<%=videos[i].username%>">
+              <a href="<%=API_PATH%>/user/<%=videos[i].username%>">
                 <div>
                   <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=videos[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
@@ -21,11 +21,11 @@
             </div>
           <%}else if (i>9){%>
             <div class="recentVideo long1">
-              <a class="recentVideoLink" href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
+              <a class="recentVideoLink" href="<%=API_PATH%>/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
                 <div class="recentVideoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>
                 <p class="videoTitle"><%=videos[i].title%></p>
               </a>
-              <a href="/user/<%=videos[i].username%>">
+              <a href="<%=API_PATH%>/user/<%=videos[i].username%>">
                 <div>
                   <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=videos[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
@@ -34,11 +34,11 @@
             </div>
           <%}else if (i>8){%>
             <div class="recentVideo long9">
-              <a class="recentVideoLink" href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
+              <a class="recentVideoLink" href="<%=API_PATH%>/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
                 <div class="recentVideoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>
                 <p class="videoTitle"><%=videos[i].title%></p>
               </a>
-              <a href="/user/<%=videos[i].username%>">
+              <a href="<%=API_PATH%>/user/<%=videos[i].username%>">
                 <div>
                   <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=videos[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
@@ -47,11 +47,11 @@
               </div>
           <%}else if (i>7){%>
             <div class="recentVideo long8">
-              <a class="recentVideoLink" href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
+              <a class="recentVideoLink" href="<%=API_PATH%>/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
                 <div class="recentVideoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>               
                 <p class="videoTitle"><%=videos[i].title%></p>
               </a>
-              <a href="/user/<%=videos[i].username%>">
+              <a href="<%=API_PATH%>/user/<%=videos[i].username%>">
                 <div>
                   <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=videos[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
@@ -60,11 +60,11 @@
             </div>
           <%}else{%>
             <div class="recentVideo">
-              <a class="recentVideoLink" href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
+              <a class="recentVideoLink" href="<%=API_PATH%>/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
                 <div class="recentVideoThumbnail" style="background-image:url('<%=videos[i].thumbnail%>')"></div>
                 <p class="videoTitle"><%=videos[i].title%></p>
               </a>
-              <a href="/user/<%=videos[i].username%>">
+              <a href="<%=API_PATH%>/user/<%=videos[i].username%>">
                 <div>
                   <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=videos[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=videos[i].username%></p>
@@ -85,7 +85,7 @@
         <%for (let i = 0; i < topics.length; i++) {%>
           <%if (i > 11) {%>
             <div class="recentTopic long2">
-              <a class="recentTopicLink" href="/lib/<%=topics[i].topicUrl%>">
+              <a class="recentTopicLink" href="<%=API_PATH%>/lib/<%=topics[i].topicUrl%>">
                 <%if (topics[i].imageUrl !== 'null'){%>
                   <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%}else{%>
@@ -93,7 +93,7 @@
                 <%}%>
                 <p class="topicTitle"><%=topics[i].name%></p>
               </a>
-              <a href="/user/<%=topics[i].username%>">
+              <a href="<%=API_PATH%>/user/<%=topics[i].username%>">
                 <div>
                   <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=topics[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
@@ -102,7 +102,7 @@
             </div>
           <%}else if (i > 9){%>
             <div class="recentTopic long1">
-              <a class="recentTopicLink" href="/lib/<%=topics[i].topicUrl%>">
+              <a class="recentTopicLink" href="<%=API_PATH%>/lib/<%=topics[i].topicUrl%>">
                 <%if (topics[i].imageUrl !== 'null'){%>
                   <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%}else{%>
@@ -110,7 +110,7 @@
                 <%}%>
                 <p class="topicTitle"><%=topics[i].name%></p>
               </a>
-              <a href="/user/<%=topics[i].username%>">
+              <a href="<%=API_PATH%>/user/<%=topics[i].username%>">
                 <div>
                   <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=topics[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
@@ -119,7 +119,7 @@
             </div>
           <%}else if (i > 8){%>
             <div class="recentTopic long9">
-              <a class="recentTopicLink" href="/lib/<%=topics[i].topicUrl%>">
+              <a class="recentTopicLink" href="<%=API_PATH%>/lib/<%=topics[i].topicUrl%>">
                 <%if (topics[i].imageUrl !== 'null'){%>
                   <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%}else{%>
@@ -127,7 +127,7 @@
                 <%}%>
                 <p class="topicTitle"><%=topics[i].name%></p>
               </a>
-              <a href="/user/<%=topics[i].username%>">
+              <a href="<%=API_PATH%>/user/<%=topics[i].username%>">
                 <div>
                   <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=topics[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
@@ -136,7 +136,7 @@
             </div>
           <%}else if (i > 7){%>
             <div class="recentTopic long8">
-              <a class="recentTopicLink" href="/lib/<%=topics[i].topicUrl%>">
+              <a class="recentTopicLink" href="<%=API_PATH%>/lib/<%=topics[i].topicUrl%>">
                 <%if (topics[i].imageUrl !== 'null'){%>
                   <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%}else{%>
@@ -144,7 +144,7 @@
                 <%}%>
                 <p class="topicTitle"><%=topics[i].name%></p>
               </a>
-              <a href="/user/<%=topics[i].username%>">
+              <a href="<%=API_PATH%>/user/<%=topics[i].username%>">
                 <div>
                   <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=topics[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=topics[i].username%></p>
@@ -153,7 +153,7 @@
             </div>
           <%}else{%>
             <div class="recentTopic">
-              <a class="recentTopicLink" href="/lib/<%=topics[i].topicUrl%>">
+              <a class="recentTopicLink" href="<%=API_PATH%>/lib/<%=topics[i].topicUrl%>">
                 <%if (topics[i].imageUrl !== 'null'){%>
                   <div class="recentTopicImage" style="background-image:url('<%=topics[i].imageUrl%>')"></div>
                 <%}else{%>
@@ -161,7 +161,7 @@
                 <%}%>
                 <p class="topicTitle"><%=topics[i].name%></p>
               </a>
-              <a href="/user/<%=topics[i].username%>">
+              <a href="<%=API_PATH%>/user/<%=topics[i].username%>">
                 <div>
                   <div class="authorProfilePic" title="Profile Picture" style="background-image:url('<%=topics[i].pic_url%>')"></div>
                   &nbsp;<p class="authorUsername"><%=topics[i].username%></p>

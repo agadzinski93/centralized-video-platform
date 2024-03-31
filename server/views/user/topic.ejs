@@ -65,7 +65,7 @@
   <div class="itemsSelectedContainer" id="itemsSelected"></div>
   <div class="dashboardVideosContainer">
     <div class="dashboardTopicLeft">
-      <div class="backLinkContainer"><a href="/user/<%=user.username%>/dashboard/">&larr;</a></div>
+      <div class="backLinkContainer"><a href="<%=API_PATH%>/user/<%=user.username%>/dashboard/">&larr;</a></div>
       <p><%=topic.name%></p>
       <p><%=topic.difficulty%></p>
       <%if (topic.imageUrl !== 'null'){%>
@@ -101,7 +101,7 @@
           <div class="displayVideoInfo displayFlex" id="displayVideoInfo<%=video.id%>">
             <div class="videoContentContainer">
               <div class="dashboardTopicVideoContainerFirstRow">
-                <p class="dashboardVideoTitle" id="vidTitle<%=video.id%>"><a href="/lib/<%=video.topicUrl%>/<%=video.url.substring(20)%>"><%= video.title %></a></p>
+                <p class="dashboardVideoTitle" id="vidTitle<%=video.id%>"><a href="<%=API_PATH%>/lib/<%=video.topicUrl%>/<%=video.url.substring(20)%>"><%= video.title %></a></p>
                 <div class="btnEditDelete">
                   <button class="btnVideoEdit" id="btnVideoEdit<%=video.id%>">
                     <img class="icon" src="/assets/svg/edit-dark.png" alt="edit">
@@ -134,5 +134,6 @@
   let topics;
   const USERNAME = '<%=user.username%>';
   const TOPIC_URL = '<%=topic.topicUrl%>';
+  const API_PATH = '<%=API_PATH%>';
   const REFERENCE_NODE = document.querySelector('.itemsSelectedContainer');
 </script>

@@ -1,4 +1,4 @@
-//Globals Required: Username
+//Globals Required: Username, API_PATH
 let topics;
 let MODAL_TARGET = null;
 /**
@@ -46,12 +46,12 @@ const createTopicTile = ({name,difficulty,description,imageUrl}) => {
           ['span',null,null,null,'Edit Topic']
         ]],
         ['button',['btnTopicDelete','deleteTopic'],{id:`btnDeleteTopic${dashedName}`},[
-          ['img',['icon'],{src:'/assets/svg/trashBlack.svg',alt:'delete'}],
+          ['img',['icon'],{src:`/assets/svg/trashBlack.svg`,alt:'delete'}],
           ['span',null,null,null,'Delete Topic']
         ]]
       ]]
     ]],
-    ['a',null,{href:`/user/${USERNAME}/dashboard/${dashedName}`},[
+    ['a',null,{href:`${API_PATH}/user/${USERNAME}/dashboard/${dashedName}`},[
       ['div',['dashboardTopicContainer'],null,[
         ['div',['topicImageContainer'],{style:`background-image:url('${imageUrl}')`}],
         ['div',['topicInfo'],{id:'topicInfo'},[
@@ -100,7 +100,7 @@ const createTopicHandler = async (e) => {
   toggleModal(true, 'Creating topic...');
   try {
     const form =  new FormData(document.getElementById('newTopicForm'));
-    const result = await fetch(`/topics/${USERNAME}/create`,{
+    const result = await fetch(`${API_PATH}/topics/${USERNAME}/create`,{
       method:'POST',
       body:form
     });
@@ -176,7 +176,7 @@ const addCreateTopicEvent = () => {
           topicsToDelete.push(selectedTopics[i].textContent);
         }
 
-        const result = await fetch(`/topics/${USERNAME}/deleteSelected`, {
+        const result = await fetch(`${API_PATH}/topics/${USERNAME}/deleteSelected`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json'},
@@ -407,7 +407,7 @@ const addCreateTopicEvent = () => {
     const id = e.target.parentElement.getAttribute('id').substring(14);
     const fetchId = document.querySelector(`#${id} p#topicNameTitle`).textContent.replaceAll(' ','-');
     try {
-      const result = await fetch(`/topics/${USERNAME}/${fetchId.replaceAll(' ','-')}`,{
+      const result = await fetch(`${API_PATH}/topics/${USERNAME}/${fetchId.replaceAll(' ','-')}`,{
         method:'DELETE'
       });
       const data = await result.json();
@@ -443,7 +443,7 @@ const addCreateTopicEvent = () => {
         body[k] = v;
       });
 
-      const result = await fetch(`/topics/${USERNAME}/${fetchId}`,{
+      const result = await fetch(`${API_PATH}/topics/${USERNAME}/${fetchId}`,{
         method:'PUT',
         headers:{
           'Content-Type':'application/json'
@@ -459,7 +459,7 @@ const addCreateTopicEvent = () => {
           document.querySelector(`#${id} p.topicDifficulty`).textContent = document.querySelector(`#editForm${id} > .editDifficultyContainer > select`).value;
           document.getElementById(`${id}Description`).textContent = document.querySelector(`#editForm${id} > textArea`).value;
           document.querySelector(`#editForm${id} > input[name="name"]`).setAttribute('placeholder',newTitle);
-          document.querySelector(`#${id.replaceAll(' ','-')} > a`).setAttribute('href',`/user/${USERNAME}/dashboard/${newTitle.replaceAll(' ','-')}`);
+          document.querySelector(`#${id.replaceAll(' ','-')} > a`).setAttribute('href',`${API_PATH}/user/${USERNAME}/dashboard/${newTitle.replaceAll(' ','-')}`);
           document.getElementById(`btnSelect${fetchId}`).setAttribute('id',`btnSelect${newTitle.replaceAll(' ','-')}`);
         } catch (err) {
           console.error(`Topic updated but error updating screen: ${err.message}`);

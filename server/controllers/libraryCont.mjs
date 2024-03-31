@@ -1,5 +1,5 @@
 import {AppError} from '../utilities/AppError.mjs';
-import { pathCSS,pathAssets } from '../utilities/publicPath.mjs';
+import { PATH_CSS, PATH_ASSETS, API_PATH } from '../utilities/config.mjs';
 import { escapeHTML, removeParams } from '../utilities/helpers/sanitizers.mjs';
 import { enableHyphens } from '../utilities/helpers/topicHelpers.mjs';
 import { getTopic } from '../utilities/helpers/topicHelpers.mjs';
@@ -7,7 +7,7 @@ import {getTopicVideos,getVideo} from '../utilities/helpers/videoHelpers.mjs';
 import { isSubscribed } from '../utilities/helpers/subscribeHelpers.mjs';
 
 const renderLibaryTopic = async (req, res, next) => {
-  const pageStyles = `${pathCSS}lib/topicPage.css`;
+  const pageStyles = `${PATH_CSS}lib/topicPage.css`;
 
   let topicName = enableHyphens(escapeHTML(req.params.topic),false);
   res.locals.prevUrl = `/lib/${topicName}`;
@@ -22,15 +22,16 @@ const renderLibaryTopic = async (req, res, next) => {
 
   res.render("lib/topicPage", {title: `${topicName} | Playlist`, 
     pageStyles, 
-    pathCSS, 
-    pathAssets, 
+    PATH_CSS, 
+    PATH_ASSETS,
+    API_PATH,
     user: req.user , 
     topic: topic[0], 
     videos
   });
 }
 const renderVideoPage = async (req, res, next) => {
-  const pageStyles = `${pathCSS}lib/videoPage.css`;
+  const pageStyles = `${PATH_CSS}lib/videoPage.css`;
   
   let topicName = enableHyphens(escapeHTML(req.params.topic),false);
   let userId = null;
@@ -68,8 +69,9 @@ const renderVideoPage = async (req, res, next) => {
   res.render("lib/videoPage", {
     title: `${topicName} | ${video[0].title.substring(0,50)}`, 
     pageStyles, 
-    pathCSS,
-    pathAssets,
+    PATH_CSS,
+    PATH_ASSETS,
+    API_PATH,
     user:req.user, 
     topic: topic[0], 
     videos, 

@@ -1,4 +1,4 @@
-//Globals Required: Username and Topic Url
+//Globals Required: Username, Topic Url, API_PATH
 let MODAL_TARGET = null;
 /**
   * Close modal when clicking anywhere off the modal
@@ -76,7 +76,7 @@ const toggleNewTopicForm = () => {
       input[k] = v;
     });
     try {
-      const result = await fetch(`/video/${USERNAME}/${TOPIC_URL}/${id}`,{
+      const result = await fetch(`${API_PATH}/video/${USERNAME}/${TOPIC_URL}/${id}`,{
         method:'PUT',
         headers:{
           'Content-Type':'application/json'
@@ -169,7 +169,7 @@ const addSwapVideoEvents = async () => {
         const swapVidId = upButtons[i+1].getAttribute('id').substring(6);
         swapHighlight(currentVidId,swapVidId);
 
-        const result = await fetch(`/video/${USERNAME}/swapVideos`, {
+        const result = await fetch(`${API_PATH}/video/${USERNAME}/swapVideos`, {
           method:'PUT',
           headers: {
             'Content-Type':'application/json'
@@ -198,7 +198,7 @@ const addSwapVideoEvents = async () => {
         const swapVidId = downButtons[i-1].getAttribute('id').substring(8);
         swapHighlight(currentVidId,swapVidId);
 
-        const result = await fetch(`/video/${USERNAME}/swapVideos`, {
+        const result = await fetch(`${API_PATH}/video/${USERNAME}/swapVideos`, {
           method:'PUT',
           headers: {
             'Content-Type':'application/json'
@@ -229,7 +229,7 @@ const addSwapVideoEvents = async () => {
         const swapVidId = downButtons[i-1].getAttribute('id').substring(8);
         swapHighlight(currentVidId,swapVidId);
 
-        const result = await fetch(`/video/${USERNAME}/swapVideos`, {
+        const result = await fetch(`${API_PATH}/video/${USERNAME}/swapVideos`, {
           method:'PUT',
           headers: {
             'Content-Type':'application/json'
@@ -257,7 +257,7 @@ const addSwapVideoEvents = async () => {
         const swapVidId = upButtons[i+1].getAttribute('id').substring(6);
         swapHighlight(currentVidId,swapVidId);
 
-        const result = await fetch(`/video/${USERNAME}/swapVideos`, {
+        const result = await fetch(`${API_PATH}/video/${USERNAME}/swapVideos`, {
           method:'PUT',
           headers: {
             'Content-Type':'application/json'
@@ -444,7 +444,7 @@ const addSwapVideoEvents = async () => {
           videoList.push(selectedVideos[i].getAttribute('id'));
         }
         try {
-          const result = await fetch(`/video/${USERNAME}/deleteSelected`, {
+          const result = await fetch(`${API_PATH}/video/${USERNAME}/deleteSelected`, {
             method:'DELETE',
             headers: {
               'Content-Type':'application/json',
@@ -495,7 +495,7 @@ const addSwapVideoEvents = async () => {
           videoList.push(selectedVideos[i].getAttribute('id'));
         }
         try {
-          const result = await fetch(`/video/${USERNAME}/refreshMetadata`, {
+          const result = await fetch(`${API_PATH}/video/${USERNAME}/refreshMetadata`, {
             method:'PUT',
             headers: {
               'Content-Type':'application/json',
@@ -593,7 +593,7 @@ const addSwapVideoEvents = async () => {
         toggleEditTopicImageForm();
         toggleBackdrop(true, '#fff', '10%');
         toggleModal(true, 'Updating image...');
-        let result = await fetch(`/topics/${USERNAME}/${TOPIC_URL}/image`, {
+        let result = await fetch(`${API_PATH}/topics/${USERNAME}/${TOPIC_URL}/image`, {
           method:'POST',
           body: formData,
         });
@@ -661,7 +661,7 @@ const addSwapVideoEvents = async () => {
       ['div',['videoContentContainer'],null,[
         ['div',['dashboardTopicVideoContainerFirstRow'],null,[
           ['p',['dashboardVideoTitle'],{id:`vidTitle${id}`},[
-            ['a',null,{href:`/lib/${TOPIC_URL}/${url.substring(20)}`},null,`${title}`]
+            ['a',null,{href:`${API_PATH}/lib/${TOPIC_URL}/${url.substring(20)}`},null,`${title}`]
           ]],
           ['div',['btnEditDelete'],null,[
             ['button',['btnVideoEdit'],{id:`btnVideoEdit${id}`},[
@@ -692,7 +692,7 @@ const addSwapVideoEvents = async () => {
           const swapVidId = down.getAttribute('id').substring(8);
           swapHighlight(currentVidId,swapVidId);
 
-          const result = await fetch(`/video/${USERNAME}/swapVideos`, {
+          const result = await fetch(`${API_PATH}/video/${USERNAME}/swapVideos`, {
             method:'PUT',
             headers: {
               'Content-Type':'application/json'
@@ -720,7 +720,7 @@ const addSwapVideoEvents = async () => {
           const swapVidId = up.getAttribute('id').substring(6);
           swapHighlight(currentVidId,swapVidId);
 
-          const result = await fetch(`/video/${USERNAME}/swapVideos`, {
+          const result = await fetch(`${API_PATH}/video/${USERNAME}/swapVideos`, {
             method:'PUT',
             headers: {
               'Content-Type':'application/json'
@@ -806,7 +806,7 @@ const addSwapVideoEvents = async () => {
       body[k] = v;
     });
 
-    const res = await fetch(`/video/${USERNAME}/${TOPIC_URL}/create`,{
+    const res = await fetch(`${API_PATH}/video/${USERNAME}/${TOPIC_URL}/create`,{
       method:'POST',
       headers:{
         'Content-Type':'application/json'
@@ -834,7 +834,7 @@ const addSwapVideoEvents = async () => {
     toggleModal(true, 'Adding video(s). Please be patient.');
     const el = e.target.parentElement.parentElement.parentElement.parentElement.parentElement;
     const id = el.getAttribute('id').substring(16);
-    const result = await fetch(`/video/${USERNAME}/${TOPIC_URL}/${id}`,{
+    const result = await fetch(`${API_PATH}/video/${USERNAME}/${TOPIC_URL}/${id}`,{
       method:'DELETE'
     });
     const data = await result.json();

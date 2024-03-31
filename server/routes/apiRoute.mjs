@@ -14,7 +14,7 @@ apiRouter.use('/auth', UserAuthRouter);
 apiRouter.use('/lib', LibraryRouter);
 apiRouter.use('/user', UserRouter);
 apiRouter.use('/subscribe',SubscribeRouter);
-apiRouter.use('/topic', TopicRouter);
+apiRouter.use('/topics', TopicRouter);
 apiRouter.use('/video', VideoRouter);
 
 export { apiRouter };

@@ -89,7 +89,7 @@
             </button>
         </div>
       </div>
-      <a href="/user/<%= user.username %>/dashboard/<%=topic.topicUrl%>"
+      <a href="<%=API_PATH%>/user/<%= user.username %>/dashboard/<%=topic.topicUrl%>"
         ><div class="dashboardTopicContainer">
           <%if (topic.imageUrl !== 'null'){%>
             <div class="topicImageContainer" style="background-image:url('<%=topic.imageUrl%>');"></div>
@@ -159,6 +159,7 @@
 <script>
   const REFERENCE_NODE = document.querySelector('.dashboardTopicList');
   const USERNAME = '<%=user.username%>';
+  const API_PATH = '<%=API_PATH%>';
 </script>
 <script src="/js/global.js"></script>
 <script src="/js/user/dashboard.js"></script>

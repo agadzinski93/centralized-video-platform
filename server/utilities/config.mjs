@@ -7,6 +7,13 @@ const USE_DOCKER = process.env.USE_DOCKER || 'false';
 const DOMAIN_PUBLIC = process.env.DOMAIN_PUBLIC;
 const DOMAIN_PRIVATE = process.env.DOMAIN_PRIVATE || 'localhost';
 
+//Control path to public resources depending on environment
+const PATH_CSS = (NODE_ENV === 'production') ? '/css/' : '/css/';
+const PATH_ASSETS = (NODE_ENV === 'production') ? '/assets/' : '/assets/';
+
+//Alter the paths for links on the old EJS version of site when in production
+const API_PATH = (NODE_ENV === 'production') ? '/api/v1' : '';
+
 const YOUTUBE_KEY = process.env.YOUTUBE_KEY;
 
 //Database Connection Info In Development
@@ -57,6 +64,9 @@ export {
     USE_DOCKER,
     DOMAIN_PUBLIC,
     DOMAIN_PRIVATE,
+    PATH_CSS,
+    PATH_ASSETS,
+    API_PATH,
     YOUTUBE_KEY,
     DB_DEV_HOST,
     DB_DEV_PORT,

@@ -1,7 +1,6 @@
 import { ApiResponse } from '../utilities/ApiResponse.mjs';
 import {pp} from '../utilities/ppStrategies.mjs'
 import jwt from 'jsonwebtoken'
-import { pathCSS,pathAssets } from '../utilities/publicPath.mjs';
 import { paramsExist } from '../utilities/validators/paramsExist.mjs';
 import bcrypt from 'bcrypt'
 import { containsHTML } from '../utilities/helpers/sanitizers.mjs';
@@ -15,6 +14,9 @@ const {USERNAME,EMAIL,concat_user_columns} = USER_COLS;
 import { 
   NODE_ENV, 
   PORT,
+  PATH_CSS,
+  PATH_ASSETS,
+  API_PATH,
   COOKIE_SECRET,
   DEFAULT_PROFILE_PIC,
   DEFAULT_PIC_FILENAME,
@@ -45,11 +47,12 @@ const renderLogin = (req, res) => {
   if (req.user) {
     res.redirect(`/user/${req.user.username}/dashboard`);
   }
-  const pageStyles = `${pathCSS}user/loginRegister.css`;
+  const pageStyles = `${PATH_CSS}user/loginRegister.css`;
   res.render("login", { title: "Login", 
     pageStyles, 
-    pathCSS, 
-    pathAssets, 
+    PATH_CSS, 
+    PATH_ASSETS,
+    API_PATH,
     user: req.user
   });
 }
@@ -145,7 +148,7 @@ const logout = (req, res, next) => {
  * @param {*} res
  */
 const renderRegistration = (req, res) => {
-  const pageStyles = `${pathCSS}user/loginRegister.css`;
+  const pageStyles = `${PATH_CSS}user/loginRegister.css`;
   /* if (res.locals.error.length > 0) {
     if (res.locals?.error[0].includes('is required')) {
       res.status(422);
@@ -153,8 +156,9 @@ const renderRegistration = (req, res) => {
   } */
   res.render("register", { title: "Register", 
     pageStyles, 
-    pathCSS, 
-    pathAssets, 
+    PATH_CSS, 
+    PATH_ASSETS,
+    API_PATH,
     user: req.user
   });
 }

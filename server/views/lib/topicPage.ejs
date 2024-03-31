@@ -18,7 +18,7 @@
     <div class="topicVideoList">
       <% if (videos.length > 0) { %> 
         <% for (video of videos) { %>
-          <a class="topicVideoLink" href="/lib/<%=video.topicUrl%>/<%=video.url.substring(20)%>">
+          <a class="topicVideoLink" href="<%=API_PATH%>/lib/<%=video.topicUrl%>/<%=video.url.substring(20)%>">
             <div class="topicVideo">
               <div class="topicVideoThumbnail" style="background-image:url('<%=video.thumbnail%>')"></div>
               <div class="topicVideoInfoContainer">

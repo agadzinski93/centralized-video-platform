@@ -1,6 +1,6 @@
 import {AppError} from '../utilities/AppError.mjs';
 import { ApiResponse } from '../utilities/ApiResponse.mjs';
-import { pathCSS,pathAssets } from '../utilities/publicPath.mjs';
+import { PATH_CSS, PATH_ASSETS, API_PATH } from '../utilities/config.mjs';
 import { escapeHTML } from '../utilities/helpers/sanitizers.mjs';
 import { getRecentVideos, searchVideos, getMoreVideos } from '../utilities/helpers/videoHelpers.mjs';
 import { enableHyphens, getRecentTopic } from '../utilities/helpers/topicHelpers.mjs';
@@ -9,7 +9,8 @@ import { getRedisCache, setRedisCache } from '../utilities/db/redisCache.mjs';
 const renderHome = async (req,res,next) => {
     try {
         res.locals.prevUrl = "/";
-        const pageStyles = `${pathCSS}home.css`;
+
+        const pageStyles = `${PATH_CSS}home.css`;
         const videos = await getRecentVideos();
         for (let video of videos) {
           video.topicUrl = enableHyphens(video.topic,true);
@@ -20,7 +21,7 @@ const renderHome = async (req,res,next) => {
         }
         const title = `Programming Help | Your Source For Programming Tutorials`;
 
-        res.render("index", { title, pageStyles, pathCSS, pathAssets, user: req.user, videos, topics});
+        res.render("index", { title, pageStyles, PATH_CSS, PATH_ASSETS, API_PATH, user: req.user, videos, topics});
       } catch (err) {
         next(new AppError(500, err.message));
       }
@@ -68,7 +69,7 @@ const renderHomeScreen = async (req,res,next) => {
   res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const renderSearch = async (req,res,next) => {
-  const pageStyles = `${pathCSS}search.css`;
+  const pageStyles = `${PATH_CSS}search.css`;
   let searchQuery = null,
       topics = null,
       videos = null;
@@ -83,7 +84,7 @@ const renderSearch = async (req,res,next) => {
       }
     } 
     
-    res.render("search", { title: "Search Page", pageStyles, pathCSS, pathAssets, user: req.user, searchQuery, videos, topics});
+    res.render("search", { title: "Search Page", pageStyles, PATH_CSS, PATH_ASSETS, API_PATH, user: req.user, searchQuery, videos, topics});
   } catch (err) {
     next(new AppError(500, err.message));
   }

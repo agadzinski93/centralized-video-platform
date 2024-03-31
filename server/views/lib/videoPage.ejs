@@ -14,7 +14,7 @@
           <div class="authorAvatar" style="background-image:url('<%=video.pic_url%>')"></div>
           <div class="authorDetails">
             <ul>
-              <li><a href="/user/<%=video.username%>"><%=video.username%></a></li>
+              <li><a href="<%=API_PATH%>/user/<%=video.username%>"><%=video.username%></a></li>
               <li>
                 <%=video.subscribers%>
                 <%if (video.subscribers === 1){%>
@@ -45,11 +45,11 @@
         <%}%>
       </div>
       <div class="videoPlaylistLeft">
-        <div class="topicTitleContainer"><a href="/lib/<%=video.topicUrl%>">&larr; <%=video.topic%></a></div>
+        <div class="topicTitleContainer"><a href="<%=API_PATH%>/lib/<%=video.topicUrl%>">&larr; <%=video.topic%></a></div>
         <div class="videoPlaylistContainer">
           <%if (videos.length > 0) {%>
             <%for (let i = 0;i < videos.length; i++) {%>
-              <a class="playlistVideoLink" href="/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
+              <a class="playlistVideoLink" href="<%=API_PATH%>/lib/<%=videos[i].topicUrl%>/<%=videos[i].url.substring(20)%>">
                 <% if (video.id === videos[i].id) {%>
                   <div class="playlistVideoContainer playlistVideoContainerSelected" id="selectedVideo">
                     <div class="playlistVideoImageContainer" style="background-image: url('<%=videos[i].thumbnail%>');">

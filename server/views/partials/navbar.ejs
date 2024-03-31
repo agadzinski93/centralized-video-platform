@@ -1,32 +1,32 @@
 <div class="navbar">
-    <div class="homeButton"><a href="/">Home</a></div>
+    <div class="homeButton"><a href="<%=API_PATH%>/">Home</a></div>
     <div class="searchContainer">
-        <form class="searchContainerForm" action="/search">
+        <form class="searchContainerForm" action="<%=API_PATH%>/search">
             <input name="q" id="inputSearch" type="text" placeholder="Search Videos (e.g. &quot;Java&quot;, &quot;Linux&quot;, &quot;Variables&quot;)">
         </form>
     </div>
     <%if (user === undefined || user === null || user === {}) {%>
         <div class="loginRegisterContainer">
-            <div class="loginButton"><a href="/auth/login">Login</a></div>
-            <div class="registerButton"><a href="/auth/register"><span class="txtRegisterButton">Sign Up</span></a></div>
+            <div class="loginButton"><a href="<%=API_PATH%>/auth/login">Login</a></div>
+            <div class="registerButton"><a href="<%=API_PATH%>/auth/register"><span class="txtRegisterButton">Sign Up</span></a></div>
         </div>
     <%}else{%>
         <div class="userDropDownLinks desktopMenu" tabindex="0" >
             <div class="avatar navbarProfilePic" style="background-image:url('<%=user.pic_url%>')"></div>
             <ul class="userSubmenu">
-                <li><a class="profileLink" href="/user/<%= user.username %>">Profile</a></li>
-                <li><a href="/user/<%= user.username %>/dashboard">Dashboard</a></li>
-                <li><a href="/user/<%= user.username %>/settings">Settings</a></li>
-                <li><a href="/auth/logout">Logout</a></li>
+                <li><a class="profileLink" href="<%=API_PATH%>/user/<%= user.username %>">Profile</a></li>
+                <li><a href="<%=API_PATH%>/user/<%= user.username %>/dashboard">Dashboard</a></li>
+                <li><a href="<%=API_PATH%>/user/<%= user.username %>/settings">Settings</a></li>
+                <li><a href="<%=API_PATH%>/auth/logout">Logout</a></li>
             </ul>
         </div>
         <div class="userDropDownLinks mobileMenu">
             <div class="hamburger"></div>
             <ul class="userSubmenu">
-                <li><a class="profileLink" href="/user/<%= user.username %>"><div class="avatar navbarProfilePic" style="background-image:url('<%=user.pic_url%>')"></div></a></li>
-                <li><a href="/user/<%= user.username %>/dashboard">Dashboard</a></li>
-                <li><a href="/user/<%= user.username %>/settings">Settings</a></li>
-                <li><a href="/auth/logout">Logout</a></li>
+                <li><a class="profileLink" href="<%=API_PATH%>/user/<%= user.username %>"><div class="avatar navbarProfilePic" style="background-image:url('<%=user.pic_url%>')"></div></a></li>
+                <li><a href="<%=API_PATH%>/user/<%= user.username %>/dashboard">Dashboard</a></li>
+                <li><a href="<%=API_PATH%>/user/<%= user.username %>/settings">Settings</a></li>
+                <li><a href="<%=API_PATH%>/auth/logout">Logout</a></li>
             </ul>
         </div>
     <%}%>

@@ -34,7 +34,7 @@ const Init = {
                 });
             }
 
-            const {pathCSS,pathAssets} = await import('./publicPath.mjs');
+            const {PATH_CSS,PATH_ASSETS,API_PATH} = await import('./config.mjs');
 
             //Error Handler
             app.use((err, req, res, next) => {
@@ -43,7 +43,7 @@ const Init = {
                 const status = err.status || 500;
                 const pageStyles = null;
                 const message = (process.env.NODE_ENV === 'production') ? err.message : err.stack;
-                res.status(status).render("error", { title: `${status} Error`, status, message, pageStyles, pathCSS, pathAssets, user: req.user });
+                res.status(status).render("error", { title: `${status} Error`, status, message, pageStyles, PATH_CSS, PATH_ASSETS, API_PATH, user: req.user });
             });
             output = true;
         } catch (err) {

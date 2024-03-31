@@ -1,7 +1,6 @@
 import {AppError} from '../utilities/AppError.mjs';
 import { ApiResponse } from '../utilities/ApiResponse.mjs';
 import { userLogger } from '../utilities/logger.mjs';
-import { pathCSS,pathAssets } from '../utilities/publicPath.mjs';
 import { Cloudinary } from '../utilities/cloudinary.mjs';
 import { escapeHTML } from '../utilities/helpers/sanitizers.mjs';
 import { paramsExist } from '../utilities/validators/paramsExist.mjs';
@@ -28,7 +27,13 @@ const {
   concat_user_columns
 } = USER_COLS;
 
-import { DEFAULT_PROFILE_PIC,DEFAULT_PIC_FILENAME } from '../utilities/config.mjs';
+import { 
+  PATH_CSS,
+  PATH_ASSETS,
+  API_PATH,
+  DEFAULT_PROFILE_PIC,
+  DEFAULT_PIC_FILENAME 
+} from '../utilities/config.mjs';
 
 import { getUserTopics, getTopic } from '../utilities/helpers/topicHelpers.mjs';
 import { getTopicVideos } from '../utilities/helpers/videoHelpers.mjs';
@@ -62,13 +67,14 @@ const renderUserPage = async (req, res, next) => {
     user = req.user;
   }
   
-  let pageStyles = `${pathCSS}user/page.css`;
+  let pageStyles = `${PATH_CSS}user/page.css`;
 
   res.render(`user/userPage`, {
     title: `${author.username}'s Channel`,
     pageStyles,
-    pathCSS,
-    pathAssets,
+    PATH_CSS,
+    PATH_ASSETS,
+    API_PATH,
     author,
     user
   });
@@ -76,7 +82,7 @@ const renderUserPage = async (req, res, next) => {
 const renderUserSettings = async (req, res) => {
   const username = escapeHTML(req.params.username);
   const user = await getUser(username);
-  let pageStyles = `${pathCSS}user/settings.css`;
+  let pageStyles = `${PATH_CSS}user/settings.css`;
   if (user instanceof AppError) return next(user);
   
   let usingDefaultProfilePic = false;
@@ -87,8 +93,9 @@ const renderUserSettings = async (req, res) => {
   res.render("user/settings", {
     title: `${user.username}'s Settings`,
     pageStyles,
-    pathCSS,
-    pathAssets,
+    PATH_CSS,
+    PATH_ASSETS,
+    API_PATH,
     user,
     usingDefaultProfilePic
   });
@@ -324,7 +331,7 @@ const updateBanner = async (req,res) => {
   res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const renderUserDashboard = async (req, res, next) => {
-  const pageStyles = `${pathCSS}user/dashboard.css`;
+  const pageStyles = `${PATH_CSS}user/dashboard.css`;
   const username = escapeHTML(req.params.username);
   const user = await getUser(username);
   if (user instanceof AppError) return next(user);
@@ -338,14 +345,15 @@ const renderUserDashboard = async (req, res, next) => {
   res.render("user/dashboard", {
     title: `${user.username}'s Dashboard`,
     pageStyles,
-    pathCSS,
-    pathAssets,
+    PATH_CSS,
+    PATH_ASSETS,
+    API_PATH,
     user,
     topics,
   });
 }
 const renderUserTopic = async (req, res, next) => {
-  const pageStyles = `${pathCSS}user/dashboard.css`;
+  const pageStyles = `${PATH_CSS}user/dashboard.css`;
   const username = escapeHTML(req.params.username);
   const user = await getUser(username);
   if (user instanceof AppError) return next(user);
@@ -367,8 +375,9 @@ const renderUserTopic = async (req, res, next) => {
   res.render('user/topic', {
     title: topicTitle, 
     pageStyles,
-    pathCSS,
-    pathAssets,
+    PATH_CSS,
+    PATH_ASSETS,
+    API_PATH,
     topicName, 
     topic:topic[0],
     user, 
