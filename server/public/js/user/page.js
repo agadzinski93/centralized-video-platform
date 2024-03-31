@@ -1,8 +1,10 @@
+//Required Globals: AUTHOR, API_PATH
+
 let seeMore; //Global variable for controlling click event for 'See More' button
 const appendTopics = (topics) => {
     const container = document.getElementById('userContent');
         for (let i = 0; i < topics.length;i++) {
-            const topic = createTopic(`/lib/${topics[i].topicUrl}`,topics[i].imageUrl,topics[i].name);
+            const topic = createTopic(`${API_PATH}/lib/${topics[i].topicUrl}`,topics[i].imageUrl,topics[i].name);
             container.append(topic);
         }
 }
@@ -13,7 +15,7 @@ const appendVideos = (videos) => {
             if (videos[i].url.includes('youtube.com')) {
                 urlIndex = 20;
             }
-            const video = createVideo(`/lib/${videos[i].topicUrl}/${videos[i].url.substring(urlIndex)}`,videos[i].thumbnail,videos[i].title);
+            const video = createVideo(`${API_PATH}/lib/${videos[i].topicUrl}/${videos[i].url.substring(urlIndex)}`,videos[i].thumbnail,videos[i].title);
             container.append(video);
         }
 }
@@ -35,7 +37,7 @@ const appendAboutMe = (subscriptions,dateJoined,aboutMe) => {
  */
 const getMoreResults = async (choice,page) => {
  try{
-    let result = await fetch(`/user/${AUTHOR}/getUserContent?content=${choice}&viewAll=true&page=${page}`);
+    let result = await fetch(`${API_PATH}/user/${AUTHOR}/getUserContent?content=${choice}&viewAll=true&page=${page}`);
     let data = await result.json();
     switch(choice){
         case 'topics':
@@ -159,7 +161,7 @@ const getAuthorTopics = async (e, viewAll = false, override = false) => {
         deleteUserContent();
         toggleViewAllButton();
         toggleBackgroundLoading(true,document.getElementById('userContent'),false,null,'2rem','2rem');
-        let result = await fetch(`/user/${AUTHOR}/getUserContent`,{
+        let result = await fetch(`${API_PATH}/user/${AUTHOR}/getUserContent`,{
             method:'GET'
         });
         let data = await result.json();
@@ -214,12 +216,12 @@ const getAuthorVideos = async (e, viewAll = false, override = false) => {
         toggleBackgroundLoading(true,document.getElementById('userContent'),false,null,'2rem','2rem');
         let result = null;
         if (viewAll) {
-            result = await fetch(`/user/${AUTHOR}/getUserContent?content=videos&viewAll=true`,{
+            result = await fetch(`${API_PATH}/user/${AUTHOR}/getUserContent?content=videos&viewAll=true`,{
                 method:'GET'
             });
         }
         else {
-            result = await fetch(`/user/${AUTHOR}/getUserContent?content=videos`,{
+            result = await fetch(`${API_PATH}/user/${AUTHOR}/getUserContent?content=videos`,{
                 method:'GET'
             });
         }
@@ -278,7 +280,7 @@ const getAuthorAbout = async (e,override = false) => {
         }
         let data = null;
         try{
-            let result = await fetch(`/user/${AUTHOR}/getUserContent?content=about-me`);
+            let result = await fetch(`${API_PATH}/user/${AUTHOR}/getUserContent?content=about-me`);
             data = await result.json();
             toggleBackgroundLoading(false,document.getElementById('userContent'),false,null);
             if (data.response === 'success') {
