@@ -24,6 +24,7 @@ services:
     volumes:
       - db-data:/var/lib/mysql
       - ./server/utilities/db/create-db.sql:/docker-entrypoint-initdb.d/create-db.sql
+      - ./server/utilities/db/roundcube.sql:/docker-entrypoint-initdb.d/roundcube.sql
     networks:
       - cvp-network
     secrets:
@@ -39,6 +40,53 @@ services:
       PMA_HOST: db-server
     networks:
       - cvp-network
+  email-server:
+    depends_on:
+        db-server:
+          condition: service_started
+    image: mailserver/docker-mailserver:13
+    container_name: email-server
+    restart: always
+    hostname: mail.cvp.com
+    domainname: docker.local
+    ports:
+      - 25:25
+      - 143:143
+    environment:
+     PERMIET_DOCER: network
+     ENABLE_IMAP: 1
+     ENABLE_CLAMAV: 0
+     ENABLE_SPAMASSASSIN: 0
+     ENABLE_POSTGREY: 0
+     ENABLE_FAIL2BAN: 0
+     SPOOF_PROTECTION: 0
+    volumes:
+      - ./server/utilities/email/postfix-main.cf:/tmp/docker-mailserver/postfix-main.cf
+    networks:
+      - cvp-network
+  email-client:
+    depends_on:
+          db-server:
+            condition: service_started
+    image: roundcube/roundcubemail:1.6.6-apache
+    container_name: email-client
+    restart: always
+    ports:
+      - 8000:80
+    environment:
+      ROUNDCUBEMAIL_DEFAULT_HOST: email-server
+      ROUNDCUBEMAIL_DEFAULT_PORT: 143
+      ROUNDCUBEMAIL_SMTP_SERVER: email-server
+      ROUNDCUBEMAIL_SMTP_PORT: 25
+      ROUNDCUBEMAIL_DB_TYPE: mysql
+      ROUNDCUBEMAIL_DB_HOST: db-server
+      ROUNDCUBEMAIL_DB_NAME: roundcubemail
+    volumes:
+      - ./server/utilities/email/roundcube-config.php:/var/roundcube/config/roundcube-config.php
+    networks:
+      - cvp-network
+    secrets:
+      - roundcube_db_password
   redis:
     image: redis:7.2-alpine
     container_name: redis
@@ -99,6 +147,8 @@ secrets:
     file: ./server/utilities/db/db_user.txt
   db_password:
     file: ./server/utilities/db/db_password.txt
+  roundcube_db_password:
+    file: ./server/utilities/db/db_root_password.txt
 volumes:
   db-data:
     driver: local

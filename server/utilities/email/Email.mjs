@@ -1,7 +1,7 @@
 "use strict"
 import nodemailer from 'nodemailer'
 import {AppError} from '../AppError.mjs'
-import { EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS } from '../config.mjs'
+import { EMAIL_SECURE, EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS } from '../config.mjs'
 
 /**
  * @param {object} email - email of recipient
@@ -27,7 +27,7 @@ const sendEmail = async(email)=>{
         const transporter = nodemailer.createTransport({
             host:EMAIL_HOST,
             port:EMAIL_PORT,
-            secure:true,
+            secure: (EMAIL_SECURE === 'true') ? true : false,
             auth:{
                 user:EMAIL_USER,
                 pass:EMAIL_PASS

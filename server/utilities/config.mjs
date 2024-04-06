@@ -47,10 +47,11 @@ const CLOUDINARY_SECRET = process.env.CLOUDINARY_SECRET;
 const DEFAULT_PROFILE_PIC = process.env.DEFAULT_PROFILE_PIC;
 const DEFAULT_PIC_FILENAME = process.env.DEFAULT_PIC_FILENAME;
 
-const EMAIL_HOST = process.env.EMAIL_HOST;
-const EMAIL_PORT = process.env.EMAIL_PORT || '587';
+const EMAIL_HOST = process.env.EMAIL_HOST || 'email-server';
+const EMAIL_PORT = process.env.EMAIL_PORT || '25';
 const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASS = process.env.EMAIL_PASS;
+const EMAIL_SECURE = process.env.EMAIL_SECURE || 'false';
 
 const REDIS_ENABLED = process.env.REDIS_ENABLED || 'false';
 const REDIS_DOCKER_HOST = process.env.REDIS_DOCKER_HOST || 'redis';
@@ -94,6 +95,7 @@ export {
     EMAIL_PORT,
     EMAIL_USER,
     EMAIL_PASS,
+    EMAIL_SECURE,
     REDIS_ENABLED,
     REDIS_DOCKER_HOST,
     REDIS_PATH,

@@ -55,7 +55,10 @@ Installing via Docker is designed for development purposes. It is not recommende
 4. You may open `server/utilities/db/create-db.sql` and rename the database found on the first 2 lines as you wish. Be sure your Env variables reflect these changes as the web app will use `cvp` by default.
 5. In the root of the project, run ```docker-compose up```
 
-By default the server should be running on localhost:5000, the client on localhost:3000, and phpMyAdmin on localhost:8080. You can login to phpMyAdmin using either root or the user you created in the aforementioned secret files.
+By default the server should be running on localhost:5000, the client on localhost:3000, phpMyAdmin on localhost:8080, and Roundcube on localhost:8000. You can login to phpMyAdmin using either root or the user you created in the aforementioned secret files.
+
+6. You will have 2 minutes to generate an email for the email-server service. Open the command line and run `docker exec -it email-server bash`. Inside, create the first email you'd like the application to use when sending emails in the format: `setup email add <email>@<hostname>.com <password>`. Here is an example: `setup email add no-reply@mail.cvp.com admin`. Be sure the hostname matches the hostname given in the compose YAML file (and must have a prefix to the domain name such as `mail.example.com`). Make sure the the full email address and password are used for the ENV variables `EMAIL_USER` and `EMAIL_PASS`. You can always return into the email-server container to create more emails so you can create more accounts in the application.
+7. After creating your own account, you can log in to the email account at localhost:8000. This is where your auto-generated email will be sent when registering on the website.
 
 ## Manual Installation
 
@@ -79,7 +82,7 @@ Redis is optional. The application will still run without it. Make sure the env 
 
 ### Additional Setup
 1. To satisfy the environemnt variables below, you will need to create a Cloudinary account and get an account name, API key, and secret.
-2. This app uses Nodemailer for sending emails to new users. Make sure you have some sort of email server set up. It doesn't need to be remote. You can set up something like Mercury included in [XAMPP](https://www.apachefriends.org/download.html) locally on your machine to handle this requirement.
+2. This app uses Nodemailer for sending emails to new users. Make sure you have some sort of email server set up. It doesn't need to be remote. You can set up an IMAP/SMTP server like Mercury included in [XAMPP](https://www.apachefriends.org/download.html) locally on your machine to handle this requirement. You can also use an email client such as [Mozilla Thunderbird](https://www.thunderbird.net/en-US/) to access your local email.
 
 ### Env Setup
 
@@ -213,17 +216,22 @@ You are only required to provide details based on whether your environment will 
 These variables are for connecting to a SMTP server responsible for sending emails (e.g. email verification upon registration)
 
 1. `EMAIL_HOST`
-    * Remote hostname for sending emails
+    * Default: email-server
+    * Hostname for sending emails. If using Docker in development, use the service name for the email server listed in the compose YAML file (email-server is the default) 
 
-2. `EMAIL_PASS`
-    * Password to access email server
-
-3. `EMAIL_PORT`
-    * Default: 587
+2. `EMAIL_PORT`
+    * Default: 25
     * Port number to access email server
 
-4. `EMAIL_USER`
+3. `EMAIL_USER`
     * Email account that is responsible for sending emails
+
+4. `EMAIL_PASS`
+    * Password to access email server
+
+5. `EMAIL_SECURE`
+    * Default: false
+    * Will the email connection use SSL/TLS?
 
 ### Redis (Optional)
 These variables are only required if you wish to use Redis.
