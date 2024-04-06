@@ -1,5 +1,3 @@
-import { API_PATH } from "../../../utilities/config.mjs";
-
 //Globals Required: Username
 let MODAL_TARGET = null;
 /**
