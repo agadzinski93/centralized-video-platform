@@ -1,3 +1,5 @@
+import { API_PATH } from "../../../utilities/config.mjs";
+
 //Globals Required: Username
 let MODAL_TARGET = null;
 /**
@@ -57,7 +59,7 @@ const setSettingsButtonEvents = () => {
         let result;
         let currentlyChecked = (e.target.classList.contains('btnSettingSelected')) ? '0' : '1';
         try {
-            result = await fetch(`/user/${USERNAME}/settings/updateRefreshMetadata`,{
+            result = await fetch(`${API_PATH}/user/${USERNAME}/settings/updateRefreshMetadata`,{
                 method:'PATCH',
                 headers: {
                     'Content-Type':'application/json',
@@ -79,7 +81,7 @@ const setSettingsButtonEvents = () => {
         let result;
         let currentlyChecked = (e.target.classList.contains('btnSettingSelected')) ? '0' : '1';
         try {
-            result = await fetch(`/user/${USERNAME}/settings/updateRefreshMetadata`,{
+            result = await fetch(`${API_PATH}/user/${USERNAME}/settings/updateRefreshMetadata`,{
                 method:'PATCH',
                 headers: {
                     'Content-Type':'application/json',
@@ -101,7 +103,7 @@ const setSettingsButtonEvents = () => {
         let result;
         let currentlyChecked = (e.target.classList.contains('btnSettingSelected')) ? '0' : '1';
         try {
-            result = await fetch(`/user/${USERNAME}/settings/updateRefreshMetadata`,{
+            result = await fetch(`${API_PATH}/user/${USERNAME}/settings/updateRefreshMetadata`,{
                 method:'PATCH',
                 headers: {
                     'Content-Type':'application/json',
@@ -154,7 +156,7 @@ const addBasicInfoEvents = () => {
             toggleModal(true, 'Updating profile pic...');
             const form = document.getElementById('editProfilePicForm');
             const formData = new FormData(form);
-            let result = await fetch(`/user/${USERNAME}/settings/updateProfilePic`, {
+            let result = await fetch(`${API_PATH}/user/${USERNAME}/settings/updateProfilePic`, {
                 method:'PATCH',
                 body: formData,
             });
@@ -181,7 +183,7 @@ const addBasicInfoEvents = () => {
             toggleBackdrop(true, '#fff', '10%');
             toggleModal(true, 'Deleting profile pic...');
 
-            let result = await fetch(`/user/${USERNAME}/settings/updateProfilePic`,{
+            let result = await fetch(`${API_PATH}/user/${USERNAME}/settings/updateProfilePic`,{
                 method:'DELETE'
             });
             let data = await result.json();
@@ -224,7 +226,7 @@ const addBasicInfoEvents = () => {
         let txtDN =  document.getElementById('txtDisplayName');
         let txtDisplayName = txtDN.value;
         if (txtDisplayName.length >= 3 && txtDisplayName.length <= 24) {
-            let result = await fetch(`/user/${USERNAME}/settings/updateDisplayName`,{
+            let result = await fetch(`${API_PATH}/user/${USERNAME}/settings/updateDisplayName`,{
                 method:'PATCH',
                 headers:{
                     'Content-Type':'application/json'
@@ -301,7 +303,7 @@ const addBasicInfoEvents = () => {
         let txtE = document.getElementById('txtEmail')
         let txtEmail = txtE.value;
         if (validateEmail(null,txtE)) {
-            let result = await fetch(`/user/${USERNAME}/settings/updateEmail`,{
+            let result = await fetch(`${API_PATH}/user/${USERNAME}/settings/updateEmail`,{
                 method:'PATCH',
                 headers:{
                     'Content-Type':'application/json'
@@ -341,7 +343,7 @@ const addBasicInfoEvents = () => {
         if (txtAboutMe.length <= 1024) {
             toggleBackdrop(true,'#FFF','10%');
             toggleModal('Updating your \'About Me\'...');
-            let result = await fetch(`/user/${USERNAME}/settings/updateAboutMe`,{
+            let result = await fetch(`${API_PATH}/user/${USERNAME}/settings/updateAboutMe`,{
                 method:'PATCH',
                 headers:{
                     'Content-Type':'application/json'
@@ -412,7 +414,7 @@ const addBasicInfoEvents = () => {
             
             const form = document.getElementById('editBannerForm');
             const formData = new FormData(form);
-            let result = await fetch(`/user/${USERNAME}/settings/updateBanner`, {
+            let result = await fetch(`${API_PATH}/user/${USERNAME}/settings/updateBanner`, {
                 method:'PATCH',
                 body: formData,
             });
@@ -437,7 +439,7 @@ const addBasicInfoEvents = () => {
             toggleBackdrop(true, '#fff', '10%');
             toggleModal(true, 'Deleting Banner...');
 
-            let result = await fetch(`/user/${USERNAME}/settings/deleteBanner`,{
+            let result = await fetch(`${API_PATH}/user/${USERNAME}/settings/deleteBanner`,{
                 method:'DELETE',
                 headers:{
                     'Content-Type':'application/json'
