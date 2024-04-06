@@ -1,11 +1,11 @@
-//Globals Required:UserId and AuthorId
+//Globals Required:UserId, AuthorId, API_PATH
 const addSubscribeEvents = () => {
     const btnSubscribe = document.getElementById('btnSubscribe');
     const btnUnsubscribe = document.getElementById('btnUnsubscribe');
     btnSubscribe.addEventListener('click',async()=>{
         btnSubscribe.disabled = true;
         toggleBackgroundLoading(true,btnSubscribe,true);
-        let result = await fetch("/subscribe",{
+        let result = await fetch(`${API_PATH}/subscribe`,{
             method:'POST',
             headers:{
                 'Content-Type':'application/json'
@@ -29,7 +29,7 @@ const addSubscribeEvents = () => {
     btnUnsubscribe.addEventListener('click',async()=>{
         btnUnsubscribe.disabled = true;
         toggleBackgroundLoading(true,btnUnsubscribe,true);
-        let result = await fetch("/subscribe",{
+        let result = await fetch(`${API_PATH}/subscribe`,{
             method:'DELETE',
             headers:{
                 'Content-Type':'application/json'
