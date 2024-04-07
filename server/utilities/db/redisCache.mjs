@@ -36,7 +36,7 @@ const setRedisCache = async (key,value,options) => {
             const client = await getRedisConnection();
             await client.set(key,value,options);
         } catch (err) {
-            logger.log('error',`Redis 'Get Cache' Error: ${err.message}`);
+            logger.log('error',`Redis 'Set Cache' Error: ${err.message}`);
         }
     }
 }
