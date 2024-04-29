@@ -1,7 +1,7 @@
 import { getDatabase } from "../db/mysql-connect.mjs";
 import { escapeSQL } from "./sanitizers.mjs";
 import {AppError} from "../AppError.mjs";
-import { Cloudinary } from "../cloudinary.mjs";
+import { Cloudinary } from "../storage.mjs";
 
 /**
  * Choose whether topic's title has hyphens or whitespaces

@@ -3,7 +3,7 @@ import { topicLogger } from "../utilities/logger.mjs";
 import { paramsExist } from "../utilities/validators/paramsExist.mjs";
 import {AppError} from "../utilities/AppError.mjs";
 import { escapeHTML } from "../utilities/helpers/sanitizers.mjs";
-import { Cloudinary } from "../utilities/cloudinary.mjs";
+import { Cloudinary } from "../utilities/storage.mjs";
 import { 
   topicExists,
   insertTopic,

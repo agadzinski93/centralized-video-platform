@@ -56,7 +56,7 @@ const Init = {
             contentSecurityPolicy:{
               useDefaults:true,
               directives:{
-                imgSrc:["'self'","data:","https://res.cloudinary.com","https://i.ytimg.com"],
+                imgSrc:["'self'","data:","https://res.cloudinary.com","https://storage.googleapis.com",`https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com`,"https://i.ytimg.com"],
                 scriptSrc:["'self'","'unsafe-inline'"],
                 frameSrc:["'self'","https://www.youtube.com"],
               }

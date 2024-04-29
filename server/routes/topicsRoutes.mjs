@@ -1,9 +1,10 @@
 import express from 'express';
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods.mjs';
 import multer from 'multer';
-import { storage } from '../utilities/cloudinary.mjs';
+import { storage, topicStorage, gcsStorage, s3Storage } from '../utilities/storage.mjs';
 import {filter} from '../utilities/validators/fileValidator.mjs';
 const parser = multer({storage, fileFilter:filter, limits:{fileSize:1024000}});
+const topicParser = multer({storage:topicStorage, fileFilter:filter, limits:{fileSize:1024000}});
 const router = express.Router({ caseSensitive: false, strict: false });
 import { 
   createTopic,
@@ -16,7 +17,7 @@ import { topicValidation } from '../utilities/validators/middleware/validators.m
 import { isLoggedIn,isAuthor } from '../utilities/validators/middleware/userAuth.mjs';
 
 router.route('/:username/create')
-  .post(isLoggedIn,isAuthor,parser.single('topic[file]'),topicValidation,createTopic)
+  .post(isLoggedIn,isAuthor,topicParser.single('topic[file]'),topicValidation,createTopic)
   .all(verifyMethods(['POST']));
 
 router.route('/:username/:topic')

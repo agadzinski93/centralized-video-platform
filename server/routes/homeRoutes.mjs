@@ -1,5 +1,4 @@
 import express from 'express';
-import { apiRouter } from './apiRoute.mjs';
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods.mjs';
 import { setCache,setCors } from '../utilities/validators/middleware/setHeaders.mjs';
 const router = express.Router({caseSensitive:false, strict:false});

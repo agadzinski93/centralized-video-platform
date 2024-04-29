@@ -2,7 +2,7 @@ import { ApiResponse } from "../../ApiResponse.mjs";
 import { paramsExist } from "../paramsExist.mjs";
 import registerValidator from "../registerValidator.mjs";
 import topicValidator from "../topicValidator.mjs";
-import { Cloudinary } from "../../cloudinary.mjs";
+import { Cloudinary } from "../../storage.mjs";
 
 /**
  * Validates user input in registration form. Returns user to form with flashed error message if unsuccessful.
