@@ -1,7 +1,7 @@
 import {AppError} from '../utilities/AppError.mjs';
 import { ApiResponse } from '../utilities/ApiResponse.mjs';
 import { userLogger } from '../utilities/logger.mjs';
-import { Cloudinary } from '../utilities/cloudinary.mjs';
+import { Cloudinary } from '../utilities/storage.mjs';
 import { escapeHTML } from '../utilities/helpers/sanitizers.mjs';
 import { paramsExist } from '../utilities/validators/paramsExist.mjs';
 import { getUser, updateAuthToken } from '../utilities/helpers/authHelpers.mjs';

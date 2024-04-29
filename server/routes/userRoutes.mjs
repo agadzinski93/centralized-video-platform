@@ -3,7 +3,7 @@ const router = express.Router({ caseSensitive: false, strict: false });
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods.mjs';
 import { setCache,setCors } from '../utilities/validators/middleware/setHeaders.mjs';
 import multer from 'multer';
-import { storage } from '../utilities/cloudinary.mjs';
+import { storage } from '../utilities/storage.mjs';
 import {filter} from '../utilities/validators/fileValidator.mjs';
 const parserProfilePic = multer({storage, fileFilter:filter, limits:{fileSize:1024000}});
 const parserBanner = multer({storage, fileFilter:filter, limits:{fileSize:2048000}});

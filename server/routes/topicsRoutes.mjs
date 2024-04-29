@@ -1,7 +1,7 @@
 import express from 'express';
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods.mjs';
 import multer from 'multer';
-import { storage, topicStorage, gcsStorage, s3Storage } from '../utilities/storage.mjs';
+import { storage, topicStorage} from '../utilities/storage.mjs';
 import {filter} from '../utilities/validators/fileValidator.mjs';
 const parser = multer({storage, fileFilter:filter, limits:{fileSize:1024000}});
 const topicParser = multer({storage:topicStorage, fileFilter:filter, limits:{fileSize:1024000}});

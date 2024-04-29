@@ -1,6 +1,6 @@
 import { getDatabase } from "../db/mysql-connect.mjs";
 import {AppError} from "../AppError.mjs";
-import { Cloudinary } from "../cloudinary.mjs";
+import { Cloudinary } from "../storage.mjs";
 import { enableHyphens } from "./topicHelpers.mjs";
 import { setPaginationData,endOfResults } from "./pagination.mjs";
 import { DEFAULT_PROFILE_PIC, DEFAULT_PIC_FILENAME } from "../config.mjs";
