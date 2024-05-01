@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "build": "vite build client",
-    "build-server":"tsc -p ./server/tsconfig.json",
+    "build-server": "tsc -p ./server/tsconfig.json",
     "client": "npm run dev --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "jest",
@@ -38,7 +38,10 @@
     "winston": "^3.13.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.24.4",
+    "@babel/core": "^7.24.5",
+    "@babel/preset-env": "^7.24.5",
+    "@babel/preset-typescript": "^7.24.1",
+    "@jest/globals": "^29.7.0",
     "@types/bcrypt": "^5.0.2",
     "@types/bluebird": "^3.5.42",
     "@types/cookie-parser": "^1.4.7",
@@ -55,12 +58,14 @@
     "concurrently": "^8.2.2",
     "jest": "^29.7.0",
     "nodemon": "^3.1.0",
+    "ts-jest": "^29.1.2",
     "typescript": "^5.4.5"
   },
   "overrides": {
     "semver": "^7.5.3"
   },
   "jest": {
+    "preset": "ts-jest",
     "transform": {
       "^.+\\.jsx?$": "babel-jest",
       "^.+\\.mjs$": "babel-jest"
@@ -71,6 +76,7 @@
       "client/"
     ],
     "moduleFileExtensions": [
+      "ts",
       "js",
       "jsx",
       "mjs"

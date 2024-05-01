@@ -1,9 +1,10 @@
-import { createEmail } from "../server/utilities/email/Email.mjs";
-import { EMAIL_USER } from "../server/utilities/config.mjs";
-import { ApiResponse } from "../server/utilities/ApiResponse.mjs";
-import { paramsExist } from "../server/utilities/validators/paramsExist.mjs";
-import { setPaginationData, endOfResults } from "../server/utilities/helpers/pagination.mjs";
-import { USER_COLS } from "../server/utilities/globals/user.mjs";
+import { expect, test } from "@jest/globals";
+import { createEmail } from "../server/utilities/email/Email.ts";
+import { EMAIL_USER } from "../server/utilities/config.ts";
+import { ApiResponse } from "../server/utilities/ApiResponse.ts";
+import { paramsExist } from "../server/utilities/validators/paramsExist.ts";
+import { setPaginationData, endOfResults } from "../server/utilities/helpers/pagination.ts";
+import { USER_COLS } from "../server/utilities/globals/user.ts";
 
 test('Generate Email Object',()=>{
     expect(createEmail('sample@example.com','Subject','Text Message','<p>HTML Email</p>'))
