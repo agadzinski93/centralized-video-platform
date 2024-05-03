@@ -308,6 +308,8 @@ const addCreateTopicEvent = () => {
       reader.onload = (e) => {
         let img = document.createElement('img');
         img.src = e.target.result;
+        const prevImg = document.querySelector('.file-upload img');
+        if (prevImg) prevImg.remove();
         document.getElementById('lblFileUpload').append(img);
         document.querySelector('.file-upload span').classList.add('displayNone');
       }
@@ -337,6 +339,8 @@ const addCreateTopicEvent = () => {
             reader.onload = (e2) => {
               let img = document.createElement('img');
               img.src = e2.target.result;
+              const prevImg = document.querySelector('.file-upload img');
+              if (prevImg) prevImg.remove();
               document.getElementById('lblFileUpload').append(img);
               document.querySelector('.file-upload span').classList.add('displayNone');
               document.getElementById('fileSelected').textContent = files[i].name;

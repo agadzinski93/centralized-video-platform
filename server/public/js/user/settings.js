@@ -144,6 +144,42 @@ const addBasicInfoEvents = () => {
         reader.readAsDataURL(this.files[0]);
         }
         });
+
+        document.getElementById('lblProfilePicUpload').addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "copy";
+          });
+          document.getElementById('lblProfilePicUpload').addEventListener('dragenter', (e) => {
+            if (e.dataTransfer.items[0].kind === 'file') {
+              document.getElementById('lblProfilePicUpload').style.border = 'solid 1px blue';
+            }
+          });
+          document.getElementById('lblProfilePicUpload').addEventListener('dragleave', (e) => {
+            document.getElementById('lblProfilePicUpload').style.border = '';
+          });
+          document.getElementById('lblProfilePicUpload').addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.items[0].kind === 'file') {
+              let files = e.dataTransfer.files;
+              let reader;
+              for (let i = 0; i < files.length; i++) {
+                if (files[i].type.includes('image')) {
+                  reader = new FileReader();
+                  reader.onload = (e2) => {
+                    let img = document.createElement('img');
+                    img.src = e2.target.result;
+                    const prevImg = document.querySelector('#lblProfilePicUpload img');
+                    if (prevImg) prevImg.remove();
+                    document.getElementById('lblProfilePicUpload').append(img);
+                    document.querySelector('#lblProfilePicUpload span').classList.add('displayNone');
+                    document.getElementById('fileSelected').textContent = files[i].name;
+                    document.getElementById('btnFileUpload').files = files;
+                  }
+                  reader.readAsDataURL(files[i]);
+                }
+              }
+            }
+          });
     }
     profilePicEvent();
     const updateProfilePicEvent = () => {
@@ -401,6 +437,42 @@ const addBasicInfoEvents = () => {
         reader.readAsDataURL(this.files[0]);
         }
         });
+
+        document.getElementById('lblBannerUpload').addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "copy";
+          });
+          document.getElementById('lblBannerUpload').addEventListener('dragenter', (e) => {
+            if (e.dataTransfer.items[0].kind === 'file') {
+              document.getElementById('lblBannerUpload').style.border = 'solid 1px blue';
+            }
+          });
+          document.getElementById('lblBannerUpload').addEventListener('dragleave', (e) => {
+            document.getElementById('lblBannerUpload').style.border = '';
+          });
+          document.getElementById('lblBannerUpload').addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.items[0].kind === 'file') {
+              let files = e.dataTransfer.files;
+              let reader;
+              for (let i = 0; i < files.length; i++) {
+                if (files[i].type.includes('image')) {
+                  reader = new FileReader();
+                  reader.onload = (e2) => {
+                    let img = document.createElement('img');
+                    img.src = e2.target.result;
+                    const prevImg = document.querySelector('#lblBannerUpload img');
+                    if (prevImg) prevImg.remove();
+                    document.getElementById('lblBannerUpload').append(img);
+                    document.querySelector('#lblBannerUpload span').classList.add('displayNone');
+                    document.getElementById('fileSelected').textContent = files[i].name;
+                    document.getElementById('btnBannerUpload').files = files;
+                  }
+                  reader.readAsDataURL(files[i]);
+                }
+              }
+            }
+          });
     }
     bannerPicEvent();
     const updateBannerEvent = () => {

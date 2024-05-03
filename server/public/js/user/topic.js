@@ -571,9 +571,11 @@ const addSwapVideoEvents = async () => {
           if (files[i].type.includes('image')) {
             reader = new FileReader();
             reader.onload = (e2) => {
-              let img = document.querySelector('.file-upload img');
+              let img = document.createElement('img');
               img.src = e2.target.result;
-              img.classList.remove('displayNone');
+              const prevImg = document.querySelector('.file-upload img');
+              if (prevImg) prevImg.remove();
+              document.getElementById('lblFileUpload').append(img);
               document.querySelector('.file-upload span').classList.add('displayNone');
               document.getElementById('fileSelected').textContent = files[i].name;
               document.getElementById('btnFileUpload').files = files;

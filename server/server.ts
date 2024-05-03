@@ -35,7 +35,6 @@ initializePassport(app);
 addSecurityPolicy(app);
 addRateLimit(app);
 
-//let routesLoaded = false;
 app.get("/_health", (req, res) => {
   res.status(200).send('App is running.');
 });
@@ -49,25 +48,6 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.resolve(__dirname, 'client', 'dist', 'index.html'));
   });
 }
-
-
-/*
-  App requires a functional path at runtime. It cannot wait for the async ES6 routes to load.
-  This temporary message will be presented when the app first loads.
-*/
-/* app.use(function (req, res, next) {
-  if (!routesLoaded) {
-    setTimeout(() => {
-      if (!routesLoaded) {
-        return res.status(200).send('<h1>App loaded. Please refresh!</h1>');
-      }
-      return next();
-    }, 3000);
-  }
-  else {
-    return next();
-  }
-}); */
 
 //Port
 const server = app.listen(PORT);

@@ -98,7 +98,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
  * @param next
  */
 const loginUser = async (req: Request, res: Response, next: NextFunction) => {
-  let url = "/";
+  let url = (NODE_ENV === 'production') ? API_PATH : '/';
   pp.authenticate('login', async (err: Error, user: any, info: any) => {
     if (err) {
       next(new AppError(500, `Login Error: ${err.message}`));
@@ -126,8 +126,10 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
  * @param {*} res
  */
 const logoutUser = (req: Request, res: Response, next: NextFunction) => {
+  const url = (NODE_ENV === 'production') ? API_PATH : '/';
+
   res.clearCookie('token');
-  res.redirect("/");
+  res.redirect(url);
 }
 /**
  * Logs the user out
@@ -168,6 +170,7 @@ const renderRegistration = (req: Request, res: Response) => {
   });
 }
 const registerUser = async (req: Request, res: Response, next: NextFunction) => {
+  const url = (NODE_ENV === 'production') ? API_PATH : '/';
   const exist = paramsExist([
     req.body.username,
     req.body.email,
@@ -287,14 +290,14 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
       return next(new AppError(500, 'Error Sending Email'));
     }
 
-    res.redirect("/");
+    res.redirect(url);
   }
   else {
-    res.redirect("/");
+    res.redirect(url);
   }
-
 }
 const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
+  const url = (NODE_ENV === 'production') ? API_PATH : '/';
   const exist = paramsExist([
     req.params.userId,
     req.params.key
@@ -328,9 +331,9 @@ const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
         return next(new AppError(500, `Error Sending Email`));
       }
 
-      res.redirect("/");
+      res.redirect(url);
     } catch (err) {
-      res.redirect("/");
+      res.redirect(url);
     }
   }
   else {
