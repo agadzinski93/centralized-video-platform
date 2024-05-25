@@ -24,6 +24,7 @@ This is a long-term project.
         * [DB in Development with Docker](#DB-in-Development-with-Docker)
         * [DB in Development without Docker](#DB-in-Development-without-Docker)
         * [DB in Production](#DB-in-Production)
+    * [Google OAuth](#Google-OAuth)
     * [Cloudinary](#Cloudinary)
     * [Email](#Email)
 5. [React Environment Variables](#React-Environment-Variables)
@@ -135,6 +136,9 @@ Create the `.env` file in the root of the project.
 
 10. `COOKIE_SECRET`
     * Secret attached to cookie associated with Passport
+
+11. `SESSION SECRET`
+    * Secret for sessions used with OAuth
 
 ### Database Configurations
 You are only required to provide details based on whether your environment will be in development, development w/ Docker, or production.

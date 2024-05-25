@@ -5,6 +5,7 @@ import { addMessage } from "../../redux/slices/flashMessageSlice";
 import { useRenderTopicScreenMutation } from "../../redux/api/libApi";
 import { castApiResponse } from "../../types/types";
 import VideoPlaylistTile from "../../components/Video/VideoPlaylistTile";
+import LoadingTopicScreen from "../loaders/LoadingTopicScreen";
 
 import "./TopicScreen.scss";
 
@@ -22,6 +23,7 @@ const TopicScreen = () => {
   const [renderTopicScreen] = useRenderTopicScreenMutation();
 
   useEffect(() => {
+    setIsLoading(true);
     if (topic) {
       renderTopicScreen({ topic })
         .then((data) => {
@@ -71,7 +73,7 @@ const TopicScreen = () => {
       navigate("/");
     }
     setIsLoading(false);
-  }, []);
+  }, [topic]);
 
   const topicScreen = (
     <div className="topic-container">
@@ -106,11 +108,17 @@ const TopicScreen = () => {
 
   return (
     <div className="topic-page-container">
-      <div
-        className="topic-background"
-        style={{ backgroundImage: `url('${bg}')`, opacity }}
-      ></div>
-      {isLoading ? <p>Loading...</p> : topicScreen}
+      {isLoading ? (
+        <LoadingTopicScreen />
+      ) : (
+        <>
+          <div
+            className="topic-background"
+            style={{ backgroundImage: `url('${bg}')`, opacity }}
+          ></div>
+          {topicScreen}
+        </>
+      )}
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { useRenderVideoScreenMutation } from "../../redux/api/libApi";
 import { castApiResponse } from "../../types/types";
 import VideoPlaylistTile from "../../components/Video/VideoPlaylistTile";
 import { scanForLinks } from "../../assets/scripts/scripts";
+import LoadingVideoScreen from "../loaders/LoadingVideoScreen";
 
 import "./VideoScreen.scss";
 
@@ -145,7 +146,7 @@ const VideoScreen = () => {
 
   return (
     <div className="video-page-container">
-      {isLoading ? <p>Loading...</p> : videoScreen}
+      {isLoading ? <LoadingVideoScreen /> : videoScreen}
     </div>
   );
 };

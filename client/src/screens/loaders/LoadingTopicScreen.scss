@@ -1,0 +1,175 @@
+.topic-page-container {
+    .loading-topic-page-container {
+        display:flex;
+        align-items:flex-start;
+        justify-content: space-between;
+        gap:1rem;
+        margin:1rem 4rem;
+        width:100%;
+
+        .loading-topic-page-info {
+            flex-grow:1;
+
+            .loading-topic-image {
+                height:10rem;
+            }
+            .loading-topic-info {
+                .loading-topic-title {
+                    margin-top:2rem;
+                    width:60%;
+                    height:3rem;
+                    background-color:var(--primary-bg-color-lt2);
+                    border-radius:3rem;
+                }
+                .loading-topic-difficulty {
+                    display:flex;
+                    gap:1rem;
+                    margin-top:1rem;
+    
+                    .loading-difficulty {
+                        height:1rem;
+                        width:6rem;
+                        padding:0.125rem;
+                        border: solid 1px #aaa;
+                        border-radius:0.25rem;
+                    }
+    
+                    .loading-date {
+                        width:10rem;
+                        height:1rem;
+                        padding:0.25rem;
+                        background-color:var(--primary-bg-color-lt2);
+                        border-radius:2rem;
+                    }
+                }
+                .loading-topic-description {
+                    margin-top:1.5rem;
+                    width:80%;
+                    height:1rem;
+                    border-radius:1rem;
+                    background-color:var(--primary-bg-color-lt2);
+                }
+            }
+            
+        }
+        .loading-topic-page-playlist {
+            width:45rem;
+            background-color:var(--primary-bg-color);
+
+            .loading-topic-video {
+                display:flex;
+                width:100%;
+                height:5rem;
+
+                .loading-topic-image {
+                    height:auto;
+                    aspect-ratio: 16 / 9;
+                }
+
+                .loading-topic-video-info {
+                    flex-grow:1;
+
+                    .loading-topic-video-title {
+                        margin-top:0.25rem;
+                        height:1rem;
+                        width:70%;
+                        background-color:var(--primary-bg-color-lt2);
+                        border-radius:1rem;
+                    }
+                    .loading-topic-video-author {
+                        margin-top:1rem;
+                        height:1rem;
+                        width:6rem;
+                        background-color:var(--primary-bg-color-lt2);
+                        border-radius:1rem;
+                    }
+                    .loading-topic-video-uploaded-when {
+                        margin-top:0.25rem;
+                        height:1rem;
+                        width:10rem;
+                        background-color:var(--primary-bg-color-lt2);
+                        border-radius:1rem;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width:1400px) {
+    .topic-page-container {
+        .loading-topic-page-container {
+            flex-flow:column;
+
+            .loading-topic-page-info {
+                display:flex;
+                width:100%;
+
+                .loading-topic-image {
+                    aspect-ratio: 16 / 9;;
+                }
+                .loading-topic-info {
+                    flex-grow:1;
+
+                    .loading-topic-title {
+                        width:75%;
+                        margin-top:0;
+                        height:2rem;
+                    }
+                    .loading-topic-description {
+                        margin-top:1rem;
+                    }
+                }
+            }
+
+            .loading-topic-page-playlist {
+                width:100%;
+            }
+        }
+    }
+}
+
+@media (max-width: 760px) {
+    .topic-page-container {
+        .loading-topic-page-container {
+            margin:1rem 0;
+
+            .loading-topic-page-info {
+                .loading-topic-image {
+                    display:none;
+                }
+
+                .loading-topic-info {
+                    padding:0 0.5rem;
+
+                    .loading-topic-title {
+                        height:1.5rem;
+                    }
+                    .loading-topic-difficulty {
+                        gap:0.5rem;
+                        margin-top:0.75rem;
+
+                        .loading-difficulty, .loading-date {
+                            height:0.75rem;
+                        }
+                        .loading-difficulty {
+                            width:4rem;
+                            padding:0.125rem;
+                        }
+                        .loading-date {
+                            padding:0;
+                            width:6rem;
+                        }
+                    }
+                    .loading-topic-description {
+                        margin-top:0.75rem;
+                        height:0.75rem;
+                    }
+                }
+            }
+            .loading-topic-page-playlist {
+                margin-top:1rem;
+            }
+        }
+    }
+}

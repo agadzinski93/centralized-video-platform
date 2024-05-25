@@ -88,7 +88,7 @@ const getTopic = async (topic: string) => {
     if (db instanceof AppError) return db;
     topic = escapeSQL(topic);
 
-    const sql = `SELECT name, description, difficulty, imageUrl, timeCreated 
+    const sql = `SELECT name, description, difficulty, imageUrl, timeCreated, username 
       FROM topics WHERE name = ?`;
     const values = [topic];
     let topics = await db.execute<RowDataPacket[]>(sql, values);
