@@ -6,7 +6,11 @@ import type { authState } from "../../types/types";
 const PublicOnly = () => {
   const auth = useSelector((state: authState) => state.auth);
 
-  return !auth.token ? <Outlet /> : <Navigate to="/" replace={true} />;
+  return !auth.isAuthenticated ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/" replace={true} />
+  );
 };
 
 export default PublicOnly;

@@ -1,0 +1,19 @@
+.flashMessages {
+    display:flex;
+    flex-flow: column;
+    gap:1rem;
+    position:absolute;
+    top:5rem;
+    right:1rem;
+    width:40rem;
+    max-width:40rem;
+    z-index:1;
+}
+
+@media (max-width:50rem) {
+    .flashMessages {
+        top:7rem;
+        width:90vw;
+        max-width:initial;
+    }
+}

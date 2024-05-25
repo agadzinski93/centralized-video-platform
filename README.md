@@ -113,23 +113,27 @@ Create the `.env` file in the root of the project.
     * Default: 5000
     * Port for Node app
 
-4. `USE_DOCKER`
+4. `CLIENT_PORT`
+    * Default: 3000
+    * Port for client app
+
+5. `USE_DOCKER`
     * Default: false
     * Is the current environment using Docker
 
-5. `DOMAIN_PUBLIC`
+6. `DOMAIN_PUBLIC`
     * Hostname (domain name or IP) of the online version of this app
 
-6. `DOMAIN_PRIVATE`
+7. `DOMAIN_PRIVATE`
     * Default: localhost
 
-7. `YOUTUBE_KEY`
+8. `YOUTUBE_KEY`
     * Your YouTube API key
 
-8. `PASSPORT_SECRET`
+9. `PASSPORT_SECRET`
     * Secret for PassportJS
 
-9. `COOKIE_SECRET`
+10. `COOKIE_SECRET`
     * Secret attached to cookie associated with Passport
 
 ### Database Configurations
@@ -194,6 +198,18 @@ You are only required to provide details based on whether your environment will 
 5. `DB_PRO_DATABASE`
     * Default: cvp
     * Name of database to access in your remote MySQL DB
+
+### Google OAuth
+These variables are provided by Google when creating your credentials in Google Cloud for OAuth support
+
+1. `GOOGLE_CLIENT_ID`
+    * Client ID provided by Google
+
+2. `GOOGLE_CLIENT_SECRET`
+    * Secret provided by Google
+
+3. `GOOGLE_CALLBACK_URL`
+    * The callback URL you provided when creating the above credentials
 
 ### Cloudinary
 

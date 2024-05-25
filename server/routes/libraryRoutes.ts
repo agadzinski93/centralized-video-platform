@@ -1,18 +1,28 @@
 import express from 'express'
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods';
-import { setCache, setCors } from '../utilities/validators/middleware/setHeaders';
+import { setCache } from '../utilities/validators/middleware/setHeaders';
 const router = express.Router({ caseSensitive: false, strict: false });
 import {
   renderLibaryTopic,
-  renderVideoPage
+  renderTopicScreen,
+  renderVideoPage,
+  renderVideoScreen
 } from '../controllers/libraryCont';
 
 router.route('/:topic')
-  .get(setCors(), setCache, renderLibaryTopic)
+  .get(setCache, renderLibaryTopic)
+  .all(verifyMethods(['GET']));
+
+router.route('/:topic/renderTopicScreen')
+  .get(setCache, renderTopicScreen)
   .all(verifyMethods(['GET']));
 
 router.route('/:topic/:video')
-  .get(setCors(), setCache, renderVideoPage)
-  .all(verifyMethods(['GET']))
+  .get(setCache, renderVideoPage)
+  .all(verifyMethods(['GET']));
+
+router.route('/:topic/:video/renderVideoScreen')
+  .get(setCache, renderVideoScreen)
+  .all(verifyMethods(['GET']));
 
 export { router };

@@ -1,0 +1,15 @@
+#root > footer {
+    width:100%;
+    box-sizing: border-box;
+    padding:1rem;
+    margin-top:2rem;
+    background-color:#1c1c1c;
+    text-align: center;
+    overflow:hidden;
+}
+
+@media (max-width:700px) {
+    #root > footer {
+        font-size:0.75rem;
+    }
+}

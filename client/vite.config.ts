@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import { loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -8,7 +9,7 @@ export default defineConfig(({ mode }) => {
   const overwritePath = (process.env.NODE_ENV !== 'production') ? /\/api\/v1/ : '';
 
   return {
-    plugins: [react()],
+    plugins: [react(), nodePolyfills()],
     base: '/',
     test: {
       environment: 'jsdom',

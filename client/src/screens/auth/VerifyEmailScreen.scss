@@ -1,0 +1,20 @@
+@use "../../App.scss" as m;
+
+.verifying-email-page-container {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    height:calc(100vh - 10rem);
+
+    .verify-email-container {
+        background-color:var(--primary-bg-color-lt2);
+        padding:2rem;
+        
+        .verify-email-spinner {
+            margin:1rem auto 0 auto;
+            height:2rem;
+            width:2rem;
+            @include m.bg-properties(center,contain,url('/images/spinner.gif'));
+        }
+    }
+}

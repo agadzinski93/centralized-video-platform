@@ -216,7 +216,7 @@ const deleteImage = async (user: UserObject, target: string) => {
             case 'PROFILE PIC':
                 filename = user.pic_filename;
                 if (filename !== DEFAULT_PIC_FILENAME) {
-                    await Cloudinary.uploader.destroy(filename);
+                    if (filename) await Cloudinary.uploader.destroy(filename);
                 }
                 const sql = `UPDATE users SET pic_url = ?, pic_filename = ? WHERE user_id = ?`;
                 const values = [DEFAULT_PROFILE_PIC, DEFAULT_PIC_FILENAME, user.user_id];
@@ -227,7 +227,7 @@ const deleteImage = async (user: UserObject, target: string) => {
                 break;
             case 'BANNER':
                 filename = user.banner_filename;
-                await Cloudinary.uploader.destroy(filename);
+                if (filename) await Cloudinary.uploader.destroy(filename);
 
                 const sqlTwo = `UPDATE users SET banner_url = null, banner_filename = null WHERE user_id = ?`;
                 const valuesTwo = [user.user_id];

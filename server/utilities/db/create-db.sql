@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS users(
     username VARCHAR(24) NOT NULL UNIQUE,
     display_name VARCHAR(24) DEFAULT NULL,
     email VARCHAR(45) NOT NULL UNIQUE,
-    password VARCHAR(90) NOT NULL,
+    password VARCHAR(90),
+    google_id VARCHAR(45) UNIQUE DEFAULT NULL,
     dateJoined DATE NOT NULL DEFAULT (NOW()),
     account_type ENUM('admin','user') NOT NULL DEFAULT 'user',
     activation_status ENUM('active','banned','pending','suspended') NOT NULL DEFAULT 'pending',
@@ -117,6 +118,7 @@ CREATE VIEW recent_videos AS
         v.thumbnail AS thumbnail,
         v.topic AS topic,
         v.username AS username,
+        v.timeCreated AS timeCreated,
         u.pic_url AS pic_url
     FROM
         videos v
@@ -182,6 +184,31 @@ BEGIN
 END//
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS registerUserUsingGoogle;
+DELIMITER //
+CREATE PROCEDURE registerUserUsingGoogle(user_id VARCHAR(45),username VARCHAR(24), email VARCHAR(45),google_id VARCHAR(45), pic_url VARCHAR(150),pic_filename VARCHAR(90))
+BEGIN
+	DECLARE sql_error TINYINT DEFAULT FALSE;
+	BEGIN
+		DECLARE EXIT HANDLER FOR SQLEXCEPTION SET sql_error = TRUE;
+		START TRANSACTION;
+        IF (SELECT count(*) AS user_count FROM (SELECT 1 FROM users LIMIT 1) AS users) > 0 THEN
+            INSERT INTO users(user_id,username,email,google_id,pic_url,pic_filename, activation_status) VALUES(user_id,username,email,google_id,pic_url,pic_filename,'active');
+        ELSE
+            INSERT INTO users(user_id,username,email,google_id,account_type,pic_url,pic_filename, activation_status) VALUES(user_id,username,email,google_id,'admin',pic_url,pic_filename,'active');
+        END IF;
+
+        INSERT INTO registration(user_id,activation_key) VALUES(user_id,activation_key);
+	END;
+    IF sql_error = TRUE THEN
+		ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Error Registering User";
+	ELSE
+		COMMIT;
+    END IF;
+END//
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS swap_video_rows;
 DELIMITER //
 CREATE PROCEDURE swap_video_rows(id_1 INT, id_2 INT)
@@ -221,7 +248,7 @@ DELIMITER ;
 
 DROP PROCEDURE IF EXISTS verifyEmail;
 DELIMITER //
-CREATE PROCEDURE verifyEmail(id varchar(45),activation_key varchar(45))
+CREATE PROCEDURE verifyEmail(id varchar(45),act_key varchar(45))
 BEGIN
 	DECLARE msg varchar(50);
     DECLARE auth_status varchar(10);
@@ -236,7 +263,7 @@ BEGIN
 			SET msg = "User status is not pending verification";
 			SET input_error = TRUE;
 		ELSE
-			IF activation_key = (SELECT activation_key FROM registration WHERE user_id = id) THEN
+			IF act_key = (SELECT activation_key FROM registration WHERE user_id = id) THEN
 				UPDATE users SET activation_status = 'active' WHERE user_id = id;
 				UPDATE registration SET complete = true WHERE user_id = id;
 			ELSE

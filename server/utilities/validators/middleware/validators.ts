@@ -1,6 +1,7 @@
 import { ApiResponse } from "../../ApiResponse";
 import { paramsExist } from "../paramsExist";
 import registerValidator from "../registerValidator";
+import registerUsernameValidator from "../registerUsernameValidator";
 import topicValidator from "../topicValidator";
 import { Cloudinary } from "../../storage";
 
@@ -16,6 +17,15 @@ const registrationValidation = (req: Request, res: Response, next: NextFunction)
   let { error } = registerValidator.validate(req.body);
   if (error) {
     res.redirect("/auth/register");
+  } else {
+    next();
+  }
+}
+const registerUsernameValidation = (req: Request, res: Response, next: NextFunction): void => {
+  let { error } = registerUsernameValidator.validate(req.body);
+  if (error) {
+    const Response = new ApiResponse('error', 400, error.message);
+    res.status(Response.getStatus).json(Response.getApiResponse());
   } else {
     next();
   }
@@ -39,4 +49,4 @@ const topicValidation = (req: Request, res: Response, next: NextFunction): void 
   res.status(Response.getStatus).json(Response.getApiResponse());
 }
 
-export { registrationValidation, topicValidation };
+export { registrationValidation, registerUsernameValidation, topicValidation };

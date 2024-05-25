@@ -1,6 +1,6 @@
 import express from 'express';
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods';
-import { setCache, setCors } from '../utilities/validators/middleware/setHeaders';
+import { setCache } from '../utilities/validators/middleware/setHeaders';
 const router = express.Router({ caseSensitive: false, strict: false });
 import {
     renderHome,
@@ -10,15 +10,15 @@ import {
 } from '../controllers/homeCont';
 
 router.route('/')
-    .get(setCors(), setCache, renderHome)
+    .get(setCache, renderHome)
     .all(verifyMethods(['GET']));
 
 router.route('/home')
-    .get(setCors(), setCache, renderHomeScreen)
+    .get(setCache, renderHomeScreen)
     .all(verifyMethods(['GET']));
 
 router.route('/search')
-    .get(setCors(), setCache, renderSearch)
+    .get(setCache, renderSearch)
     .post(getMoreResults)
     .all(verifyMethods(['GET', 'POST']));
 

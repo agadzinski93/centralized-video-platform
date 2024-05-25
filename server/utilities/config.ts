@@ -1,6 +1,7 @@
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const HOSTED_ONLINE: string = process.env.HOSTED_ONLINE || 'false';
 const PORT: string = process.env.PORT || '5000';
+const CLIENT_PORT: string = process.env.CLIENT_PORT || '3000';
 
 const USE_DOCKER: string = process.env.USE_DOCKER || 'false';
 
@@ -39,6 +40,13 @@ const DB_PRO_DATABASE: string = process.env.DB_PRO_DATABASE || 'cvp';
 
 const PASSPORT_SECRET: string | undefined = process.env.PASSPORT_SECRET;
 const COOKIE_SECRET: string | undefined = process.env.COOKIE_SECRET;
+const SESSION_SECRET: string | undefined = process.env.SESSION_SECRET;
+
+//Google OAuth
+const GOOGLE_CLIENT_ID: string = process.env.GOOGLE_CLIENT_ID || '';
+const GOOGLE_CLIENT_SECRET: string = process.env.GOOGLE_CLIENT_SECRET || '';
+const GOOGLE_CALLBACK_URL: string = process.env.GOOGLE_CALLBACK_URL || 'http://localhost:5000/auth/google/callback'
+const GOOGLE_SUCCESS_URL: string = (NODE_ENV === 'production') ? '/auth/login/google/success' : 'http://localhost:3000/auth/login/google/success';
 
 const CLOUDINARY_NAME: string | undefined = process.env.CLOUDINARY_NAME;
 const CLOUDINARY_API_KEY: string | undefined = process.env.CLOUDINARY_API_KEY;
@@ -62,6 +70,7 @@ export {
     NODE_ENV,
     HOSTED_ONLINE,
     PORT,
+    CLIENT_PORT,
     USE_DOCKER,
     DOMAIN_PUBLIC,
     DOMAIN_PRIVATE,
@@ -86,6 +95,11 @@ export {
     DB_PRO_DATABASE,
     PASSPORT_SECRET,
     COOKIE_SECRET,
+    SESSION_SECRET,
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    GOOGLE_CALLBACK_URL,
+    GOOGLE_SUCCESS_URL,
     CLOUDINARY_NAME,
     CLOUDINARY_API_KEY,
     CLOUDINARY_SECRET,

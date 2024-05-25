@@ -28,15 +28,16 @@ interface UserObject {
     user_id: string,
     username: string,
     email: string,
-    password: string,
+    password?: string,
+    google_id?: string,
     activation_status: string,
     pic_url: string,
-    pic_filename: string,
-    banner_url: string,
-    banner_filename: string,
-    settingRefreshTitle: number,
-    settingRefreshDescription: number,
-    settingRefreshThumbnail: number
+    pic_filename?: string,
+    banner_url?: string,
+    banner_filename?: string,
+    settingRefreshTitle?: number,
+    settingRefreshDescription?: number,
+    settingRefreshThumbnail?: number
 }
 
 /* Pagination */

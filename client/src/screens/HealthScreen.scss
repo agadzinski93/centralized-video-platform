@@ -1,0 +1,22 @@
+.health-page-container {
+    .test-options-container {
+        margin-top:1rem;
+        text-align:center;
+
+        button {
+            padding:1rem 2rem;
+            background-color:var(--primary-color);
+            color:#FFF;
+            border:none;
+            border-radius:1rem;
+            cursor: pointer;
+            transition:background-color 200ms;
+        }
+        button:hover, button:focus-visible {
+            background-color:var(--primary-color-hover);
+        }
+        button:focus-visible {
+            outline:solid 0.125rem #FFF;
+        }
+    }
+}

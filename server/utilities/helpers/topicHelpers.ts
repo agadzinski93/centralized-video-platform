@@ -88,7 +88,7 @@ const getTopic = async (topic: string) => {
     if (db instanceof AppError) return db;
     topic = escapeSQL(topic);
 
-    const sql = `SELECT name, description, difficulty, imageUrl 
+    const sql = `SELECT name, description, difficulty, imageUrl, timeCreated 
       FROM topics WHERE name = ?`;
     const values = [topic];
     let topics = await db.execute<RowDataPacket[]>(sql, values);
@@ -102,7 +102,7 @@ const getRecentTopic = async () => {
     const db = await getDatabase();
     if (db instanceof AppError) return db;
 
-    const sql = 'SELECT * FROM recent_topics LIMIT 14';
+    const sql = 'SELECT * FROM recent_topics LIMIT 8';
 
     let topics = await db.execute<RowDataPacket[]>(sql);
     return topics[0].map((o) => Object.assign({}, o));

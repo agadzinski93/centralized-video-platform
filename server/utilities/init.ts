@@ -3,12 +3,17 @@ import { Server } from 'http';
 import { AppError } from './AppError';
 import helmet from 'helmet';
 import { terminate } from './closeApp';
+import { getDatabaseCreds } from './db/mysql-connect';
+import session from 'express-session'
+const MySQLStore = require('express-mysql-session')(session);
 import passport from 'passport';
+import './ppStrategies';
 import cookieParser from 'cookie-parser'
 import rateLimit from 'express-rate-limit'
 import { apiRouter } from '../routes/apiRoute';
 import { verifyUser } from './validators/middleware/userAuth';
-import { PATH_CSS, PATH_ASSETS, API_PATH } from './config';
+import { setCors } from './validators/middleware/setHeaders';
+import { PATH_CSS, PATH_ASSETS, API_PATH, NODE_ENV, SESSION_SECRET, COOKIE_SECRET } from './config';
 
 import { Request, Response, NextFunction } from 'express';
 
@@ -39,6 +44,7 @@ const addRoutes = (app: Express): void => {
         //Error Handler
         app.use((err: AppError, req: Request, res: Response, next: NextFunction) => {
             if (res.headersSent) return;
+            if (err.message === 'Authentication Failed. Logging out.') req.logout((err) => { });
             res.locals.message = err.message;
             const status = err.status || 500;
             const pageStyles = null;
@@ -50,6 +56,8 @@ const addRoutes = (app: Express): void => {
     }
 }
 const addSecurityPolicy = (app: Express) => {
+    app.use(setCors());
+
     app.use(helmet({
         contentSecurityPolicy: {
             useDefaults: true,
@@ -70,13 +78,33 @@ const addRateLimit = (app: Express): void => {
     });
     app.use(limiter);
 }
-const initializePassport = async (app: Express): Promise<void> => {
+const initializePassport = (app: Express): void => {
+    if (!SESSION_SECRET) throw new Error('No secret provided for session. Check ENV variables.');
 
     //Cookie Parser
-    app.use(cookieParser(process.env.COOKIE_SECRET));
+    app.use(cookieParser(COOKIE_SECRET));
+
+    //Add MySQL Store
+    const options = getDatabaseCreds();
+    const sessionStore = new MySQLStore(options);
+
+    //Add Session
+    app.use(session({
+        secret: SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        store: sessionStore,
+        cookie: {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60,
+            sameSite: 'strict',
+            secure: (NODE_ENV === 'production') ? true : false,
+        }
+    }));
 
     //Passport
     app.use(passport.initialize());
+    app.use(passport.session());
 }
 
 export {

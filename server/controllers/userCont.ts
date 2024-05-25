@@ -37,7 +37,6 @@ import {
 
 import { getUserTopics, getTopic } from '../utilities/helpers/topicHelpers';
 import { getTopicVideos } from '../utilities/helpers/videoHelpers';
-import { UserObject } from '../types/types';
 
 import { Request, Response, NextFunction } from 'express';
 
@@ -58,13 +57,12 @@ const getUserContent = async (req: Request, res: Response) => {
   }
   else {
     userLogger.log('error', `User ID: ${username} -> Invalid Arguments.`);
-    Response.setApiResponse('error', 422, 'Invalid Arguments');
+    Response.setApiResponse('error', 422, 'Invalid arguments');
   }
   res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const renderUserPage = async (req: Request, res: Response, next: NextFunction) => {
   const username = escapeHTML(req.params.username);
-  //req.session.prevUrl = `/user/${username}`;
   const author = await getUser(username);
   if (author instanceof AppError) return next(author);
   let user = null;
@@ -83,6 +81,33 @@ const renderUserPage = async (req: Request, res: Response, next: NextFunction) =
     author,
     user
   });
+}
+const renderUserScreen = async (req: Request, res: Response): Promise<void> => {
+  const Response = new ApiResponse('error', 500, 'Error loading user page');
+  const { username } = req.params;
+  try {
+    if (paramsExist([username])) {
+      const sanitizedUsername = escapeHTML(username);
+      const author = await getUser(sanitizedUsername);
+      if (author instanceof AppError) throw author;
+      let user = null;
+      if (req.user) {
+        user = req.user;
+      }
+
+      Response.setApiResponse('success', 200, 'Successfully retrieved user data', '/', { author, user });
+    } else {
+      Response.setStatus = 422;
+      Response.setMessage = 'Invalid arguments'
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      userLogger.log('error', err.message);
+      if (err instanceof AppError) Response.setStatus = err.status;
+      Response.applyMessage(err.message, 'Error loading user page.');
+    }
+  }
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const renderUserSettings = async (req: Request, res: Response, next: NextFunction) => {
   const username = escapeHTML(req.params.username);
@@ -444,7 +469,7 @@ const deleteBanner = async (req: Request, res: Response) => {
           userLogger.log('error', `User ID: ${user.user_id} -> ${data.message}`);
           Response.setStatus = data.status;
           try {
-            await Cloudinary.uploader.destroy(filename);
+            if (filename) await Cloudinary.uploader.destroy(filename);
             Response.applyMessage(data.message, 'Error deleting banner.');
           } catch (err) {
             userLogger.log('error', `User ID: ${user.user_id} -> ${(err as Error).message}`);
@@ -476,6 +501,7 @@ const deleteAccount = async (req: Request, res: Response, next: NextFunction) =>
 export {
   getUserContent,
   renderUserPage,
+  renderUserScreen,
   renderUserSettings,
   updateRefreshMetadata,
   updateDisplayName,

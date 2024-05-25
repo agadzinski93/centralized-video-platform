@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router({ caseSensitive: false, strict: false });
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods';
-import { setCache, setCors } from '../utilities/validators/middleware/setHeaders';
+import { setCache } from '../utilities/validators/middleware/setHeaders';
 import multer from 'multer';
 import { storage } from '../utilities/storage';
 import { filter } from '../utilities/validators/fileValidator';
@@ -12,6 +12,7 @@ import { logoutUser } from '../controllers/userAuthCont';
 import {
   getUserContent,
   renderUserPage,
+  renderUserScreen,
   renderUserSettings,
   updateRefreshMetadata,
   updateDisplayName,
@@ -27,7 +28,11 @@ import {
 } from '../controllers/userCont';
 
 router.route('/:username')
-  .get(setCors(), setCache, renderUserPage)
+  .get(setCache, renderUserPage)
+  .all(verifyMethods(['GET']));
+
+router.route('/:username/renderUserScreen')
+  .get(setCache, renderUserScreen)
   .all(verifyMethods(['GET']));
 
 router.route('/:username/getUserContent')
@@ -35,7 +40,7 @@ router.route('/:username/getUserContent')
   .all(verifyMethods(['GET']));
 
 router.route('/:username/settings')
-  .get(setCors(), setCache, isLoggedIn, isAuthor, renderUserSettings)
+  .get(setCache, isLoggedIn, isAuthor, renderUserSettings)
   .all(verifyMethods(['GET']));
 
 router.route('/:username/settings/updateRefreshMetadata')
@@ -64,7 +69,7 @@ router.route('/:username/settings/updateBanner')
   .all(verifyMethods(['PATCH']));
 
 router.route('/:username/dashboard')
-  .get(setCors(), setCache, isLoggedIn, isAuthor, renderUserDashboard)
+  .get(setCache, isLoggedIn, isAuthor, renderUserDashboard)
   .all(verifyMethods(['GET']));
 
 router.route('/:username/dashboard/:topic')

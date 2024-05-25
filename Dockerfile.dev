@@ -11,13 +11,7 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/root/.npm \
     npm ci
 
-RUN <<EOF
-adduser -s /bin/bash dev
-addgroup docker
-addgroup dev docker
-EOF
-
-USER dev
+USER node
 
 COPY . .
 

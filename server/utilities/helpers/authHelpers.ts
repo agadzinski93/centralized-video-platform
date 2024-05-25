@@ -59,6 +59,62 @@ const getUserById = async (id: string, columns: string = '*'): Promise<AppError 
   }
 }
 /**
+ * Retrieve all columns for a user
+ * @param {string} google_id id of user associated with their Google account
+ * @param {string} email email used when registering via Google OAuth
+ * @returns {Promise<object>} The user object from the database or an error object
+ */
+const getUserByGoogleId = async (google_id: string, email: string): Promise<AppError | UserObject> => {
+  try {
+    const db = await getDatabase();
+    if (db instanceof AppError) return db;
+
+    const sql = `SELECT user_id, username, email, google_id, activation_status, pic_url
+      FROM users WHERE google_id = ? AND email = ?`;
+    const values = [google_id, email];
+
+    const user = await db.execute<RowDataPacket[]>(sql, values);
+
+    if (user[0].length === 0) {
+      return new AppError(400, "User Doesn\'t Exist");
+    }
+
+    return Object.assign(({} as UserObject), Object.values(user[0])[0]);
+  } catch (err) {
+    return new AppError(500, (err as Error).message);
+  }
+}
+const usernameExists = async (username: string): Promise<AppError | boolean> => {
+  try {
+    const db = await getDatabase();
+    if (db instanceof AppError) return db;
+
+    const sql = `SELECT 1 FROM users WHERE username = ?`;
+    const values = [username];
+
+    const output = await db.execute<RowDataPacket[]>(sql, values);
+
+    return (output[0].length !== 0);
+  } catch (err) {
+    return new AppError(500, (err as Error).message)
+  }
+}
+const emailExists = async (email: string): Promise<AppError | boolean> => {
+  try {
+    const db = await getDatabase();
+    if (db instanceof AppError) return db;
+
+    const sql = `SELECT 1 FROM users WHERE email = ?`;
+    const values = [email];
+
+    const output = await db.execute<RowDataPacket[]>(sql, values);
+
+    return (output[0].length !== 0);
+  } catch (err) {
+    return new AppError(500, (err as Error).message)
+  }
+}
+/**
  * Check is the user logged in matches the username in the requested URL
  * @param {string} loggedUsername Username of the user currently logged in
  * @param {string} urlUsername Username of the account in the URL
@@ -106,4 +162,4 @@ const updateAuthToken = (res: Response, user: UserObject, { property, value }: {
   });
 }
 
-export { getUser, getUserById, usernameMatch, updateAuthToken };
+export { getUser, getUserById, getUserByGoogleId, usernameMatch, usernameExists, emailExists, updateAuthToken };

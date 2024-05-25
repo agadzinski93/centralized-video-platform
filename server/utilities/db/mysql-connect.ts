@@ -12,6 +12,38 @@ import {
 
 let database: MYSQL_DB | null = null;
 
+const getDatabaseCreds = () => {
+  if (NODE_ENV == 'development' || NODE_ENV == 'Development') {
+    if (USE_DOCKER === 'true') {
+      return {
+        host: DB_DOCKER_HOST,
+        port: parseInt(DB_DOCKER_PORT),
+        user: DB_DOCKER_USER,
+        password: DB_DOCKER_PASS,
+        database: DB_DOCKER_DATABASE
+      }
+    }
+    else {
+      return {
+        host: DB_DEV_HOST,
+        port: parseInt(DB_DEV_PORT),
+        user: DB_DEV_USER,
+        password: DB_DEV_PASS,
+        database: DB_DEV_DATABASE
+      }
+    }
+  }
+  else {
+    return {
+      host: DB_PRO_HOST,
+      port: parseInt(DB_PRO_PORT),
+      user: DB_PRO_USER,
+      password: DB_PRO_PASS,
+      database: DB_PRO_DATABASE
+    }
+  }
+}
+
 class MYSQL_DB {
   #db: mysql.Pool;
   #host: string | undefined;
@@ -22,29 +54,12 @@ class MYSQL_DB {
 
   constructor() {
     try {
-      if (NODE_ENV == 'development' || NODE_ENV == 'Development') {
-        if (USE_DOCKER === 'true') {
-          this.#host = DB_DOCKER_HOST;
-          this.#port = parseInt(DB_DOCKER_PORT);
-          this.#user = DB_DOCKER_USER;
-          this.#password = DB_DOCKER_PASS;
-          this.#database = DB_DOCKER_DATABASE;
-        }
-        else {
-          this.#host = DB_DEV_HOST;
-          this.#port = parseInt(DB_DEV_PORT);
-          this.#user = DB_DEV_USER;
-          this.#password = DB_DEV_PASS;
-          this.#database = DB_DEV_DATABASE;
-        }
-      }
-      else {
-        this.#host = DB_PRO_HOST;
-        this.#port = parseInt(DB_PRO_PORT);
-        this.#user = DB_PRO_USER;
-        this.#password = DB_PRO_PASS;
-        this.#database = DB_PRO_DATABASE;
-      }
+      const { host, port, user, password, database: databaseTarget } = getDatabaseCreds();
+      this.#host = host;
+      this.#port = port;
+      this.#user = user;
+      this.#password = password;
+      this.#database = databaseTarget;
 
       this.#db = mysql.createPool({
         host: this.#host,
@@ -65,6 +80,16 @@ class MYSQL_DB {
   }
 
   getConnection() { return this.#db; }
+
+  getConnectionInfo() {
+    return {
+      host: this.#host,
+      port: this.#port,
+      user: this.#user,
+      password: this.#password,
+      database: this.#database
+    }
+  }
 }
 
 /**
@@ -96,4 +121,12 @@ const getDatabase = async () => {
   }
 }
 
-export { getDatabase };
+const getDatabaseInfo = () => {
+  let output = null;
+  if (database) {
+    output = database.getConnectionInfo();
+  }
+  return output;
+}
+
+export { getDatabase, getDatabaseInfo, getDatabaseCreds };

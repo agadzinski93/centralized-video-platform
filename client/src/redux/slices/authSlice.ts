@@ -1,32 +1,41 @@
 import { createSlice } from "@reduxjs/toolkit";
 const token: string | null = localStorage.getItem('userToken') || null;
+const profile = (typeof token === 'string') ? JSON.parse(token) : token;
+
+const verifyProfile = (unverifiedProfile: object | null) => {
+    if (unverifiedProfile) {
+        return ['user_id', 'email', 'username', 'pic_url'].every((prop) => Object.prototype.hasOwnProperty.call(unverifiedProfile, prop));
+    } else {
+        return false;
+    }
+}
 
 type authState = {
-    token: string | null,
-    isLoading: boolean
+    isAuthenticated: boolean,
+    profile: object | null
 }
 
 const initialState: authState = {
-    token: token,
-    isLoading: true
+    isAuthenticated: (profile) ? verifyProfile(profile) : false,
+    profile: (verifyProfile(profile)) ? profile : null
 }
 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setToken: (state, action) => {
-            state.token = action.payload;
-            state.isLoading = false;
+        login: (state, action) => {
+            state.isAuthenticated = true;
+            state.profile = action.payload;
             localStorage.setItem('userToken', JSON.stringify(action.payload));
         },
         logout: (state) => {
-            state.token = null;
-            state.isLoading = false;
+            state.isAuthenticated = false;
+            state.profile = null;
             localStorage.removeItem('userToken');
         }
     }
 });
 
-export const { setToken, logout } = authSlice.actions;
+export const { login, logout } = authSlice.actions;
 export default authSlice.reducer;

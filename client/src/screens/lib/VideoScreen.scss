@@ -1,0 +1,140 @@
+@use "../../App.scss" as m;
+
+.video-page-container {
+    width:100%;
+    .video-container {
+        display:flex;
+        gap:1rem;
+        margin:1rem 4rem;
+
+        .video-info {
+            width:calc(100vw - 45rem);
+            min-height:calc(100vh - 12rem);
+
+            .video {
+                display:flex;
+                width:auto;
+                aspect-ratio: 16 / 9;
+
+                iframe {
+                    height:100%;
+                    display:block;
+                }
+            }
+
+            .video-title {
+                margin-top:1rem;
+                color:#FFF;
+                font-size:1.5rem;
+                font-weight:bold;
+                font-family: "Nunito", sans-serif;
+            }
+
+            .uploaded-when {
+                margin-top:0.5rem;
+            }
+
+            .uploader-info {
+                display:flex;
+                gap:0.5rem;
+                margin-top:1rem;
+
+                .avatar {
+                    width:2rem;
+                    aspect-ratio: 1 / 1;
+                    border-radius:50%;
+                    @include m.bg-properties(center,cover);
+                }
+            }
+
+            .video-description {
+                margin-top:1rem;
+                white-space: pre-line;
+
+                a {
+                    color:#6F9AFA;
+                    text-decoration: none;
+                }
+                a:focus-visible {
+                    outline:solid 0.125rem #FFF;
+                }
+            }
+
+            .video-description.hide-overflow {
+                max-height:4rem;
+                overflow:hidden;
+            }
+
+            .video-description-see-more {
+                margin:0 auto;
+                width:fit-content;
+                color:#6F9AFA;
+                cursor:pointer;
+            }
+            .video-description-see-more:focus-visible {
+                outline:solid 0.125rem #FFF;
+            }
+        }
+        .video-playlist-container {
+            position:relative;
+            overflow:auto;
+            width:45rem;
+
+            .topic-playlist {
+                position:absolute;
+                min-height:15rem;
+            }
+        }
+    }
+}
+
+@media (max-width: 1400px) {
+    .video-page-container {
+        .video-container {
+            flex-flow:column;
+
+            .video-info {
+                width:100%;
+                min-height:initial;
+            }
+            .video-playlist-container {
+                position:static;
+                width:100%;
+                flex-grow:1;
+                max-height:25rem;
+
+                .topic-playlist {
+                    position:static;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 760px) {
+    .video-page-container {
+        .video-container {
+            margin:1rem 0;
+            
+            .video-info {
+                .video-title, .uploaded-when {
+                    margin:0.5rem;
+                   }
+                .video-title {
+                    font-size:1rem;
+                }
+                .uploaded-when {
+                    font-size:0.875rem;
+                }
+                .uploader-info {
+                    margin-left:0.5rem;
+                    font-size:0.875rem;
+
+                    .avatar {
+                        width:1.75rem;
+                    }
+                }
+            }
+        }
+    }
+}

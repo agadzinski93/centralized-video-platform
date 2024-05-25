@@ -1,0 +1,180 @@
+.home-page-loading-container {
+    .slider-loading-container {
+        width:auto;
+        height:22.5vw;
+
+        .slider-loading-info {
+            display:flex;
+            flex-direction: column;
+            justify-content: center;
+            gap:1rem;
+            height:100%;
+
+            .slider-loading-title {
+                height:3rem;
+                width:33%;
+                background-color:var(--primary-bg-color-lt2);
+                border-radius:1rem;
+            }
+            .slider-loading-difficulty {
+                height:1rem;
+                width:4rem;
+                border:solid 1px var(--muted-text);
+            }
+            .slider-loading-description {
+                height:2rem;
+                width:45%;
+                background-color:var(--primary-bg-color-lt2);
+                border-radius:1rem;
+            }
+            .slider-loading-button {
+                height:2.5rem;
+                width:10rem;
+                background-color:var(--primary-bg-color-lt2);
+                border-radius:1rem;
+            }
+        }
+    }
+    > h2 {
+        margin:2.875rem 0 1rem 0;
+        color:#FFF;
+        font-size:1.5rem;
+        font-weight:bold;
+    }
+    .recent-videos-loading {
+        display:grid;
+        gap:2rem 1rem;
+        grid-template-columns: repeat(5,1fr);
+
+        .loading-video {
+            .loading-video-thumbnail {
+                width:100%;
+                aspect-ratio:16 / 9;
+                background-color:var(--primary-bg-color-lt2);
+                border-radius:0.5rem;
+            }
+            .loading-video-title {
+                height:2rem;
+                margin:0.5rem 0rem;
+                background-color:var(--primary-bg-color-lt2);
+                border-radius:0.5rem;
+            }
+            .loading-video-user-info {
+                display:flex;
+                gap:1rem;
+                margin-top:0.5rem;
+
+                .loading-video-user-avatar {
+                    width:2rem;
+                    height:2rem;
+                    background-color:var(--primary-bg-color-lt2);
+                    border-radius:50%;
+                }
+                .loading-video-username-uploaded-when {
+                    display:flex;
+                    flex-grow:1;
+                    flex-flow: column;
+                    gap:0.125rem;
+
+                    .loading-video-username {
+                        height:0.875rem;
+                        width:33%;
+                        background-color:var(--primary-bg-color-lt2);
+                        border-radius:0.5rem;
+                    }
+                    .loading-video-uploaded-when {
+                        height:0.875rem;
+                        width:50%;
+                        background-color:var(--primary-bg-color-lt2);
+                        border-radius:0.5rem;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width:1400px) {
+    .home-page-loading-container {
+        .slider-loading-container {
+            .slider-loading-info {
+                .slider-loading-title {
+                        height:2.5rem;
+                }
+            }
+        }
+        .recent-videos-loading {
+            grid-template-columns: repeat(4,1fr);
+    
+            .loading-video:nth-child(n+9) {
+                display:none;
+            }
+        }
+    }
+}
+
+@media (max-width:1000px) {
+    .home-page-loading-container {
+        .slider-loading-container {
+            height:calc(94vw * 9 / 16);
+
+            .slider-loading-info {
+                margin-left:1rem;
+            }
+        }
+        .recent-videos-loading {
+            grid-template-columns: repeat(3,1fr);
+
+            .loading-video:nth-child(n+7) {
+                display:none;
+            }
+        }
+    }
+}
+
+@media (max-width:700px) {
+    .home-page-loading-container {
+        .slider-loading-container {
+            .slider-loading-info {
+                .slider-loading-title {
+                    height:2rem;
+                }
+                .slider-loading-difficulty {
+                    height:0.875rem;
+                }
+                .slider-loading-description {
+                    height:1.75rem;
+                }
+            }
+        }
+        .recent-videos-loading {
+            grid-template-columns: repeat(2,1fr);
+        }
+    }
+}
+
+@media (max-width:500px) {
+    .home-page-loading-container {
+        .slider-loading-container {
+            .slider-loading-info {
+                .slider-loading-title {
+                    height:1.5rem;
+                }
+                .slider-loading-difficulty {
+                    width:3.5rem;
+                    height:0.625rem;
+                }
+                .slider-loading-description {
+                    height:1.625rem;
+                }
+                .slider-loading-button {
+                    height:2rem;
+                    width:8rem;
+                }
+            }
+        }
+        > h2 {
+            font-size:1.25rem;
+        }
+    }
+}

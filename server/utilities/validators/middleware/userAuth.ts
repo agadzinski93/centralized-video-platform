@@ -4,14 +4,14 @@ import { escapeHTML } from "../../helpers/sanitizers";
 import { usernameMatch } from "../../helpers/authHelpers";
 import passport from "passport";
 import jwt from "jsonwebtoken";
-import { COOKIE_SECRET } from "../../config";
+import { NODE_ENV, COOKIE_SECRET, GOOGLE_SUCCESS_URL } from "../../config";
 
 import { Request, Response, NextFunction } from "express";
 import { UserObject } from "../../../types/types";
 
 const tokenCookieExtractor = (req: Request) => {
   let token = null;
-  if (req && COOKIE_SECRET && Object.keys(req.signedCookies).length > 0) {
+  if (req && COOKIE_SECRET && req.signedCookies && Object.keys(req.signedCookies).length > 0) {
     token = req.signedCookies['token'];
     jwt.verify(token, COOKIE_SECRET, (err: any, decoded: any) => {
       if (err) {
@@ -40,14 +40,19 @@ const verifyUser = (req: Request, res: Response, next: NextFunction) => {
 }
 
 const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
-  passport.authenticate('cookie', { session: false }, (err: any, user: any, info: any) => {
-    if (user) {
-      return next();
-    }
-    else {
-      return next(new AppError(401, "Unauthorized"));
-    }
-  })(req, res, next);
+  if (req.isAuthenticated()) {
+    next();
+  }
+  else {
+    passport.authenticate('cookie', { session: false }, (err: any, user: any, info: any) => {
+      if (user) {
+        return next();
+      }
+      else {
+        return next(new AppError(401, "Unauthorized"));
+      }
+    })(req, res, next);
+  }
 }
 
 const isAuthor = async (req: Request, res: Response, next: NextFunction) => {
@@ -67,4 +72,17 @@ const isAuthor = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-export { isLoggedIn, verifyUser, isAuthor };
+const processValidation = (req: Request, res: Response, next: NextFunction) => {
+  if (!req?.user?.username) {
+    res.cookie('tmp_user', JSON.stringify(req.user), {
+      httpOnly: false,
+      secure: (NODE_ENV === 'production') ? true : false,
+      maxAge: 1000 * 60 * 60,
+      sameSite: 'lax',
+      signed: true
+    });
+  }
+  res.redirect(GOOGLE_SUCCESS_URL);
+}
+
+export { isLoggedIn, verifyUser, isAuthor, processValidation };

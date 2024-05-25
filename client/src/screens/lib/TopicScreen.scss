@@ -1,0 +1,193 @@
+@use "../../App.scss" as m;
+
+.topic-page-container {
+    display:flex;
+
+    .topic-background {
+        position:fixed;
+        width:100%;
+        height:100%;
+        background-color:pink;
+        @include m.bg-properties(center, cover);
+        z-index:-1;
+        filter: grayscale(50%);
+        backdrop-filter: blur(5x);
+        transition:opacity 500ms;
+        -webkit-box-shadow: inset 0px -10px 13px -6px var(--primary-bg-color);
+        -moz-box-shadow: inset 0px -10px 13px -6px var(--primary-bg-color);
+        box-shadow: inset 0px -10px 13px -6px var(--primary-bg-color);
+    }
+
+    .topic-container {
+        display:flex;
+        align-items:stretch;
+        gap:1rem;
+        margin:1rem 4rem;
+        width:100%;
+
+        .topic-info {
+            flex-grow:1;
+            min-height:calc(100vh - 10rem - 2rem);
+            font-family: "Nunito", sans-serif;
+            
+            .topic-image-container {
+                height:10rem;
+
+                img {
+                    height:100%;
+                    object-fit: contain;
+                }
+            }
+
+            > div {
+                > h1 {
+                    margin-top:2rem;
+                    color:#FFF;
+                    font-size:3rem;
+                    font-weight:bold;
+                }
+    
+                .difficulty {
+                    display:inline-block;
+                    margin-top:1rem;
+    
+                    span {
+                        padding:0 0.25rem;
+                        border:solid 1px #aaa;
+                        border-radius:0.25rem;
+                    }
+                }
+    
+                .description {
+                    margin-top:2rem;
+                    white-space: pre-line;
+                }
+            }
+        }
+        .topic-playlist-container {
+            position:relative;
+            overflow:auto;
+            width:45rem;
+            opacity:0.85;
+            .topic-playlist {
+                position:absolute;
+                display:grid;
+                grid-template-columns: repeat(1,1fr);
+                background-color:var(--primary-bg-color);
+    
+                .video {
+                    flex-flow:row !important;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width:1400px) {
+    .topic-page-container {
+        align-items:flex-start;
+        
+        .topic-container {
+            flex-flow:column;
+            max-height:calc(100vh - 12rem);
+
+            .topic-info {
+                display:flex;
+                flex-grow: initial;
+                min-height:initial;
+
+                > div:nth-child(2) {
+                    margin-top:0.25rem;
+                    margin-left:0.5rem;
+
+                    > h1 {
+                        margin-top:0;
+                        font-size:2rem;
+                    }
+        
+                    .difficulty {
+                        display:inline-block;
+                        margin-top:1rem;
+                    }
+        
+                    .description {
+                        margin-top:1rem;
+                    }
+                }
+            }
+            .topic-playlist-container {
+                width:100%;
+                min-height:15rem;
+                flex-grow:1;
+                overflow:auto;
+                .topic-playlist {
+                    position:initial;
+                    flex:1;
+                    
+                }
+            }
+        }
+    }
+}
+
+@media (max-width:1400px) and (max-height:37rem) {
+    div.topic-page-container {
+        .topic-container {
+            max-height:25rem;
+        }
+    }
+}
+
+@media (max-width:760px) {
+    .topic-page-container {
+        .topic-container {
+            margin:0;
+            margin-top:0.5rem;
+            max-height:calc(100vh - 15rem);
+            .topic-info {
+                .topic-image-container {
+                    display: none;
+                }
+                > div:nth-child(2) {
+                    > h1 {
+                        margin-top:0;
+                        font-size:1.5rem;
+                    }
+        
+                    .difficulty {
+                        margin-top:0.75rem;
+                        font-size:0.75rem;
+                    }
+        
+                    .description {
+                        margin-top:0.75rem;
+                        font-size:0.75rem;
+                    }
+                }
+            }
+            .topic-playlist-container {
+                margin-top:1rem;
+            }
+        }
+    }
+}
+
+@media (max-width:700px) {
+    .topic-page-container {
+        .topic-container {
+            .topic-info {
+                .topic-image-container {
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width:500px) {
+    .topic-page-container {
+        .topic-container {
+            max-height:calc(100vh - 13rem);
+        }
+    }
+}

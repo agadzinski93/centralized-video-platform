@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { logout } from "../redux/slices/authSlice";
-import { useLogoutUserMutation } from "../redux/api/authApi";
+import { logout } from "../../redux/slices/authSlice";
+import { useLogoutUserMutation } from "../../redux/api/authApi";
 import { useNavigate } from "react-router-dom";
-import { castApiResponse } from "../types/types";
+import { castApiResponse } from "../../types/types";
 
 const LogoutScreen = () => {
   const dispatch = useDispatch();
@@ -26,6 +26,7 @@ const LogoutScreen = () => {
       })
       .catch((err) => {
         if (err.data?.response === "error") {
+          console.log("ERROR");
           dispatch(logout());
         }
         navigate("/");

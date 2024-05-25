@@ -1,0 +1,51 @@
+@use "../../App.scss" as m;
+
+.message-success, .message-error {
+    display:flex;
+    gap:0.5rem;
+    color:#FFF;
+    animation: 250ms 7750ms forwards message-fade-out;
+
+    .message-symbol {
+        display:flex;
+        justify-content: center;
+        align-items:center;
+        
+        text-align:center;
+        padding:0 0.5rem;
+
+        svg {
+            width:1.5rem;
+            height:1.5rem;
+        }
+    }
+    p.message-text {
+        flex-grow:1;
+        padding:0.75rem;
+    }
+}
+
+.message-success {
+    background-color:green;
+
+    .message-symbol {
+        background-color:#002B08;
+    }
+}
+
+.message-error {
+    background-color:#FE2828;
+
+    .message-symbol {
+        background-color:#2B0000;
+    }
+}
+
+@keyframes message-fade-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}

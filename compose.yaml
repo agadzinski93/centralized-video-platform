@@ -131,6 +131,7 @@ services:
       - CHOKIDAR_USEPOLLING=true
     volumes:
       - "./client/src:/usr/src/app/src"
+      - "./client/public:/usr/src/app/public"
       - "./client/tests:/usr/src/app/tests"
       - "./client/index.html:/usr/src/app/index.html"
       - "./client/package-lock.json:/usr/src/app/package-lock.json"

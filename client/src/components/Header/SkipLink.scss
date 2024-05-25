@@ -1,0 +1,44 @@
+.skip-link {
+    position:fixed;
+    right:101vw;
+    padding:1.5rem 1rem;
+    outline:solid 0.125rem #FFF;
+    background-color:var(--primary-color);
+    color:#FFF;
+    text-align:center;
+    font-size:1.25rem;
+    font-weight:bold;
+    box-sizing: border-box;
+    border-radius:0.25rem;
+}
+
+.skip-link:focus {
+    right:initial;
+    top:15vh;
+    left:0;
+    right:0;
+    width:max-content;
+    margin:0 auto;
+    animation-name: border-glow;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    z-index:1;
+}
+
+@keyframes border-glow {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 #FFFF00;
+        -moz-box-shadow: 0 0 0 0 #FFFF00;
+        box-shadow: 0 0 0 0 #FFFF00;
+    }
+    50% {
+        -webkit-box-shadow: 0 0 0.5rem 0.125rem #FFFF00;
+        -moz-box-shadow: 0 0 0.5rem 0.125rem #FFFF00;
+        box-shadow: 0 0 0.5rem 0.125rem #FFFF00;
+    }
+    100% {
+        -webkit-box-shadow: 0 0 0 0 #FFFF00;
+        -moz-box-shadow: 0 0 0 0 #FFFF00;
+        box-shadow: 0 0 0 0 #FFFF00;
+    }
+}
