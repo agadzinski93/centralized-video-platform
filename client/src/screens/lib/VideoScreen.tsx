@@ -43,7 +43,9 @@ const VideoScreen = () => {
               setVideos(res.data.data.videos);
 
               document.title = `${res.data.data.video.title} | ${res.data.data.video.username} | Centralized Video Platform`;
+              setIsLoading(false);
             } else {
+              setIsLoading(false);
               dispatch(
                 addMessage({
                   type: res.data.response,
@@ -52,6 +54,7 @@ const VideoScreen = () => {
               );
             }
           } else {
+            setIsLoading(false);
             if (res.error) console.error(res.error.error);
             dispatch(
               addMessage({ type: "error", message: "Something went wrong." })
@@ -59,12 +62,14 @@ const VideoScreen = () => {
           }
         })
         .catch((err) => {
+          setIsLoading(false);
           if (err instanceof Error) {
             dispatch(addMessage({ type: "error", message: err.message }));
           }
           navigate("/");
         });
     } else {
+      setIsLoading(false);
       dispatch(
         addMessage({
           type: "error",
@@ -73,7 +78,6 @@ const VideoScreen = () => {
       );
       navigate("/");
     }
-    setIsLoading(false);
   }, [video]);
 
   const videoScreen = (

@@ -71,7 +71,7 @@ const addSecurityPolicy = (app: Express) => {
 }
 const addRateLimit = (app: Express): void => {
     const limiter = rateLimit({
-        windowMs: 5 * 60 * 1000,
+        windowMs: 5 * 1000,
         limit: 100,
         standardHeaders: 'draft-7',
         legacyHeaders: false
