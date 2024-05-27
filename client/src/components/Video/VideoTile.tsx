@@ -9,9 +9,15 @@ interface videoTileProps {
   video: video;
   id?: string;
   className?: string;
+  includeAuthor?: boolean;
 }
 
-const VideoTile = ({ video, id = "", className }: videoTileProps) => {
+const VideoTile = ({
+  video,
+  id = "",
+  className,
+  includeAuthor = true,
+}: videoTileProps) => {
   return (
     <div className={className}>
       <Link
@@ -27,22 +33,24 @@ const VideoTile = ({ video, id = "", className }: videoTileProps) => {
         ></div>
         <p>{video.title}</p>
       </Link>
-      <Link className="author-link" to={`/user/${video.username}`}>
-        <div className="video-info">
-          <div className="upload-info">
-            <div
-              className="avatar"
-              style={{ backgroundImage: `url('${video.pic_url}')` }}
-            ></div>
-            <div>
-              <div className="username">{video.username}</div>
-              <div className={"uploaded-when"}>
-                {getUploadedWhen.call(null, video.timeCreated)}
+      {includeAuthor && (
+        <Link className="author-link" to={`/user/${video.username}`}>
+          <div className="video-info">
+            <div className="upload-info">
+              <div
+                className="avatar"
+                style={{ backgroundImage: `url('${video.pic_url}')` }}
+              ></div>
+              <div>
+                <div className="username">{video.username}</div>
+                <div className={"uploaded-when"}>
+                  {getUploadedWhen.call(null, video.timeCreated)}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </Link>
+        </Link>
+      )}
     </div>
   );
 };

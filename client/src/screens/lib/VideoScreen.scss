@@ -39,11 +39,22 @@
                 gap:0.5rem;
                 margin-top:1rem;
 
-                .avatar {
-                    width:2rem;
-                    aspect-ratio: 1 / 1;
-                    border-radius:50%;
-                    @include m.bg-properties(center,cover);
+                > a {
+                    display:block;
+
+                    .avatar {
+                        width:2rem;
+                        aspect-ratio: 1 / 1;
+                        border-radius:50%;
+                        @include m.bg-properties(center,cover);
+                    }
+                }
+
+                .username {
+                    a {
+                        color:#aaa;
+                        text-decoration: none;
+                    }
                 }
             }
 

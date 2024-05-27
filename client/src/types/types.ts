@@ -33,12 +33,16 @@ interface ApiResponseVideoScreen extends ApiResponse {
 
 interface ApiResponseUserScreen extends ApiResponse {
     data: {
-        author: {
-            user_id: string,
-            username: string,
-            pic_url: string
-        },
+        author: author,
         user: user
+    }
+}
+
+interface ApiResponseGetUserContent extends ApiResponse {
+    data: {
+        data: topic[] | video[] | aboutMe,
+        moreResults: boolean,
+        response: string
     }
 }
 
@@ -91,6 +95,22 @@ interface user {
     subscriptions: number
 }
 
+interface author {
+    user_id: string,
+    username: string,
+    display_name: string,
+    pic_url: string,
+    banner_url: string,
+    subscribers: number,
+    account_type: string
+}
+
+interface aboutMe {
+    about_me: string,
+    dateJoined: string,
+    subscriptions: number
+}
+
 const castApiResponse = <T = ApiResponse>(input: { error: object } | { data: T }) => {
     return (input as RtkQueryResponse<T>);
 }
@@ -102,9 +122,13 @@ export type {
     ApiResponseTopicScreen,
     ApiResponseVideoScreen,
     ApiResponseUserScreen,
+    ApiResponseGetUserContent,
     RtkQueryResponse,
     authState,
     topic,
-    video
+    video,
+    user,
+    author,
+    aboutMe
 };
 export { castApiResponse };

@@ -1,6 +1,6 @@
 import { useState, useEffect, BaseSyntheticEvent } from "react";
 import { useDispatch } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { addMessage } from "../../redux/slices/flashMessageSlice";
 import { useRenderVideoScreenMutation } from "../../redux/api/libApi";
 import { castApiResponse } from "../../types/types";
@@ -99,12 +99,19 @@ const VideoScreen = () => {
               {new Date(Date.parse(currentVideo.timeCreated)).toDateString()}
             </div>
             <div className="uploader-info">
-              <div
-                className="avatar"
-                style={{ backgroundImage: `url('${currentVideo.pic_url}')` }}
-              ></div>
+              <Link to={`/user/${currentVideo.username}`}>
+                <div
+                  className="avatar"
+                  style={{ backgroundImage: `url('${currentVideo.pic_url}')` }}
+                ></div>
+              </Link>
+
               <div>
-                <div className="username">{currentVideo.username}</div>
+                <div className="username">
+                  <Link to={`/user/${currentVideo.username}`}>
+                    {currentVideo.username}
+                  </Link>
+                </div>
                 <div className="subscriber-count">
                   {`${currentVideo.subscribers} ` +
                     `${

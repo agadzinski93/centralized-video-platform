@@ -88,7 +88,7 @@ const renderUserScreen = async (req: Request, res: Response): Promise<void> => {
   try {
     if (paramsExist([username])) {
       const sanitizedUsername = escapeHTML(username);
-      const author = await getUser(sanitizedUsername);
+      const author = await getUser(sanitizedUsername, "user_id, username, display_name, pic_url, banner_url, subscribers, account_type");
       if (author instanceof AppError) throw author;
       let user = null;
       if (req.user) {
