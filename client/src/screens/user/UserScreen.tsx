@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addMessage } from "../../redux/slices/flashMessageSlice";
@@ -17,47 +17,190 @@ import type { author, topic, video, aboutMe } from "../../types/types";
 interface searchOptions {
   username?: string;
   content?: "topics" | "videos" | "about-me" | undefined;
-  viewAll?: boolean | undefined;
+  viewAll?: boolean;
   page?: number | undefined;
+  gettingMoreResults?: boolean;
+}
+
+interface AuthorContentType {
+  viewContent: "topics" | "videos" | "about-me";
+  moreResults: boolean;
+  viewAll: boolean;
+  pageNum: number;
+  data: topic[] | video[] | aboutMe | null;
+}
+
+interface Action {
+  type: "topics" | "videos" | "about-me";
+  payload: {
+    moreResults?: boolean;
+    viewAll?: boolean;
+    pageNum?: number;
+    data: topic[] | video[] | aboutMe;
+  };
 }
 
 const UserScreen = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [fetchLoading, setFetchLoading] = useState<boolean>(false);
+  const [fetchingMoreResults, setFetchingMoreResults] =
+    useState<boolean>(false);
   const [author, setAuthor] = useState<author | null>(null);
-  const [viewContent, setViewContent] = useState<
-    "topics" | "videos" | "about-me"
-  >("topics");
-  const [topics, setTopics] = useState<topic[] | null>(null);
-  const [videos, setVideos] = useState<video[] | null>(null);
-  const [about, setAbout] = useState<aboutMe | null>(null);
+
+  const reducer = (
+    state: AuthorContentType,
+    action: Action
+  ): AuthorContentType => {
+    switch (action.type) {
+      case "topics":
+        return {
+          ...state,
+          viewContent: "topics",
+          data: action.payload.pageNum
+            ? (state.data as topic[]).concat(action.payload.data as topic[])
+            : action.payload.data,
+          moreResults:
+            typeof action.payload.moreResults === "boolean"
+              ? action.payload.moreResults
+              : state.moreResults,
+          viewAll:
+            typeof action.payload.viewAll === "boolean"
+              ? action.payload.viewAll
+              : state.viewAll,
+          pageNum: action.payload.pageNum ? action.payload.pageNum + 1 : 0,
+        };
+      case "videos":
+        return {
+          ...state,
+          viewContent: "videos",
+          data: action.payload.pageNum
+            ? (state.data as video[]).concat(action.payload.data as video[])
+            : action.payload.data,
+          moreResults:
+            typeof action.payload.moreResults === "boolean"
+              ? action.payload.moreResults
+              : state.moreResults,
+          viewAll:
+            typeof action.payload.viewAll === "boolean"
+              ? action.payload.viewAll
+              : state.viewAll,
+          pageNum: action.payload.pageNum ? action.payload.pageNum + 1 : 0,
+        };
+      case "about-me":
+        return { ...state, viewContent: "about-me", data: action.payload.data };
+      default:
+    }
+    return { ...state };
+  };
+
+  const [
+    { viewContent, viewAll, moreResults, pageNum, data },
+    dispatchContent,
+  ] = useReducer(reducer, {
+    viewContent: "topics",
+    moreResults: false,
+    viewAll: false,
+    pageNum: 0,
+    data: null,
+  });
+
   const { username: userParam } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [renderUserScreen] = useRenderUserScreenMutation();
   const [getUserContent] = useGetUserContentMutation();
 
-  const handleClickTopics = () => {
-    if (viewContent !== "topics") {
-      setViewContent("topics");
-      setTopics(null);
-      getContent({ content: "topics" });
+  const handleClickTopics = async () => {
+    if (author && viewContent !== "topics") {
+      const output = await getContent({ username: author.username });
+      if (output)
+        dispatchContent({
+          type: "topics",
+          payload: {
+            data: output.data,
+            moreResults: false,
+            viewAll: false,
+          },
+        });
     }
   };
 
-  const handleClickVideos = () => {
-    if (viewContent !== "videos") {
-      setViewContent("videos");
-      setVideos(null);
-      getContent({ content: "videos" });
+  const handleClickVideos = async () => {
+    if (author && viewContent !== "videos") {
+      const output = await getContent({
+        username: author.username,
+        content: "videos",
+      });
+      if (output)
+        dispatchContent({
+          type: "videos",
+          payload: {
+            data: output.data,
+            moreResults: false,
+            viewAll: false,
+          },
+        });
     }
   };
 
-  const handleAbout = () => {
-    if (viewContent !== "about-me") {
-      setViewContent("about-me");
-      setAbout(null);
-      getContent({ content: "about-me" });
+  const handleAbout = async () => {
+    if (author && viewContent !== "about-me") {
+      const output = await getContent({
+        username: author.username,
+        content: "about-me",
+      });
+      if (output)
+        dispatchContent({
+          type: "about-me",
+          payload: {
+            data: output.data,
+            moreResults: false,
+            viewAll: false,
+          },
+        });
+    }
+  };
+
+  const handleViewAll = async () => {
+    if (author) {
+      const output = await getContent({
+        username: author.username,
+        content: viewContent,
+        viewAll: true,
+      });
+      if (output)
+        dispatchContent({
+          type: viewContent,
+          payload: {
+            data: output.data,
+            viewAll: true,
+            moreResults: output.moreResults,
+          },
+        });
+    }
+  };
+
+  const handleMoreResults = async () => {
+    if (author) {
+      const output = await getContent({
+        username: author.username,
+        content: viewContent,
+        viewAll: true,
+        page: pageNum + 1,
+        gettingMoreResults: true,
+      });
+      if (output) {
+        console.log(`Page: ${pageNum}`);
+        dispatchContent({
+          type: viewContent,
+          payload: {
+            data: output.data,
+            viewAll: true,
+            moreResults: output.moreResults,
+            pageNum: pageNum + 1,
+          },
+        });
+      }
     }
   };
 
@@ -66,9 +209,14 @@ const UserScreen = () => {
     content,
     viewAll,
     page,
+    gettingMoreResults = false,
   }: searchOptions) => {
     try {
-      setFetchLoading(true);
+      if (gettingMoreResults) {
+        setFetchingMoreResults(true);
+      } else {
+        setFetchLoading(true);
+      }
       if (author || username) {
         const result = await getUserContent({
           username: username ? username : (author as author).username,
@@ -78,23 +226,12 @@ const UserScreen = () => {
         });
         const res = castApiResponse(result);
         if (res.data) {
-          switch (content) {
-            case undefined:
-            case "topics":
-              setTopics(res.data.data.data as topic[]);
-              setViewContent("topics");
-              break;
-            case "videos":
-              setVideos(res.data.data.data as video[]);
-              setViewContent(content);
-              break;
-            case "about-me":
-              setAbout(res.data.data.data as aboutMe);
-              setViewContent(content);
-              break;
-            default:
-              throw new Error("Invalid fetch arguments");
-          }
+          setFetchLoading(false);
+          setFetchingMoreResults(false);
+          return {
+            moreResults: res.data.data.moreResults,
+            data: res.data.data.data,
+          };
         } else {
           throw new Error("Error fetching data");
         }
@@ -105,6 +242,7 @@ const UserScreen = () => {
         });
       }
     } catch (err) {
+      setFetchingMoreResults(false);
       if (err instanceof Error) {
         dispatch(addMessage({ type: "error", message: err.message }));
         console.error(err.message);
@@ -123,8 +261,18 @@ const UserScreen = () => {
             if (res.data) {
               setAuthor(res.data.data.author);
               document.title = `${res.data.data.author.username}'s Page | Centralized Video Platform`;
-              getContent({ username: res.data.data.author.username });
-              setIsLoading(false);
+              getContent({ username: res.data.data.author.username })
+                .then((output) => {
+                  if (output)
+                    dispatchContent({
+                      type: "topics",
+                      payload: { data: output.data, viewAll: false },
+                    });
+                  setIsLoading(false);
+                })
+                .catch((err) => {
+                  throw err;
+                });
             } else {
               dispatch(
                 addMessage({
@@ -161,25 +309,68 @@ const UserScreen = () => {
 
   const spinner = <div className="user-page-spinner"></div>;
 
-  const topicResults = fetchLoading ? (
+  const btnMoreResults = fetchingMoreResults ? (
     spinner
   ) : (
-    <div className="author-topics-container">
-      {topics &&
-        topics.map((topic) => <TopicTile className={"topic"} topic={topic} />)}
+    <div className="view-more-container">
+      <button onClick={handleMoreResults}>More</button>
     </div>
   );
-  const videoResults = fetchLoading ? (
-    spinner
-  ) : (
-    <div className="author-videos-container">
-      {videos &&
-        videos.map((video) => (
-          <VideoTile className={"video"} includeAuthor={false} video={video} />
-        ))}
+
+  const btnViewAll = (
+    <div className="view-all-container">
+      <button onClick={handleViewAll} className="view-all">
+        View All
+      </button>
     </div>
   );
-  const aboutResults = fetchLoading ? spinner : <p>{about?.about_me}</p>;
+
+  const topicResults = fetchLoading
+    ? spinner
+    : viewContent === "topics" &&
+      data && (
+        <>
+          {(data as topic[]).length === 12 && !viewAll && btnViewAll}
+          <div className="author-topics-container">
+            {(data as topic[]).map((topic) => (
+              <TopicTile key={topic.name} className={"topic"} topic={topic} />
+            ))}
+          </div>
+        </>
+      );
+  const videoResults = fetchLoading
+    ? spinner
+    : viewContent === "videos" &&
+      data && (
+        <>
+          {(data as video[]).length === 12 && !viewAll && btnViewAll}
+          <div className="author-videos-container">
+            {(data as video[]).map((video, index) => (
+              <VideoTile
+                key={index}
+                className={"video"}
+                includeAuthor={false}
+                video={video}
+              />
+            ))}
+          </div>
+          {moreResults && btnMoreResults}
+        </>
+      );
+  const aboutResults = fetchLoading
+    ? spinner
+    : data && (
+        <div className="author-about-me">
+          <div>Joined</div>
+          <div>
+            {new Date(Date.parse((data as aboutMe).dateJoined)).toDateString()}
+          </div>
+          <div>Subscriptions</div>
+          <div>{(data as aboutMe).subscriptions}</div>
+          <div>About Me</div>
+          <div>{(data as aboutMe).about_me}</div>
+        </div>
+      );
 
   const userScreen = author && (
     <>
