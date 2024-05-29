@@ -67,7 +67,10 @@ const UserScreen = () => {
             typeof action.payload.viewAll === "boolean"
               ? action.payload.viewAll
               : state.viewAll,
-          pageNum: action.payload.pageNum ? action.payload.pageNum + 1 : 0,
+          pageNum:
+            typeof action.payload.pageNum === "number"
+              ? action.payload.pageNum + 1
+              : 0,
         };
       case "videos":
         return {
@@ -84,7 +87,10 @@ const UserScreen = () => {
             typeof action.payload.viewAll === "boolean"
               ? action.payload.viewAll
               : state.viewAll,
-          pageNum: action.payload.pageNum ? action.payload.pageNum + 1 : 0,
+          pageNum:
+            typeof action.payload.pageNum === "number"
+              ? action.payload.pageNum + 1
+              : 0,
         };
       case "about-me":
         return { ...state, viewContent: "about-me", data: action.payload.data };
@@ -175,6 +181,7 @@ const UserScreen = () => {
             data: output.data,
             viewAll: true,
             moreResults: output.moreResults,
+            pageNum: 0,
           },
         });
     }
@@ -190,16 +197,16 @@ const UserScreen = () => {
         gettingMoreResults: true,
       });
       if (output) {
-        console.log(`Page: ${pageNum}`);
         dispatchContent({
           type: viewContent,
           payload: {
             data: output.data,
             viewAll: true,
             moreResults: output.moreResults,
-            pageNum: pageNum + 1,
+            pageNum: pageNum,
           },
         });
+        console.log(`AFTER page: ${pageNum}`);
       }
     }
   };
@@ -212,6 +219,7 @@ const UserScreen = () => {
     gettingMoreResults = false,
   }: searchOptions) => {
     try {
+      console.log(`Page: ${page}`);
       if (gettingMoreResults) {
         setFetchingMoreResults(true);
       } else {

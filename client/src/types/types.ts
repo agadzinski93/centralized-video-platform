@@ -46,6 +46,13 @@ interface ApiResponseGetUserContent extends ApiResponse {
     }
 }
 
+interface ApiResponseSearchScreen extends ApiResponse {
+    data: {
+        videos: video[],
+        searchQuery: string
+    }
+}
+
 interface RtkQueryResponse<T = ApiResponse> {
     data?: T,
     error?: {
@@ -123,6 +130,7 @@ export type {
     ApiResponseVideoScreen,
     ApiResponseUserScreen,
     ApiResponseGetUserContent,
+    ApiResponseSearchScreen,
     RtkQueryResponse,
     authState,
     topic,

@@ -6,7 +6,8 @@ import {
     renderHome,
     renderHomeScreen,
     renderSearch,
-    getMoreResults
+    getMoreResults,
+    renderSearchScreen
 } from '../controllers/homeCont';
 
 router.route('/')
@@ -21,5 +22,9 @@ router.route('/search')
     .get(setCache, renderSearch)
     .post(getMoreResults)
     .all(verifyMethods(['GET', 'POST']));
+
+router.route('/renderSearchScreen')
+    .get(setCache, renderSearchScreen)
+    .all(verifyMethods(['GET']));
 
 export { router };

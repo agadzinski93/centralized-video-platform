@@ -1,0 +1,142 @@
+@use "../App.scss" as m;
+
+.search-page-container {
+    width:calc(100% - 8rem);
+    margin:0 4rem;
+    .search-result-text {
+        margin-top:1rem;
+        text-align:center;
+    }
+
+    .search-results-container {
+        margin:2rem auto 0 auto;
+        width:60rem;
+
+        > a {
+            display:flex;
+            gap:1rem;
+            height:8rem;
+            color:#aaa;
+            text-decoration: none;;
+
+            .video-result-image {
+                height:100%;
+                aspect-ratio: 16 / 9;
+                @include m.bg-properties(center, contain);
+            }
+
+            .video-result-info {
+                display:flex;
+                flex-flow:column;
+                gap:0.5rem;
+                flex-grow: 1;
+                
+                .video-result-title {
+                    max-height:1.25rem;
+                    @include m.max-lines(1);
+                    font-size:1.25rem;
+                    font-weight:bold;
+                    color:#FFF;
+                    overflow:hidden;
+                }
+                .video-result-author {
+                    display:flex;
+                    align-items: center;
+                    gap:1rem;
+
+                    .video-result-author-avatar {
+                        height:1.5rem;
+                        width:1.5rem;
+                        border-radius:50%;
+                        @include m.bg-properties(center, contain);
+                    }
+
+                    .video-result-author-username {
+                        color:#FFF;
+                    }
+                }
+                .video-result-description {
+                    color:#aaa;
+                    max-height:4rem;
+                    overflow:hidden;
+                    @include m.max-lines(4);
+                }
+            }
+        }
+        > a:not(:first-child) {
+            margin-top:1rem;
+        }
+    }
+}
+
+@media (max-width:68rem) {
+    .search-page-container {
+        .search-results-container {
+            width:100%;
+        }
+    }
+}
+
+@media (max-width:760px) {
+    .search-page-container {
+        margin:0;
+        width:100%;
+
+        .search-results-container {
+            > a {
+                height:6rem;
+
+                .video-result-info {
+                    .video-result-title {
+                        max-height:1rem;
+                        font-size:1rem;
+                    }
+                    .video-result-author {
+                        .video-result-author-avatar {
+                            height:1.25rem;
+                            width:1.25rem;
+                        }
+                    }
+                    .video-result-description {
+                        max-height:3rem;
+                        font-size:0.875rem;
+                        @include m.max-lines(3);
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width:500px) {
+    .search-page-container {
+        .search-results-container {
+            > a {
+                height:4rem;
+
+                .video-result-info {
+                    gap:0.25rem;
+                    .video-result-title {
+                        max-height:0.75rem;
+                        font-size:0.75rem;
+                    }
+                    .video-result-author {
+                        gap:0.5rem;
+                        .video-result-author-avatar {
+                            height:0.875rem;
+                            width:0.875rem;
+                        }
+                        .video-result-author-username {
+                            font-size:0.75rem;
+                        }
+                    }
+                    .video-result-description {
+                        max-height:3rem;
+                        font-size:0.625rem;
+                        @include m.max-lines(3);
+                    }
+                }
+            }
+        }
+    }
+}

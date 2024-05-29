@@ -5,6 +5,7 @@ import { escapeHTML } from '../utilities/helpers/sanitizers';
 import { getRecentVideos, searchVideos, getMoreVideos } from '../utilities/helpers/videoHelpers';
 import { enableHyphens, getRecentTopic } from '../utilities/helpers/topicHelpers';
 import { getRedisCache, setRedisCache } from '../utilities/db/redisCache';
+import { paramsExist } from '../utilities/validators/paramsExist';
 
 import { Request, Response, NextFunction } from 'express';
 
@@ -82,7 +83,7 @@ const renderSearch = async (req: Request, res: Response, next: NextFunction) => 
       if (req.query.q && req.query.q !== '') {
         searchQuery = escapeHTML(req.query.q.toString());
         videos = await searchVideos(searchQuery);
-        if (videos instanceof AppError) throw new Error(videos.message);
+        if (videos instanceof AppError) throw videos;
         for (let video of videos) {
           video.topicUrl = enableHyphens(video.topic, true);
         }
@@ -93,6 +94,31 @@ const renderSearch = async (req: Request, res: Response, next: NextFunction) => 
   } catch (err) {
     next(new AppError(500, (err as Error).message));
   }
+}
+const renderSearchScreen = async (req: Request, res: Response) => {
+  const Response = new ApiResponse('error', 500, 'Error rendering search screen.');
+  const { q } = req.query;
+  try {
+    let searchQuery = null;
+
+    if (q && q !== '') {
+      searchQuery = escapeHTML(q.toString());
+      const videos = await searchVideos(searchQuery);
+      if (videos instanceof AppError) throw videos;
+
+      for (let video of videos) video.topicUrl = enableHyphens(video.topic, true);
+
+      Response.setApiResponse('success', 200, 'Successfully retrieved data for search screen', '/', { searchQuery, videos });
+    } else {
+      Response.setStatus = 422;
+      Response.setMessage = 'Invalid arguments';
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      Response.applyMessage(err.message, 'Error rendering search screen.');
+    }
+  }
+  res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const getMoreResults = async (req: Request, res: Response, next: NextFunction) => {
   let output = new ApiResponse('error', 500, 'Something went wrong!');
@@ -116,4 +142,4 @@ const getMoreResults = async (req: Request, res: Response, next: NextFunction) =
   }
   res.status(output.getStatus).json(output.getApiResponse());
 }
-export { renderHome, renderHomeScreen, renderSearch, getMoreResults };
+export { renderHome, renderHomeScreen, renderSearch, renderSearchScreen, getMoreResults };
