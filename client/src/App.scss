@@ -27,6 +27,12 @@
     -webkit-box-orient: vertical;
     overflow:hidden;
 }
+@mixin tab-outline {
+    outline:solid 0.125rem #FFF;
+}
+@mixin special-font {
+    font-family: "Nunito", sans-serif;
+}
 
 :root {
     --primary-bg-color:#131313;

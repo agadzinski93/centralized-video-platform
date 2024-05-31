@@ -70,7 +70,7 @@
       }
 
       button:focus-visible {
-        outline:solid 0.125rem #FFF;
+        @include m.tab-outline;
         background-color:var(--link-highlight);
       }
 
@@ -96,7 +96,7 @@
         background-color:var(--primary-bg-color-lt3);
       }
       > button:focus-visible {
-        outline:solid 0.125rem #FFF;
+        @include m.tab-outline;
       }
     }
 
@@ -115,7 +115,7 @@
       }
 
       > button:focus-visible {
-        outline:solid 0.125rem #FFF;
+        @include m.tab-outline;
       }
     }
 

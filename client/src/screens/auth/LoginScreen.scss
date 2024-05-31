@@ -26,7 +26,7 @@
             color:#aaa;
             text-align: center;
             font-size:1.5rem;
-            font-family: "Nunito", sans-serif;
+            @include m.special-font;
         }
 
         .google-loading-message {
@@ -57,7 +57,7 @@
 
             label, input {
                 display:block;
-                font-family: "Nunito", sans-serif;
+                @include m.special-font;
             }
 
             label {
@@ -81,7 +81,7 @@
 
             input:focus-visible {
                 background-color:#171724;
-                outline:solid 0.125rem #FFF;
+                @include m.tab-outline;
             }
 
             input.error {
@@ -107,7 +107,7 @@
                 border-radius:1rem;
                 background-color:var(--primary-color);
                 color:#FFF;
-                font-family: "Nunito", sans-serif;
+                @include m.special-font;
                 border:none;
                 transition-property: background-color;
                 transition-duration: 200ms;
@@ -145,7 +145,7 @@
                 color:var(--primary-color-lt1);
             }
             a:focus-visible {
-                outline:solid 0.125rem #FFF;
+                @include m.tab-outline;
             }
         }
     }

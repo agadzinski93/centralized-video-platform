@@ -28,7 +28,7 @@
         .topic-info {
             flex-grow:1;
             min-height:calc(100vh - 10rem - 2rem);
-            font-family: "Nunito", sans-serif;
+            @include m.special-font;
             
             .topic-image-container {
                 height:10rem;

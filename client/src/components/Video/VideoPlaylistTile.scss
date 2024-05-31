@@ -43,7 +43,7 @@
         }
     }
     > a.video-link:focus-visible {
-        outline:solid 0.125rem #FFF;
+        @include m.tab-outline;
         outline-offset: -0.125rem;;
     }
 }

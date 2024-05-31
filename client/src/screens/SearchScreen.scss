@@ -66,6 +66,17 @@
         > a:not(:first-child) {
             margin-top:1rem;
         }
+        > a:focus-visible {
+            @include m.tab-outline;
+            background-color:var(--primary-bg-color-lt3);
+        }
+
+        .loading-more-spinner {
+            margin:1rem auto 0 auto;
+            width:2rem;
+            height:2rem;
+            @include m.bg-properties(center,contain,url('/images/spinner.gif'));
+        }
     }
 }
 

@@ -27,7 +27,7 @@
                 color:#FFF;
                 font-size:1.5rem;
                 font-weight:bold;
-                font-family: "Nunito", sans-serif;
+                @include m.special-font;
             }
 
             .uploaded-when {
@@ -67,7 +67,7 @@
                     text-decoration: none;
                 }
                 a:focus-visible {
-                    outline:solid 0.125rem #FFF;
+                    @include m.tab-outline;
                 }
             }
 
@@ -83,7 +83,7 @@
                 cursor:pointer;
             }
             .video-description-see-more:focus-visible {
-                outline:solid 0.125rem #FFF;
+                @include m.tab-outline;
             }
         }
         .video-playlist-container {

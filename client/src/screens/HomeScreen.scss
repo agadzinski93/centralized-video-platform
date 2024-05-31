@@ -24,7 +24,7 @@
     .topic-slider-container {
         margin-top:1rem;
         overflow:hidden;
-        font-family: "Nunito", sans-serif;
+        @include m.special-font;
 
         .topic-slider {
             display:flex;
@@ -101,7 +101,7 @@
                         }
                         a:focus {
                             background-color:#0048B0;
-                            outline:solid 0.125rem #FFF;
+                            @include m.tab-outline;
                             outline-offset:-0.125rem;
                         }
                     }

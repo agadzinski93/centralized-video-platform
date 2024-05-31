@@ -1,6 +1,6 @@
 import { api } from "./api";
 
-import type { ApiResponseSearchScreen, ApiResponseVideoScreen } from "../../types/types";
+import type { ApiResponseSearchScreen, ApiResponseGetMoreResults } from "../../types/types";
 
 type searchQuery = {
     q: string
@@ -8,7 +8,7 @@ type searchQuery = {
 
 type searchQueryPaginate = {
     searchQuery: string,
-    pageNum: number
+    pageNumber: number
 }
 
 const searchApi = api.injectEndpoints({
@@ -19,7 +19,7 @@ const searchApi = api.injectEndpoints({
                 method: 'GET'
             })
         }),
-        getMoreResults: build.mutation<ApiResponseVideoScreen, searchQueryPaginate>({
+        getMoreResults: build.mutation<ApiResponseGetMoreResults, searchQueryPaginate>({
             query: body => ({
                 url: `/search`,
                 method: 'POST',
