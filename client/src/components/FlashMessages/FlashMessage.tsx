@@ -34,9 +34,9 @@ const FlashMessage = ({ id, type = "error", message }: FlashMessageType) => {
               strokeDasharray=""
               strokeDashoffset="0"
               fontFamily="none"
-              fontWeight="none"
+              fontWeight="normal"
               fontSize="none"
-              textAnchor="none"
+              textAnchor="start"
               style={{ mixBlendMode: "normal" }}
             >
               <g transform="scale(10.66667,10.66667)">

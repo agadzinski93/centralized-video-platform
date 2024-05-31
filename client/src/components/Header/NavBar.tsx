@@ -34,7 +34,7 @@ const NavBar = () => {
     <nav>
       <div className="logo-search-container">
         <Link id="logo" className="logo-link" aria-label="Home page" to="/">
-          <img src="/images/logo.png" alt="logo" height="100%" width="100%" />
+          <img src="/images/logo.png" alt="logo" />
         </Link>
       </div>
 
@@ -65,8 +65,8 @@ const NavBar = () => {
               strokeDasharray=""
               strokeDashoffset="0"
               fontFamily="none"
-              fontWeight="none"
-              textAnchor="none"
+              fontWeight="normal"
+              textAnchor="start"
               style={{ mixBlendMode: "normal" }}
             >
               <g transform="scale(5.12,5.12)">

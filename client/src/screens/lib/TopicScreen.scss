@@ -11,7 +11,7 @@
         @include m.bg-properties(center, cover);
         z-index:-1;
         filter: grayscale(50%);
-        backdrop-filter: blur(5x);
+        backdrop-filter: blur(5px);
         transition:opacity 500ms;
         -webkit-box-shadow: inset 0px -10px 13px -6px var(--primary-bg-color);
         -moz-box-shadow: inset 0px -10px 13px -6px var(--primary-bg-color);

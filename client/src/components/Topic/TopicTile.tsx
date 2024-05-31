@@ -10,11 +10,15 @@ interface topicTileProps {
   className?: string;
 }
 
+const createMainId = (id: string) => {
+  return id !== "" ? { id } : {};
+};
+
 const TopicTile = ({ topic, id = "", className }: topicTileProps) => {
   return (
     <div className={className}>
       <Link
-        id={id}
+        {...createMainId(id)}
         className="topic-link"
         to={`/lib/${topic.name.replaceAll(" ", "-")}`}
       >

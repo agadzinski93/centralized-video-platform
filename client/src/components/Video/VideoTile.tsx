@@ -12,6 +12,10 @@ interface videoTileProps {
   includeAuthor?: boolean;
 }
 
+const createMainId = (id: string) => {
+  return id !== "" ? { id } : {};
+};
+
 const VideoTile = ({
   video,
   id = "",
@@ -21,7 +25,7 @@ const VideoTile = ({
   return (
     <div className={className}>
       <Link
-        id={id}
+        {...createMainId(id)}
         className="video-link"
         to={`/lib/${video.topicUrl}/${video.url.substring(20)}`}
       >
