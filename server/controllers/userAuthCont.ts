@@ -77,7 +77,12 @@ const loginUser = async (req: Request, res: Response, next: NextFunction): Promi
     }
     else if (!user) {
       Response.setStatus = 400;
-      Response.setMessage = 'No applicable user.';
+      if (info && info.message && ['Account has not been activated. Please check your email for confirmation link.', 'Account has been disabled.'].some(msg => msg === info.message)) {
+        Response.setStatus = 403;
+        Response.setMessage = info.message;
+      } else {
+        Response.setMessage = 'No applicable user.';
+      }
     }
     else {
       const body = { user_id: user.user_id, email: user.email, username: user.username, pic_url: user.pic_url };

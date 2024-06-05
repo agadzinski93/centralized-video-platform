@@ -1,9 +1,9 @@
 import { getDatabase } from "../db/mysql-connect";
 import { escapeSQL } from "./sanitizers";
 import { AppError } from "../AppError";
-import { Cloudinary } from "../storage";
-
-import { RowDataPacket, ResultSetHeader } from "mysql2";
+import { deleteFile } from "./uploads";
+import { RowDataPacket } from "mysql2";
+import { topicLogger } from "../logger";
 
 /**
  * Choose whether topic's title has hyphens or whitespaces
@@ -158,11 +158,14 @@ const removeTopic = async (topic: string) => {
     const sql = `SELECT filename FROM topics WHERE name = ?`;
     const values = [topic];
 
+    console.log(topic);
     let topicInfo = await db.execute<RowDataPacket[]>(sql, values);
+    console.log(topicInfo);
     const topicfilename: string = topicInfo[0][0].filename;
 
     if (topicInfo) {
-      await Cloudinary.uploader.destroy(topicfilename);
+      const result = await deleteFile(topicfilename);
+      if (result instanceof AppError) throw result;
     }
 
     const sqlTwo = `DELETE FROM topics WHERE name = ?`;
@@ -172,6 +175,7 @@ const removeTopic = async (topic: string) => {
 
     return null;
   } catch (err) {
+    if (err instanceof Error) topicLogger.log('error', err.message);
     return new AppError(500, "Error Deleting Topic");
   }
 }
@@ -191,7 +195,8 @@ const deleteTopicImage = async (topicName: string) => {
     let filename = topic[0].filename;
 
     if (filename !== null) {
-      await Cloudinary.uploader.destroy(filename);
+      const result = await deleteFile(filename);
+      if (result instanceof AppError) throw result;
     }
 
     return null;
@@ -225,7 +230,11 @@ const removeSelectedTopics = async (topics: string): Promise<void | AppError> =>
       const topicFilenames = selectedTopics[0];
 
       for (let i = 0; i < topicFilenames.length; i++) {
-        if (topicFilenames[i].filename) await Cloudinary.uploader.destroy(topicFilenames[i].filename);
+        if (topicFilenames[i].filename) {
+          const result = await deleteFile(topicFilenames[i].filename);
+          if (result instanceof AppError) throw result;
+        }
+
       }
 
       const sqlTwo = `DELETE FROM topics WHERE name IN (${preparedLength})`;

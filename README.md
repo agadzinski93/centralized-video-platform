@@ -25,7 +25,7 @@ This is a long-term project.
         * [DB in Development without Docker](#DB-in-Development-without-Docker)
         * [DB in Production](#DB-in-Production)
     * [Google OAuth](#Google-OAuth)
-    * [Cloudinary](#Cloudinary)
+    * [Cloudinary and Files](#Cloudinary-and-Files)
     * [Email](#Email)
 5. [React Environment Variables](#React-Environment-Variables)
 
@@ -215,7 +215,7 @@ These variables are provided by Google when creating your credentials in Google 
 3. `GOOGLE_CALLBACK_URL`
     * The callback URL you provided when creating the above credentials
 
-### Cloudinary
+### Cloudinary and Files
 
 1. `CLOUDINARY_NAME`
     * Name of Cloudinary Account
@@ -231,6 +231,10 @@ These variables are provided by Google when creating your credentials in Google 
 
 5. `DEFAULT_PIC_FILENAME`
     * Filename associated with the aforementioned image, this is necessary to interact with the Cloudinary API
+
+6. `LOCAL_UPLOADS_DIR`
+    * Default: ./server/public/uploads
+    * Directory for uploading files locally on your PC when in development
 
 ### Email
 These variables are for connecting to a SMTP server responsible for sending emails (e.g. email verification upon registration)

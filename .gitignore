@@ -11,6 +11,7 @@ bold-flash-420302-4e4c29d1644d.json
 /node_modules
 /public/assets
 /server/dist
+/server/public/uploads/*
 /tmp
 
 # Docker Secrets #

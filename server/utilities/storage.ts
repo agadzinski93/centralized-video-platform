@@ -1,6 +1,7 @@
+import multer from 'multer';
 import { RemoteStorage } from 'multer-remote-storage';
 import { v2 as Cloudinary } from 'cloudinary';
-import { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_SECRET } from './config';
+import { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_SECRET, LOCAL_UPLOADS_DIR } from './config';
 import topicValidator from './validators/topicValidator';
 
 //Types
@@ -51,4 +52,15 @@ const topicStorage = new RemoteStorage({
     },
 });
 
-export { Cloudinary, storage, topicStorage };
+//Local Storage For Development
+const localStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, LOCAL_UPLOADS_DIR);
+    },
+    filename: (req, file, cb) => {
+        const unique = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, `${file.originalname.substring(0, file.originalname.lastIndexOf('.'))}-${unique}.${file.mimetype.substring(file.mimetype.indexOf('/') + 1)}`);
+    }
+});
+
+export { Cloudinary, storage, topicStorage, localStorage };

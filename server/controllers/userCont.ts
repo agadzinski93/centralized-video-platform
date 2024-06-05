@@ -1,7 +1,7 @@
 import { AppError } from '../utilities/AppError';
 import { ApiResponse } from '../utilities/ApiResponse';
 import { userLogger } from '../utilities/logger';
-import { Cloudinary } from '../utilities/storage';
+import { setPathAndFilename, deleteFile } from '../utilities/helpers/uploads';
 import { escapeHTML } from '../utilities/helpers/sanitizers';
 import { paramsExist } from '../utilities/validators/paramsExist';
 import { getUser, updateAuthToken } from '../utilities/helpers/authHelpers';
@@ -243,12 +243,11 @@ const updateProfilePic = async (req: Request, res: Response) => {
       const user = await getUser(username, user_cols);
       if (user instanceof AppError) throw new Error(user.message);
 
-      let picUrl = req.file.path,
-        filename = req.file.filename;
+      const { path: picUrl, filename } = setPathAndFilename(req.file.path, req.file.filename);
 
       let error = await deleteImage(user, 'PROFILE PIC');
       if (error instanceof AppError) {
-        await Cloudinary.uploader.destroy(filename);
+        await deleteFile(filename);
         Response.applyMessage(error.message, 'Error deleting profile picture.');
       }
       else {
@@ -261,7 +260,7 @@ const updateProfilePic = async (req: Request, res: Response) => {
         if (data instanceof AppError) {
           userLogger.log('error', `User ID: ${user.user_id} -> ${data.message}`);
           try {
-            await Cloudinary.uploader.destroy(filename);
+            await deleteFile(filename);
             Response.setStatus = data.status;
             Response.applyMessage(data.message, 'Error uploading new image.');
           } catch (err) {
@@ -350,9 +349,9 @@ const updateBanner = async (req: Request, res: Response) => {
       if (user instanceof AppError) throw new Error(user.message);
 
       let data = null,
-        error = null,
-        picUrl = req.file.path,
-        filename = req.file.filename;
+        error = null;
+
+      const { path: picUrl, filename } = setPathAndFilename(req.file.path, req.file.filename);
 
       if (user.banner_url !== null) {
         error = await deleteImage(user, 'BANNER');
@@ -360,7 +359,7 @@ const updateBanner = async (req: Request, res: Response) => {
 
       if (error instanceof AppError) {
         userLogger.log('error', `User ID: ${user.user_id} -> ${error.message}`);
-        await Cloudinary.uploader.destroy(filename);
+        await deleteFile(filename);
         Response.setStatus = error.status;
         Response.setMessage = 'Error deleting banner.';
       }
@@ -375,7 +374,7 @@ const updateBanner = async (req: Request, res: Response) => {
           userLogger.log('error', `User ID: ${user.user_id} -> ${data.message}`);
           Response.setStatus = data.status;
           try {
-            await Cloudinary.uploader.destroy(filename);
+            await deleteFile(filename);
             Response.applyMessage(data.message, 'Error uploading new image.');
           } catch (err) {
             userLogger.log('error', `User ID: ${user.user_id} -> ${(err as Error).message}`);
@@ -469,7 +468,7 @@ const deleteBanner = async (req: Request, res: Response) => {
           userLogger.log('error', `User ID: ${user.user_id} -> ${data.message}`);
           Response.setStatus = data.status;
           try {
-            if (filename) await Cloudinary.uploader.destroy(filename);
+            if (filename) await deleteFile(filename);
             Response.applyMessage(data.message, 'Error deleting banner.');
           } catch (err) {
             userLogger.log('error', `User ID: ${user.user_id} -> ${(err as Error).message}`);
