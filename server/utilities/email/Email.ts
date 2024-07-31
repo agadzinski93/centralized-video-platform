@@ -1,7 +1,7 @@
 "use strict"
 import nodemailer from 'nodemailer'
 import { AppError } from '../AppError'
-import { EMAIL_SECURE, EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS } from '../config'
+import { EMAIL_SECURE, EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS } from '../config/config'
 
 /**
  * @param {object} email - email of recipient

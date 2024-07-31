@@ -1,5 +1,3 @@
-import { storage, topicStorage, localStorage } from "./storage";
-
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const HOSTED_ONLINE: string = process.env.HOSTED_ONLINE || 'false';
 const PORT: string = process.env.PORT || '5000';
@@ -56,12 +54,6 @@ const CLOUDINARY_NAME: string | undefined = process.env.CLOUDINARY_NAME;
 const CLOUDINARY_API_KEY: string | undefined = process.env.CLOUDINARY_API_KEY;
 const CLOUDINARY_SECRET: string | undefined = process.env.CLOUDINARY_SECRET;
 
-//Multer Storage Object
-const LOCAL_UPLOADS_ENGINE = { storage: localStorage };
-const LOCAL_UPLOADS_DIR = process.env.LOCAL_UPLOADS_DIR || './server/public/uploads';
-const MULTER_STORAGE_ENGINE_NO_VALID = (NODE_ENV === 'production') ? { storage } : LOCAL_UPLOADS_ENGINE;
-const MULTER_STORAGE_ENGINE_TOPIC = (NODE_ENV === 'production') ? { storage: topicStorage } : LOCAL_UPLOADS_ENGINE;
-
 const DEFAULT_PROFILE_PIC: string | undefined = process.env.DEFAULT_PROFILE_PIC;
 const DEFAULT_PIC_FILENAME: string | undefined = process.env.DEFAULT_PIC_FILENAME;
 
@@ -113,9 +105,6 @@ export {
     CLOUDINARY_NAME,
     CLOUDINARY_API_KEY,
     CLOUDINARY_SECRET,
-    LOCAL_UPLOADS_DIR,
-    MULTER_STORAGE_ENGINE_NO_VALID,
-    MULTER_STORAGE_ENGINE_TOPIC,
     DEFAULT_PROFILE_PIC,
     DEFAULT_PIC_FILENAME,
     EMAIL_HOST,

@@ -1,4 +1,4 @@
-import { NODE_ENV } from "./config";
+import { NODE_ENV } from "./config/config";
 
 import { ApiResponse as Response } from "../types/types";
 

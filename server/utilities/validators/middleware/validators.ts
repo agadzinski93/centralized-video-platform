@@ -3,7 +3,7 @@ import { paramsExist } from "../paramsExist";
 import registerValidator from "../registerValidator";
 import registerUsernameValidator from "../registerUsernameValidator";
 import topicValidator from "../topicValidator";
-import { Cloudinary } from "../../storage";
+import { Cloudinary } from "../../config/storage";
 
 import { Request, Response, NextFunction } from "express";
 

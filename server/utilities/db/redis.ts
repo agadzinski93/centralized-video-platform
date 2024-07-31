@@ -1,6 +1,6 @@
 import { logger } from "../logger";
 import { createClient } from "redis";
-import { NODE_ENV, USE_DOCKER, REDIS_PATH, REDIS_DOCKER_HOST, REDIS_PORT } from "../config";
+import { NODE_ENV, USE_DOCKER, REDIS_PATH, REDIS_DOCKER_HOST, REDIS_PORT } from "../config/config";
 
 let client: RedisConnection | null = null;
 

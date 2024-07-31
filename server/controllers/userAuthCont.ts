@@ -24,7 +24,7 @@ import {
   DEFAULT_PIC_FILENAME,
   DOMAIN_PUBLIC,
   DOMAIN_PRIVATE
-} from '../utilities/config';
+} from '../utilities/config/config';
 
 import { Request, Response, NextFunction } from 'express';
 import { RowDataPacket } from 'mysql2';

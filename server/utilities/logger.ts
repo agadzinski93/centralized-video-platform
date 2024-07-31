@@ -1,5 +1,5 @@
 import { createLogger, transports, format } from "winston";
-import { NODE_ENV } from "./config";
+import { NODE_ENV } from "./config/config";
 
 const timeZone = () => {
     return new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });

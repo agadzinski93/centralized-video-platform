@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { NODE_ENV } from "../../config";
+import { NODE_ENV } from "../../config/config";
 
 const setCache = (req: Request, res: Response, next: NextFunction) => {
     res.set('Cache-Control', 'no-cache, max-age=3600, must-revalidate');

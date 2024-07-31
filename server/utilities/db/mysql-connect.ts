@@ -8,7 +8,7 @@ import {
   DB_DOCKER_HOST, DB_DOCKER_PORT, DB_DOCKER_USER, DB_DOCKER_PASS, DB_DOCKER_DATABASE,
   DB_DEV_HOST, DB_DEV_PORT, DB_DEV_USER, DB_DEV_PASS, DB_DEV_DATABASE,
   DB_PRO_HOST, DB_PRO_PORT, DB_PRO_USER, DB_PRO_PASS, DB_PRO_DATABASE
-} from '../config';
+} from '../config/config';
 
 let database: MYSQL_DB | null = null;
 

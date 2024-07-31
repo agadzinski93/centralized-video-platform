@@ -158,9 +158,7 @@ const removeTopic = async (topic: string) => {
     const sql = `SELECT filename FROM topics WHERE name = ?`;
     const values = [topic];
 
-    console.log(topic);
     let topicInfo = await db.execute<RowDataPacket[]>(sql, values);
-    console.log(topicInfo);
     const topicfilename: string = topicInfo[0][0].filename;
 
     if (topicInfo) {

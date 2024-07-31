@@ -1,6 +1,6 @@
 import { logger } from "../logger";
 import { getRedisConnection } from "./redis";
-import { REDIS_ENABLED } from "../config";
+import { REDIS_ENABLED } from "../config/config";
 
 import { SetOptions } from "redis";
 import { ApiResponse } from "../../types/types";

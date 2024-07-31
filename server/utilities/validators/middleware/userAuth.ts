@@ -4,7 +4,7 @@ import { escapeHTML } from "../../helpers/sanitizers";
 import { usernameMatch } from "../../helpers/authHelpers";
 import passport from "passport";
 import jwt from "jsonwebtoken";
-import { NODE_ENV, COOKIE_SECRET, GOOGLE_SUCCESS_URL } from "../../config";
+import { NODE_ENV, COOKIE_SECRET, GOOGLE_SUCCESS_URL } from "../../config/config";
 
 import { Request, Response, NextFunction } from "express";
 import { UserObject } from "../../../types/types";

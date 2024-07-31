@@ -1,6 +1,6 @@
 import { expect, test } from "@jest/globals";
 import { createEmail } from "../server/utilities/email/Email.ts";
-import { EMAIL_USER } from "../server/utilities/config.ts";
+import { EMAIL_USER } from "../server/utilities/config/config.ts";
 import { ApiResponse } from "../server/utilities/ApiResponse.ts";
 import { paramsExist } from "../server/utilities/validators/paramsExist.ts";
 import { setPaginationData, endOfResults } from "../server/utilities/helpers/pagination.ts";

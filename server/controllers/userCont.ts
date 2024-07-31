@@ -33,7 +33,7 @@ import {
   API_PATH,
   DEFAULT_PROFILE_PIC,
   DEFAULT_PIC_FILENAME
-} from '../utilities/config';
+} from '../utilities/config/config';
 
 import { getUserTopics, getTopic } from '../utilities/helpers/topicHelpers';
 import { getTopicVideos } from '../utilities/helpers/videoHelpers';

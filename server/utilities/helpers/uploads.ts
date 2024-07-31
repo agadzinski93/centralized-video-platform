@@ -1,6 +1,7 @@
 import { rm } from "fs";
-import { Cloudinary } from "../storage";
-import { NODE_ENV, LOCAL_UPLOADS_DIR } from "../config"
+import { Cloudinary } from "../config/storage";
+import { NODE_ENV } from "../config/config"
+import { LOCAL_UPLOADS_DIR } from "../config/storage";
 import { AppError } from "../AppError";
 
 const setPathAndFilename = (path: string | undefined, filename: string | undefined): { path: string, filename: string } => {

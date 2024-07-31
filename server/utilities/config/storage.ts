@@ -1,8 +1,10 @@
 import multer from 'multer';
 import { RemoteStorage } from 'multer-remote-storage';
 import { v2 as Cloudinary } from 'cloudinary';
-import { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_SECRET, LOCAL_UPLOADS_DIR } from './config';
-import topicValidator from './validators/topicValidator';
+import { NODE_ENV, CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_SECRET } from './config';
+import topicValidator from '../validators/topicValidator';
+
+const LOCAL_UPLOADS_DIR = process.env.LOCAL_UPLOADS_DIR || './server/public/uploads';
 
 //Types
 import { Request } from 'express';
@@ -20,13 +22,12 @@ const handleTopicValidation = (req: Request, file: File, cb: MulterCallback) => 
 }
 
 const handlePublicId = (req: Request, file: File, cb: MulterCallback) => {
-    return `${file.originalname.split('.')[0]}-${Date.now()}}`
+    return `${file.originalname.split('.')[0]}-${Date.now()}`
 }
 
 /*
     CLOUDINARY
 */
-
 Cloudinary.config({
     cloud_name: CLOUDINARY_NAME,
     api_key: CLOUDINARY_API_KEY,
@@ -63,4 +64,17 @@ const localStorage = multer.diskStorage({
     }
 });
 
-export { Cloudinary, storage, topicStorage, localStorage };
+//Multer Storage Object
+const LOCAL_UPLOADS_ENGINE = { storage: localStorage };
+const MULTER_STORAGE_ENGINE_NO_VALID = (NODE_ENV === 'production') ? { storage } : LOCAL_UPLOADS_ENGINE;
+const MULTER_STORAGE_ENGINE_TOPIC = (NODE_ENV === 'production') ? { storage: topicStorage } : LOCAL_UPLOADS_ENGINE;
+
+export {
+    Cloudinary,
+    storage,
+    topicStorage,
+    localStorage,
+    LOCAL_UPLOADS_DIR,
+    MULTER_STORAGE_ENGINE_NO_VALID,
+    MULTER_STORAGE_ENGINE_TOPIC
+};

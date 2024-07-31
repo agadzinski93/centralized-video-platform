@@ -1,7 +1,7 @@
 import { getDatabase } from "../db/mysql-connect";
 import { AppError } from "../AppError";
 import jwt from 'jsonwebtoken';
-import { NODE_ENV, COOKIE_SECRET } from "../config";
+import { NODE_ENV, COOKIE_SECRET } from "../config/config";
 
 import { Response } from "express";
 import { UserObject } from "../../types/types";

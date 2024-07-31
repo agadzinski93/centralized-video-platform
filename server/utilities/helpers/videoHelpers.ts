@@ -1,7 +1,7 @@
 import { getDatabase } from "../db/mysql-connect";
 import { escapeSQL, prepareLikeStatement } from "./sanitizers";
 import { AppError } from "../AppError";
-import { YOUTUBE_KEY } from "../config";
+import { YOUTUBE_KEY } from "../config/config";
 
 import { modifyVideoFn, ytVideoObject } from "../../types/types";
 import { RowDataPacket } from "mysql2";

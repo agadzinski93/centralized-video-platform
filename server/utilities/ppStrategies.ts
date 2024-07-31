@@ -13,7 +13,7 @@ import {
   GOOGLE_CALLBACK_URL,
   DEFAULT_PROFILE_PIC,
   DEFAULT_PIC_FILENAME
-} from "./config";
+} from "./config/config";
 import { getUserById, getUserByGoogleId } from "./helpers/authHelpers";
 
 import { Request } from "express";

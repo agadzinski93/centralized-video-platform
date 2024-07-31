@@ -1,7 +1,7 @@
 import express from 'express';
 import { verifyMethods } from '../utilities/validators/middleware/verifyMethods';
 import multer from 'multer';
-import { MULTER_STORAGE_ENGINE_NO_VALID, MULTER_STORAGE_ENGINE_TOPIC } from '../utilities/config';
+import { MULTER_STORAGE_ENGINE_NO_VALID, MULTER_STORAGE_ENGINE_TOPIC } from '../utilities/config/storage';
 import { filter } from '../utilities/validators/fileValidator';
 const parser = multer({ ...MULTER_STORAGE_ENGINE_NO_VALID, fileFilter: filter, limits: { fileSize: 1024000 } });
 const topicParser = multer({ ...MULTER_STORAGE_ENGINE_TOPIC, fileFilter: filter, limits: { fileSize: 1024000 } });

@@ -1,6 +1,6 @@
 import { AppError } from '../utilities/AppError';
 import { ApiResponse } from '../utilities/ApiResponse';
-import { PATH_CSS, PATH_ASSETS, API_PATH } from '../utilities/config';
+import { PATH_CSS, PATH_ASSETS, API_PATH } from '../utilities/config/config';
 import { escapeHTML } from '../utilities/helpers/sanitizers';
 import { getRecentVideos, searchVideos, getMoreVideos } from '../utilities/helpers/videoHelpers';
 import { enableHyphens, getRecentTopic } from '../utilities/helpers/topicHelpers';

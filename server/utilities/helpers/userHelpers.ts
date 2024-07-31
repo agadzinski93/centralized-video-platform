@@ -3,7 +3,7 @@ import { AppError } from "../AppError";
 import { deleteFile } from "./uploads";
 import { enableHyphens } from "./topicHelpers";
 import { setPaginationData, endOfResults } from "./pagination";
-import { DEFAULT_PROFILE_PIC, DEFAULT_PIC_FILENAME } from "../config";
+import { DEFAULT_PROFILE_PIC, DEFAULT_PIC_FILENAME } from "../config/config";
 
 import { UserObject } from "../../types/types";
 import { RowDataPacket } from "mysql2";

@@ -1,6 +1,6 @@
 import { ApiResponse } from '../utilities/ApiResponse';
 import { AppError } from '../utilities/AppError';
-import { PATH_CSS, PATH_ASSETS, API_PATH } from '../utilities/config';
+import { PATH_CSS, PATH_ASSETS, API_PATH } from '../utilities/config/config';
 import { escapeHTML, removeParams } from '../utilities/helpers/sanitizers';
 import { paramsExist } from '../utilities/validators/paramsExist';
 import { enableHyphens } from '../utilities/helpers/topicHelpers';

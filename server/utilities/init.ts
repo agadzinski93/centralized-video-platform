@@ -13,7 +13,7 @@ import rateLimit from 'express-rate-limit'
 import { apiRouter } from '../routes/apiRoute';
 import { verifyUser } from './validators/middleware/userAuth';
 import { setCors } from './validators/middleware/setHeaders';
-import { PATH_CSS, PATH_ASSETS, API_PATH, NODE_ENV, SESSION_SECRET, COOKIE_SECRET } from './config';
+import { PATH_CSS, PATH_ASSETS, API_PATH, NODE_ENV, SESSION_SECRET, COOKIE_SECRET } from './config/config';
 
 import { Request, Response, NextFunction } from 'express';
 
