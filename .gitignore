@@ -3,6 +3,7 @@
 .env.production
 .npmrc
 .htaccess
+/server/swagger.json
 
 .bak
 *.sh

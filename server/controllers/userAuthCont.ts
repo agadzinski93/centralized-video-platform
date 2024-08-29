@@ -100,6 +100,36 @@ const loginUser = async (req: Request, res: Response, next: NextFunction): Promi
   })(req, res, next);
 }
 /**
+ * Logs in the user using Passport. If successful, returns JWT for use in Authorization header
+ * @param {*} req
+ * @param {*} res
+ * @param next
+ */
+const loginApiUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const Response = new ApiResponse('error', 500, 'Something went wrong');
+  let url = "/";
+  pp.authenticate('login', { session: false }, async (err: Error, user: any, info: any) => {
+    if (err) {
+      Response.setMessage = `Login Error: ${err.message}`;
+    }
+    else if (!user) {
+      Response.setStatus = 400;
+      if (info && info.message && ['Account has not been activated. Please check your email for confirmation link.', 'Account has been disabled.'].some(msg => msg === info.message)) {
+        Response.setStatus = 403;
+        Response.setMessage = info.message;
+      } else {
+        Response.setMessage = 'No applicable user.';
+      }
+    }
+    else {
+      const body = { user_id: user.user_id, email: user.email, username: user.username, pic_url: user.pic_url };
+      const token = (COOKIE_SECRET) && jwt.sign(body, COOKIE_SECRET, { expiresIn: "1hr" });
+      Response.setApiResponse('success', 200, 'Successfully logged in.', url, { token });
+    }
+    res.status(Response.getStatus).json(Response.getApiResponse());
+  })(req, res, next);
+}
+/**
  * Logs in the user using Passport. If successful, redirect to originally requested URL
  * @param {*} req
  * @param {*} res
@@ -535,6 +565,7 @@ export {
   renderLogin,
   login,
   loginUser,
+  loginApiUser,
   getUserCredentials,
   logoutUser,
   logout,

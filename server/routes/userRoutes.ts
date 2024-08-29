@@ -29,7 +29,8 @@ import {
 
 router.route('/:username')
   .get(setCache, renderUserPage)
-  .all(verifyMethods(['GET']));
+  .delete(isLoggedIn, isAuthor, deleteAccount)
+  .all(verifyMethods(['GET', 'DELETE']));
 
 router.route('/:username/renderUserScreen')
   .get(setCache, renderUserScreen)
@@ -66,7 +67,8 @@ router.route('/:username/settings/updateAboutMe')
 
 router.route('/:username/settings/updateBanner')
   .patch(isLoggedIn, isAuthor, parserBanner.single('bannerImage'), updateBanner)
-  .all(verifyMethods(['PATCH']));
+  .delete(isLoggedIn, isAuthor, deleteBanner)
+  .all(verifyMethods(['PATCH', 'DELETE']));
 
 router.route('/:username/dashboard')
   .get(setCache, isLoggedIn, isAuthor, renderUserDashboard)
@@ -75,13 +77,5 @@ router.route('/:username/dashboard')
 router.route('/:username/dashboard/:topic')
   .get(isLoggedIn, isAuthor, renderUserTopic)
   .all(verifyMethods(['GET']));
-
-router.route('/:username/settings/deleteBanner')
-  .delete(isLoggedIn, isAuthor, deleteBanner)
-  .all(verifyMethods(['DELETE']));
-
-router.route('/:username/deleteAccount')
-  .post(isLoggedIn, isAuthor, deleteAccount, logoutUser)
-  .all(verifyMethods(['POST']));
 
 export { router };

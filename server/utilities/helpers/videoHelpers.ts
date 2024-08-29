@@ -4,7 +4,7 @@ import { AppError } from "../AppError";
 import { YOUTUBE_KEY } from "../config/config";
 
 import { modifyVideoFn, ytVideoObject } from "../../types/types";
-import { RowDataPacket } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 const getTopicVideos = async (topic: string) => {
   try {
@@ -24,7 +24,7 @@ const getTopicVideos = async (topic: string) => {
 }
 /**
  * 
- * @param {string} vidId - Unique ID of video 
+ * @param {string} vidId - Unique URL key of video 
  * @param {string} topicName - Unique topic name video belongs to
  * @param {boolean} author - True if you want to include info on video's author
  * @returns AppError or Object containing video info
@@ -55,7 +55,7 @@ const getVideo = async (vidId: string, topicName: string, author: boolean = fals
 
     let videoInfo = video[0].map((v) => Object.assign({}, v));
     if (videoInfo.length < 1) {
-      return new AppError(400, "Video Doesn't Exist In This Topic");
+      return new AppError(404, "Video Doesn't Exist In This Topic");
     }
     else {
       return video[0].map((v: any) => Object.assign({}, v));
@@ -64,7 +64,60 @@ const getVideo = async (vidId: string, topicName: string, author: boolean = fals
     return new AppError(500, "Error Retrieving Video");
   }
 }
-const getVideos = async (vidIds: string[]) => {
+/**
+ * 
+ * @param {string} id - Unique ID of video 
+ * @returns AppError or Object containing video info
+ */
+const getVideoById = async (id: string) => {
+  try {
+    const db = await getDatabase();
+    if (db instanceof AppError) return db;
+
+    let video;
+
+    const sql = `SELECT * FROM videos WHERE id = ?`;
+    const values = [id];
+    video = await db.execute<RowDataPacket[]>(sql, values);
+
+    let videoInfo = video[0].map((v) => Object.assign({}, v));
+    if (videoInfo.length === 0) {
+      return new AppError(404, "Video Doesn't Exist In This Topic");
+    }
+    else {
+      return video[0].map((v: any) => Object.assign({}, v))[0];
+    }
+  } catch (err) {
+    return new AppError(500, "Error Retrieving Video");
+  }
+}
+/**
+ * 
+ * @param {string[]} ids - Unique ID of video 
+ * @returns AppError or Object containing video info
+ */
+const getVideosById = async (ids: string[]) => {
+  try {
+    const db = await getDatabase();
+    if (db instanceof AppError) return db;
+
+    let idList = '';
+    for (let i = 0; i < ids.length; i++) {
+      if (i === ids.length - 1) {
+        idList += ids[i].toString();
+      } else {
+        idList += `${ids[i].toString()},`;
+      }
+    }
+
+    const videos = await db.execute<RowDataPacket[]>(`SELECT * FROM videos WHERE id IN (${idList})`);
+
+    return videos[0].map((v: any) => Object.assign({}, v));
+  } catch (err) {
+    return new AppError(500, (err as Error).message);
+  }
+}
+const getVideoUrls = async (vidIds: string[]) => {
   let videos;
   let input = ``;
   try {
@@ -72,7 +125,7 @@ const getVideos = async (vidIds: string[]) => {
     if (db instanceof AppError) return db;
 
     if (!(Array.isArray(vidIds))) {
-      return new AppError(422, 'Invalid Arguments');
+      return new AppError(400, 'Video IDs must be an array of strings.');
     }
     else if (vidIds.length > 10000) {
       return new AppError(422, 'Can\'t get more than 10,000 videos at a time.');
@@ -94,7 +147,7 @@ const getVideos = async (vidIds: string[]) => {
 
       let videoInfo = videos[0].map((v) => Object.assign({}, v));
       if (videoInfo.length < 1) {
-        return new AppError(400, "Video Doesn't Exist");
+        return new AppError(404, "Video Doesn't Exist");
       }
       else {
         return videos[0].map((v) => Object.assign({}, v));
@@ -281,15 +334,15 @@ const videoExistsInTopic = async (vidId: string, topicName: string) => {
 
     topicName = escapeSQL(topicName);
 
-    const sql = `SELECT COUNT(url) FROM videos WHERE url = 'youtube.com/watch?v=:vidId' AND topic = :topicName`;
-    const values = { vidId, topicName };
+    const sql = `SELECT COUNT(url) FROM videos WHERE url = ? AND topic = ?`;
+    const values = [vidId, topicName];
 
     const result = await db.execute<RowDataPacket[]>(sql, values);
     exists = Object.values(result[0][0])[0] === 0 ? (exists = false) : (exists = true);
 
     return exists;
   } catch (err) {
-    return new AppError(500, "Error Checking Video");
+    return new AppError(500, (err as Error).message);
   }
 }
 const insertVideo = async (video: ytVideoObject, topicName: string, username: string) => {
@@ -483,10 +536,14 @@ const removeSelectedVideos = async (videos: string[]) => {
         }
       }
 
+      console.log(preparedLength);
+      console.log(stmt);
+
       const sql = `DELETE FROM videos WHERE id IN (${preparedLength})`;
       const values = stmt;
 
-      await db.execute(sql, values);
+      const result = await db.execute<ResultSetHeader>(sql, values);
+      return result[0].affectedRows;
     }
 
     return output;
@@ -498,7 +555,9 @@ const removeSelectedVideos = async (videos: string[]) => {
 export {
   getTopicVideos,
   getVideo,
-  getVideos,
+  getVideoById,
+  getVideosById,
+  getVideoUrls,
   getRecentVideos,
   searchVideos,
   getMoreVideos,

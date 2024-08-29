@@ -4,9 +4,10 @@ import { AppError } from "../utilities/AppError";
 import { paramsExist } from '../utilities/validators/paramsExist'
 import { getUser } from "../utilities/helpers/authHelpers";
 import { escapeHTML, unescapeSQL } from "../utilities/helpers/sanitizers";
-import { topicExists, enableHyphens } from "../utilities/helpers/topicHelpers";
+import { getTopic, enableHyphens } from "../utilities/helpers/topicHelpers";
 import {
-    getVideos,
+    getVideosById,
+    getVideoUrls,
     getVideoInfo,
     getPlaylistInfo,
     getPlaylistVideos,
@@ -17,16 +18,18 @@ import {
     modifyVideo,
     swapVideoRecords,
     removeVideo,
-    removeSelectedVideos
+    removeSelectedVideos,
+    getVideoById
 } from "../utilities/helpers/videoHelpers";
 
 import { Request, Response, NextFunction } from "express";
 
 const createVideo = async (req: Request, res: Response, next: NextFunction) => {
     const Response = new ApiResponse('error', 500, 'Something went wrong.');
+    const user = (req.user) ? req.user : res.locals.user;
     let outputData = {};
 
-    if (paramsExist([req.params.username, req.body.ytUrl, req.params.topic])) {
+    if (user && paramsExist([req.params.username, req.body.ytUrl, req.params.topic])) {
         const USERNAME = escapeHTML(req.params.username);
         const videoUrl = escapeHTML(req.body.ytUrl);
         const topicName = escapeHTML(req.params.topic);
@@ -46,57 +49,67 @@ const createVideo = async (req: Request, res: Response, next: NextFunction) => {
         else {
             vidId = videoUrl;
         }
-        let exists = await topicExists(topicNameNoDash);
+        const topic = await getTopic(topicNameNoDash);
 
-        if (exists instanceof AppError) return next(exists);
-        else if (exists === 0) {
+        if (topic instanceof AppError) return next(topic);
+        else if (topic.length === 0) {
             videoLogger.log('error', 'Topic doesn\'t exist.');
-            Response.setApiResponse('error', 400, 'Topic doesn\'t exist');
+            Response.setApiResponse('error', 404, 'Topic doesn\'t exist');
         }
         else {
-            if (!isPlaylist) {
-                let wait = await videoExistsInTopic(vidId, topicNameNoDash);
-                if (wait) {
-                    videoLogger.log('error', 'Video already exists in topic.');
-                    Response.setApiResponse('error', 409, 'Video already exists in topic');
+            if (user.username === topic[0].username) {
+                if (!isPlaylist) {
+                    let wait = await videoExistsInTopic(`youtube.com/${YT_URL_TEMPLATE}${vidId}`, topicNameNoDash);
+                    console.log(wait);
+                    if (wait instanceof AppError) {
+                        videoLogger.log('error', wait.message);
+                        Response.applyMessage(wait.message, 'Error when checking if video exists');
+                    }
+                    else if (wait) {
+                        videoLogger.log('error', 'Video already exists in topic.');
+                        Response.setApiResponse('error', 409, 'Video already exists in topic');
+                    }
+                    else {
+                        try {
+                            let video = await getVideoInfo(vidId);
+                            if (video instanceof AppError) throw new AppError(video.status, video.message);
+
+                            let id = await insertVideo(video, topicNameNoDash, USERNAME);
+                            if (id instanceof AppError) throw new AppError(id.status, id.message);
+
+                            outputData = { ...video, id };
+                            Response.setApiResponse('success', 201, 'Video Added', '/', outputData);
+                        }
+                        catch (err) {
+                            videoLogger.log('error', (err as Error).message);
+                            Response.applyMessage((err as Error).message, 'Error inserting video.');
+                        }
+                    }
                 }
                 else {
-                    try {
-                        let video = await getVideoInfo(vidId);
-                        if (video instanceof AppError) throw new AppError(video.status, video.message);
+                    let playlistInfo = await getPlaylistInfo(vidId);
+                    if (playlistInfo instanceof AppError) return next(playlistInfo);
 
-                        let id = await insertVideo(video, topicNameNoDash, USERNAME);
-                        if (id instanceof AppError) throw new AppError(id.status, id.message);
+                    let videos = await getPlaylistVideos(playlistInfo);
+                    if (videos instanceof AppError) return next(videos);
 
-                        outputData = { ...video, id };
-                        Response.setApiResponse('success', 201, 'Video Added', '/', outputData);
+                    let result = await insertManyVideos(videos, topicNameNoDash, USERNAME);
+                    if (result instanceof AppError) return next(result);
+
+                    let numOfVidsRequested = result.info.substring(result.info.indexOf('Records:') + 9, result.info.indexOf('Duplicates') - 2);
+                    let { affectedRows: numOfVidsAdded, addedVideos } = result;
+                    let numOfDuplicates = parseInt(numOfVidsRequested) - numOfVidsAdded;
+
+                    if (numOfVidsAdded === 1) {
+                        Response.setApiResponse('success', 201, `${numOfVidsAdded} video added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`, '/', addedVideos);
                     }
-                    catch (err) {
-                        videoLogger.log('error', (err as Error).message);
-                        Response.applyMessage((err as Error).message, 'Error inserting video.');
+                    else {
+                        Response.setApiResponse('success', 201, `${numOfVidsAdded} videos added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`, '/', addedVideos);
                     }
                 }
-            }
-            else {
-                let playlistInfo = await getPlaylistInfo(vidId);
-                if (playlistInfo instanceof AppError) return next(playlistInfo);
-
-                let videos = await getPlaylistVideos(playlistInfo);
-                if (videos instanceof AppError) return next(videos);
-
-                let result = await insertManyVideos(videos, topicNameNoDash, USERNAME);
-                if (result instanceof AppError) return next(result);
-
-                let numOfVidsRequested = result.info.substring(result.info.indexOf('Records:') + 9, result.info.indexOf('Duplicates') - 2);
-                let { affectedRows: numOfVidsAdded, addedVideos } = result;
-                let numOfDuplicates = parseInt(numOfVidsRequested) - numOfVidsAdded;
-
-                if (numOfVidsAdded === 1) {
-                    Response.setApiResponse('success', 201, `${numOfVidsAdded} video added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`, '/', addedVideos);
-                }
-                else {
-                    Response.setApiResponse('success', 201, `${numOfVidsAdded} videos added. ${numOfVidsRequested} videos requested with ${numOfDuplicates} duplicates.`, '/', addedVideos);
-                }
+            } else {
+                Response.setStatus = 403;
+                Response.setMessage = 'Not your topic.';
             }
         }
     }
@@ -108,7 +121,7 @@ const createVideo = async (req: Request, res: Response, next: NextFunction) => {
 }
 const editVideo = async (req: Request, res: Response, next: NextFunction) => {
     const Response = new ApiResponse('error', 500, 'Something went wrong.');
-    if (paramsExist([req.body.title, req.body.description, req.params.topic])) {
+    if (paramsExist([req.body.title, req.body.description])) {
         const title = escapeHTML(req.body.title);
         let description = escapeHTML(req.body.description);
         const id = req.params.video;
@@ -124,7 +137,7 @@ const editVideo = async (req: Request, res: Response, next: NextFunction) => {
             }
             else {
                 videoLogger.log('error', 'Video doesn\'t exist.');
-                Response.setStatus = 400;
+                Response.setStatus = 404;
                 Response.setMessage = 'Video doesn\'t exist.';
             }
         } catch (err) {
@@ -140,37 +153,54 @@ const editVideo = async (req: Request, res: Response, next: NextFunction) => {
 }
 const swapVideos = async (req: Request, res: Response, next: NextFunction) => {
     const Response = new ApiResponse('error', 500, 'Something went wrong.', '/');
-    if (paramsExist([req.body.currentVidId, req.body.swapVidId])) {
-        const currentVidId = escapeHTML(req.body.currentVidId);
-        const swapVidId = escapeHTML(req.body.swapVidId);
+    const user = (req.user) ? req.user : res.locals.user;
+    try {
+        if (user && paramsExist([req.body.currentVidId, req.body.swapVidId])) {
+            const currentVidId = escapeHTML(req.body.currentVidId);
+            const swapVidId = escapeHTML(req.body.swapVidId);
 
-        if (await videoExists(currentVidId) && await videoExists(swapVidId)) {
-            let result;
-            try {
-                result = await swapVideoRecords(currentVidId, swapVidId);
-                if (result instanceof AppError) throw new AppError(result.status, result.message);
-            } catch (err) {
-                videoLogger.log('error', (err as Error).message);
-                Response.applyMessage((err as Error).message, 'Error swapping videos.');
+            const currentVid = await getVideoById(currentVidId);
+            if (currentVid instanceof AppError) throw currentVid;
+            const swapVid = await getVideoById(swapVidId);
+            if (swapVid instanceof AppError) throw swapVid;
+
+            if (user.username === currentVid.username && user.username === swapVid.username) {
+                if (currentVid.topic === swapVid.topic) {
+                    let result;
+                    try {
+                        result = await swapVideoRecords(currentVidId, swapVidId);
+                        if (result instanceof AppError) throw new AppError(result.status, result.message);
+                    } catch (err) {
+                        videoLogger.log('error', (err as Error).message);
+                        Response.applyMessage((err as Error).message, 'Error swapping videos.');
+                    }
+                    Response.setApiResponse('success', 200, 'Successfully swapped videos.', '/');
+                } else {
+                    videoLogger.log('error', 'Topics do not match.');
+                    Response.setStatus = 400;
+                    Response.setMessage = 'Topics do not match';
+                }
             }
-            Response.setApiResponse('success', 200, 'Successfully swapped videos.', '/');
+            else {
+                Response.setStatus = 403;
+                Response.setMessage = 'One or both videos are not yours.';
+            }
         }
         else {
-            videoLogger.log('error', 'Video doesn\'t exist.');
-            Response.setStatus = 400;
-            Response.setMessage = 'Video doesn\'t exist';
+            videoLogger.log('error', 'Invalid Arguments');
+            Response.setApiResponse('error', 422, 'Invalid Arguments', '/');
         }
-    }
-    else {
-        videoLogger.log('error', 'Invalid Arguments');
-        Response.setApiResponse('error', 422, 'Invalid Arguments', '/');
+    } catch (err) {
+        if (err instanceof AppError) Response.setApiResponse('error', err.status, err.message);
+        videoLogger.log('error', (err as Error).message);
     }
     res.status(Response.getStatus).json(Response.getApiResponse());
 }
 const refreshMetadata = async (req: Request, res: Response, next: NextFunction) => {
     const Response = new ApiResponse('error', 500, 'Something went wrong.', '/');
+    let user = req.user ? req.user : res.locals.user;
     try {
-        if (req.user && paramsExist([req.body.videos])) {
+        if (user && paramsExist([req.body.videos])) {
             const { videos } = req.body;
             let vidInfo,
                 vidInfos,
@@ -178,7 +208,7 @@ const refreshMetadata = async (req: Request, res: Response, next: NextFunction) 
                 finalResult = new Array(),
                 offOutput;
 
-            const user = await getUser(req.user.username);
+            user = await getUser(user.username);
             if (user instanceof AppError) throw new Error(user.message);
 
             const { settingRefreshTitle,
@@ -188,7 +218,7 @@ const refreshMetadata = async (req: Request, res: Response, next: NextFunction) 
             if (settingRefreshTitle === 1) {
                 if (settingRefreshDescription === 1) {
                     if (settingRefreshThumbnail === 1) {
-                        vidInfos = await getVideos(videos);
+                        vidInfos = await getVideoUrls(videos);
                         if (vidInfos instanceof AppError) throw new Error(vidInfos.message);
                         for (let i = 0; i < vidInfos.length; i++) {
                             vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
@@ -201,7 +231,7 @@ const refreshMetadata = async (req: Request, res: Response, next: NextFunction) 
                         }
                     }
                     else {
-                        vidInfos = await getVideos(videos);
+                        vidInfos = await getVideoUrls(videos);
                         if (vidInfos instanceof AppError) throw new Error(vidInfos.message);
                         for (let i = 0; i < vidInfos.length; i++) {
                             vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
@@ -216,7 +246,7 @@ const refreshMetadata = async (req: Request, res: Response, next: NextFunction) 
                     }
                 }
                 else if (settingRefreshThumbnail === 1) {
-                    vidInfos = await getVideos(videos);
+                    vidInfos = await getVideoUrls(videos);
                     if (vidInfos instanceof AppError) throw new Error(vidInfos.message);
                     for (let i = 0; i < vidInfos.length; i++) {
                         vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
@@ -229,7 +259,7 @@ const refreshMetadata = async (req: Request, res: Response, next: NextFunction) 
                     }
                 }
                 else {
-                    vidInfos = await getVideos(videos);
+                    vidInfos = await getVideoUrls(videos);
                     if (vidInfos instanceof AppError) throw new Error(vidInfos.message);
                     for (let i = 0; i < vidInfos.length; i++) {
                         vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
@@ -245,7 +275,7 @@ const refreshMetadata = async (req: Request, res: Response, next: NextFunction) 
             }
             else if (settingRefreshDescription === 1) {
                 if (settingRefreshThumbnail === 1) {
-                    vidInfos = await getVideos(videos);
+                    vidInfos = await getVideoUrls(videos);
                     if (vidInfos instanceof AppError) throw new Error(vidInfos.message);
                     for (let i = 0; i < vidInfos.length; i++) {
                         vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
@@ -258,7 +288,7 @@ const refreshMetadata = async (req: Request, res: Response, next: NextFunction) 
                     }
                 }
                 else {
-                    vidInfos = await getVideos(videos);
+                    vidInfos = await getVideoUrls(videos);
                     if (vidInfos instanceof AppError) throw new Error(vidInfos.message);
                     for (let i = 0; i < vidInfos.length; i++) {
                         vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
@@ -273,7 +303,7 @@ const refreshMetadata = async (req: Request, res: Response, next: NextFunction) 
                 }
             }
             else if (settingRefreshThumbnail === 1) {
-                vidInfos = await getVideos(videos);
+                vidInfos = await getVideoUrls(videos);
                 if (vidInfos instanceof AppError) throw new Error(vidInfos.message);
                 for (let i = 0; i < vidInfos.length; i++) {
                     vidInfo = await getVideoInfo(vidInfos[i].url.substring(20));
@@ -309,14 +339,18 @@ const refreshMetadata = async (req: Request, res: Response, next: NextFunction) 
 }
 const deleteVideo = async (req: Request, res: Response, next: NextFunction) => {
     const Response = new ApiResponse('error', 500, 'Something went wrong.', '/');
+    const user = (req.user) ? req.user : res.locals.user;
     try {
-        if (paramsExist([req.params.video, req.params.username, req.params.topic])) {
+        if (user && paramsExist([req.params.video, req.params.username])) {
             const id = escapeHTML(req.params.video);
 
-            if (await videoExists(id)) {
+            const video = await getVideoById(id);
+            if (video instanceof AppError) throw video;
+
+            if (user.username === video.username) {
                 try {
                     let result = await removeVideo(id);
-                    if (result instanceof AppError) throw new AppError(result.status, result.message);
+                    //if (result instanceof AppError) throw new AppError(result.status, result.message);
                 } catch (err) {
                     videoLogger.log('error', (err as Error).message);
                     Response.applyMessage((err as Error).message, 'Error removing video.');
@@ -325,9 +359,9 @@ const deleteVideo = async (req: Request, res: Response, next: NextFunction) => {
                 Response.setApiResponse('success', 200, 'Video Deleted', '/');
             }
             else {
-                videoLogger.log('error', 'Video doesn\'t exist.');
-                Response.setStatus = 400;
-                Response.setMessage = 'Video doesn\'t exist';
+                videoLogger.log('error', 'Unauthorized. Not your video.');
+                Response.setStatus = 403;
+                Response.setMessage = 'Unauthorized. Not your video';
             }
         }
         else {
@@ -335,32 +369,66 @@ const deleteVideo = async (req: Request, res: Response, next: NextFunction) => {
             Response.setApiResponse('error', 422, 'Invalid Arguments', '/');
         }
     } catch (err) {
+        Response.setStatus = (err as AppError).status;
+        Response.setMessage = (Response.getStatus === 404) ? (err as Error).message : 'Something went wrong.';
         videoLogger.log('error', `Error deleting video: ${(err as Error).message}`);
     }
     res.status(Response.getStatus).json(Response.getApiResponse());
 
 }
-const deleteSelectedVideos = async (req: Request, res: Response, next: NextFunction) => {
+const deleteSelectedVideos = async (req: Request, res: Response) => {
     const Response = new ApiResponse('error', 500, 'Something went wrong.', '/');
+    const user = req.user ? req.user : res.locals.user;
     try {
-        let result;
-        if (paramsExist([req.body.videos])) {
-            try {
-                const { videos } = req.body;
-                result = await removeSelectedVideos(videos);
-                if (result instanceof AppError) throw new AppError(result.status, result.message);
+        if (user && paramsExist([req.body.videos])) {
+            let result = {
+                videosRequested: req.body.videos.length,
+                videosFound: 0,
+                videosDeleted: 0,
+                videosSkipped: 0,
+                issues: {
+                    unauthorized: 0,
+                    other: 0
+                }
+            };
+            if (req.body.videos.length > 1000) {
+                Response.setStatus = 422;
+                Response.setMessage = 'Cannot fetch more than 1,000 videos at a time.';
+            } else {
+                const videos = await getVideosById(req.body.videos);
+                if (videos instanceof AppError) throw videos;
 
-                Response.setApiResponse('success', 200, 'Successfully deleted videos.', '/');
-            } catch (err) {
-                videoLogger.log('error', (err as Error).message);
-                Response.applyMessage((err as Error).message, 'Error removing videos.');
+                let authorizedVideos = Array();
+                if (videos.length > 0) {
+                    result.videosFound = videos.length;
+
+                    for (const video of videos) {
+                        if (user.username === video.username) {
+                            authorizedVideos.push(video.id);
+                        } else {
+                            result.videosSkipped++;
+                            result.issues.unauthorized++;
+                        }
+                    }
+                    const removalResult = await removeSelectedVideos(authorizedVideos);
+                    if (removalResult instanceof AppError) throw removalResult;
+
+                    result.videosDeleted = removalResult;
+
+                    Response.setApiResponse('success', 200, 'Successfully deleted videos.', '/', result);
+                } else {
+                    Response.setStatus = 404;
+                    Response.setMessage = 'No videos found.';
+                    Response.setData = result;
+                }
             }
-
         } else {
             videoLogger.log('error', 'Invalid Arguments');
             Response.setApiResponse('error', 422, 'Invalid Arguments', '/');
         }
     } catch (err) {
+        Response.setStatus = (err as AppError).status;
+        Response.setMessage = (Response.getStatus === 404) ? (err as Error).message : 'Error removing videos.';
         videoLogger.log('error', `Error deleting selected videos: ${(err as Error).message}`);
     }
     res.status(Response.getStatus).json(Response.getApiResponse());

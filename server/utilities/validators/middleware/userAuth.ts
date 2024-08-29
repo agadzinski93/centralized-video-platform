@@ -1,4 +1,5 @@
 import { AppError } from "../../AppError";
+import { getDatabase } from "../../db/mysql-connect";
 import { paramsExist } from "../paramsExist";
 import { escapeHTML } from "../../helpers/sanitizers";
 import { usernameMatch } from "../../helpers/authHelpers";
@@ -8,6 +9,7 @@ import { NODE_ENV, COOKIE_SECRET, GOOGLE_SUCCESS_URL } from "../../config/config
 
 import { Request, Response, NextFunction } from "express";
 import { UserObject } from "../../../types/types";
+import { RowDataPacket } from "mysql2";
 
 const tokenCookieExtractor = (req: Request) => {
   let token = null;
@@ -40,24 +42,49 @@ const verifyUser = (req: Request, res: Response, next: NextFunction) => {
 }
 
 const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
+  //STEP 1) First, check if a session exists with PassportJS
   if (req.isAuthenticated()) {
     next();
   }
   else {
-    passport.authenticate('cookie', { session: false }, (err: any, user: any, info: any) => {
-      if (user) {
-        return next();
-      }
-      else {
-        return next(new AppError(401, "Unauthorized"));
-      }
-    })(req, res, next);
+    //STEP 2) If no session exists, check if an Auth header was sent (must contain JWT string)
+    if (req.header('Authorization')) {
+      passport.authenticate('bearer', { session: false }, async (err: any, user: any, info: any) => {
+        if (user) {
+          //If user info is returned from JWT, validate the username with the username in db
+          const db = await getDatabase();
+          if (db instanceof AppError) return next(new AppError(500, "Error verifying author status."));
+
+          const sql = `SELECT username FROM users WHERE user_id = ?`;
+          const values = [user.user_id];
+          let result = await db.execute<RowDataPacket[]>(sql, values);
+          if (user.username === result[0][0].username) {
+            res.locals.user = user;
+          }
+          return next();
+        }
+        else {
+          return next(new AppError(401, "Unauthorized"));
+        }
+      })(req, res, next);
+    } else {
+      //STEP 3) If no Auth Header, validate if a cookie exists, this will result in 401 if it fails
+      passport.authenticate('cookie', { session: false }, (err: any, user: any, info: any) => {
+        if (user) {
+          return next();
+        }
+        else {
+          return next(new AppError(401, "Unauthorized"));
+        }
+      })(req, res, next);
+    }
   }
 }
 
 const isAuthor = async (req: Request, res: Response, next: NextFunction) => {
-  if (paramsExist([(req.user as UserObject)?.username, req.params.username])) {
-    const loggedUsername = escapeHTML((req.user as UserObject).username);
+  if (paramsExist([req.params.username])) {
+    //Check either req.user for sessions or res.locals.user if Authorization header was used
+    let loggedUsername = (req.user) ? escapeHTML((req.user as UserObject).username) : escapeHTML(res.locals.user.username);
     const urlUsername = escapeHTML(req.params.username);
 
     if (loggedUsername && urlUsername) {
@@ -72,7 +99,7 @@ const isAuthor = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-const processValidation = (req: Request, res: Response, next: NextFunction) => {
+const processValidation = (req: Request, res: Response) => {
   if (!req?.user?.username) {
     res.cookie('tmp_user', JSON.stringify(req.user), {
       httpOnly: false,

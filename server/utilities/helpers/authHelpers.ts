@@ -24,7 +24,7 @@ const getUser = async (username: string, columns: string = '*'): Promise<AppErro
     const user = await db.execute<RowDataPacket[]>(sql, values);
 
     if (user[0].length === 0) {
-      return new AppError(400, "User Doesn't Exist");
+      return new AppError(404, "User Doesn't Exist");
     }
 
     return Object.assign(({} as UserObject), Object.values(user[0])[0]);
@@ -50,7 +50,7 @@ const getUserById = async (id: string, columns: string = '*'): Promise<AppError 
     const user = await db.execute<RowDataPacket[]>(sql, values);
 
     if (user[0].length === 0) {
-      return new AppError(400, "User Doesn't Exist");
+      return new AppError(404, "User Doesn't Exist");
     }
 
     return Object.assign(({} as UserObject), Object.values(user[0])[0]);
@@ -76,7 +76,7 @@ const getUserByGoogleId = async (google_id: string, email: string): Promise<AppE
     const user = await db.execute<RowDataPacket[]>(sql, values);
 
     if (user[0].length === 0) {
-      return new AppError(400, "User Doesn\'t Exist");
+      return new AppError(404, "User Doesn\'t Exist");
     }
 
     return Object.assign(({} as UserObject), Object.values(user[0])[0]);
@@ -131,7 +131,7 @@ const usernameMatch = async (loggedUsername: string, urlUsername: string): Promi
     const user = await db.execute<RowDataPacket[]>(sql, values);
 
     if (user[0].length === 0) {
-      return new AppError(400, "User Doesn't Exist");
+      return new AppError(404, "User Doesn't Exist");
     }
 
     const userObj = Object.assign(({} as UserObject), Object.values(user[0])[0]);

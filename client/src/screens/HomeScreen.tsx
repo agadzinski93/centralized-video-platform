@@ -132,7 +132,11 @@ const HomeScreen = () => {
               <div className="topic-image-container">
                 <div
                   className="topic-image"
-                  style={{ backgroundImage: `url('${topic.imageUrl}')` }}
+                  style={
+                    topic.imageUrl.substring(0, 4) === "http"
+                      ? { backgroundImage: `url('${topic.imageUrl}')` }
+                      : { backgroundImage: `url('/api/v1${topic.imageUrl}')` }
+                  }
                 ></div>
               </div>
             </div>

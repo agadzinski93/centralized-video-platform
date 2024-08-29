@@ -7,7 +7,7 @@ import {
     unsubscribe
 } from '../controllers/subscriberCont';
 
-router.route('/')
+router.route('/:username')
     .post(isLoggedIn, subscribe)
     .delete(isLoggedIn, unsubscribe)
     .all(verifyMethods(['POST', 'DELETE']));

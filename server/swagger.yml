@@ -1,0 +1,2022 @@
+openapi: 3.1.0
+info:
+  title: Centralized Video Platform API
+  description: |
+    Learn how to interact with this API with your own client app.
+    # How to Authenticate
+    ## 1. Sign In Via Client App
+    You can sign in on a client app which will place a cookie in your browser giving you access to protected routes.
+    ## 2. Sign In With Swagger
+    You can also use the **/auth/api/login** path below and provide your username and password in the request body. The response will include a token you can copy/paste into the Authorize button. Alternately, you can use an API tool like Postman and apply the token in the Authorization header with the value ```bearer [token]```
+  version: 1.0.0
+servers:
+  - url: https://cvp.programminghelp.org/api/v1
+  - url: http://localhost:3000/api/v1
+    description: Development Server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    successType:
+      type: string
+      enum:
+        - success
+        - error
+    user:
+      type: object
+      properties:
+        user_id:
+          type: string
+        username:
+          type: string
+        display_name:
+          oneOf:
+            - type: string
+            - type: 'null'
+        pic_url:
+          type: string
+        banner_url:
+          oneOf:
+            - type: string
+            - type: 'null'
+        subscribers:
+          type: number
+        account_type:
+          type: string
+          enum:
+            - admin
+            - user
+    about-me:
+      type: object
+      properties:
+        dateJoined:
+          type: string
+          examples:
+            - '2023-01-03T08:00:00.000Z'
+        about_me:
+          oneOf:
+            - type: string
+            - type: 'null'
+        subscriptions:
+          type: number
+    updateRefreshMetadataRequest:
+      type: object
+      properties:
+        setting:
+          type: string
+          enum:
+            - Title
+            - Description
+            - Thumbnail
+        value:
+          type: string
+          enum:
+            - '0'
+            - '1'
+    updateDisplayName:
+      type: object
+      properties:
+        displayName:
+          type: string
+          minLength: 3
+          maxLength: 24
+    updateEmail:
+      type: object
+      properties:
+        email:
+          type: string
+          maxLength: 45
+    updateAboutMe:
+      type: object
+      properties:
+        txtAboutMe:
+          type: string
+          maxLength: 1024
+    uploadImageResponse:
+      type: object
+      properties:
+        path:
+          type: string
+        filename:
+          type: string
+    deleteImageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        image:
+          $ref: '#/components/schemas/uploadImageResponse'
+    subscribeData:
+      type: object
+      properties:
+        author_id:
+          type: string
+    loginForm:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    video:
+      type: object
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        url:
+          type: string
+        thumbnail:
+          type: string
+        topic:
+          type: string
+        username:
+          type: string
+        timeCreated:
+          type: string
+          examples:
+            - '2024-03-28T05:51:52.000Z'
+        pic_url:
+          type: string
+        topicUrl:
+          type: string
+          examples:
+            - Topic-name-with-hyphens
+    updateVideo:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+    createVideoResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+        description:
+          type: string
+        views:
+          type: string
+        thumbnail:
+          type: string
+        id:
+          type: number
+    swapVideos:
+      type: object
+      properties:
+        currentVidId:
+          type: string
+        swapVidId:
+          type: string
+    deleteSelectedVideosResponse:
+      type: object
+      properties:
+        videosRequested:
+          type: number
+        videosFound:
+          type: number
+        videosDeleted:
+          type: number
+        videosSkipped:
+          type: number
+        issues:
+          type: object
+          properties:
+            unauthorized:
+              type: number
+            other:
+              type: number
+    createTopic:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 45
+        description:
+          type: string
+          minLength: 3
+          maxLength: 512
+        difficulty:
+          type: string
+          enum:
+            - Beginner
+            - Intermediate
+            - Advanced
+    createTopicResponse:
+      allOf:
+        - $ref: '#/components/schemas/createTopic'
+        - type: object
+          properties:
+            imageUrl:
+              type: string
+            timeCreated:
+              type: string
+            username:
+              type: string
+    topic:
+      allOf:
+        - $ref: '#/components/schemas/createTopic'
+        - type: object
+          properties:
+            imageUrl:
+              type:
+                - 'null'
+                - string
+            filename:
+              type:
+                - 'null'
+                - string
+            username:
+              type: string
+            timeCreated:
+              type: string
+              examples:
+                - '2023-04-01T04:58:12.000Z'
+            pic_url:
+              type: string
+            topicUrl:
+              type: string
+              examples:
+                - Topic-name-with-hyphens
+    videoKey:
+      properties:
+        ytUrl:
+          type: string
+    success:
+      properties:
+        response:
+          $ref: '#/components/schemas/successType'
+        status:
+          type: number
+          examples:
+            - 200
+        message:
+          type: string
+          examples:
+            - Successfully completed action.
+        prevPath:
+          type: string
+          examples:
+            - /
+    created:
+      properties:
+        response:
+          $ref: '#/components/schemas/successType'
+        status:
+          type: number
+          examples:
+            - 201
+        message:
+          type: string
+          examples:
+            - Successfully completed action.
+        prevPath:
+          type: string
+          examples:
+            - /
+    badRequest:
+      properties:
+        response:
+          $ref: '#/components/schemas/successType'
+          examples:
+            - error
+        status:
+          type: number
+          examples:
+            - 400
+        message:
+          type: string
+          examples:
+            - Bad request.
+        prevPath:
+          type: string
+          examples:
+            - /
+    notFound:
+      properties:
+        response:
+          $ref: '#/components/schemas/successType'
+          examples:
+            - error
+        status:
+          type: number
+          examples:
+            - 404
+        message:
+          type: string
+          examples:
+            - Resource not found.
+        prevPath:
+          type: string
+          examples:
+            - /
+    conflict:
+      properties:
+        response:
+          $ref: '#/components/schemas/successType'
+          examples:
+            - error
+        status:
+          type: number
+          examples:
+            - 409
+        message:
+          type: string
+          examples:
+            - Conflict with resource.
+        prevPath:
+          type: string
+          examples:
+            - /
+    tooLarge:
+      properties:
+        response:
+          $ref: '#/components/schemas/successType'
+          examples:
+            - error
+        status:
+          type: number
+          examples:
+            - 413
+        message:
+          type: string
+          examples:
+            - Request data or file too large.
+        prevPath:
+          type: string
+          examples:
+            - /
+    unsupportedMediaType:
+      properties:
+        response:
+          $ref: '#/components/schemas/successType'
+          examples:
+            - error
+        status:
+          type: number
+          examples:
+            - 415
+        message:
+          type: string
+          examples:
+            - Incorrect MIME type, request encoding, or file type on upload.
+        prevPath:
+          type: string
+          examples:
+            - /
+    unprocessableEntity:
+      properties:
+        response:
+          $ref: '#/components/schemas/successType'
+          examples:
+            - error
+        status:
+          type: number
+          examples:
+            - 422
+        message:
+          type: string
+          examples:
+            - Invalid arguments.
+        prevPath:
+          type: string
+          examples:
+            - /
+    internalServerError:
+      properties:
+        response:
+          $ref: '#/components/schemas/successType'
+          examples:
+            - error
+        status:
+          type: number
+          examples:
+            - 500
+        message:
+          type: string
+          examples:
+            - Something went wrong.
+        prevPath:
+          type: string
+          examples:
+            - /
+    searchRequest:
+      properties:
+        searchQuery:
+          type: string
+          examples:
+            - My search term
+        pageNumber:
+          type: number
+          examples:
+            - 1
+    userContent:
+      oneOf:
+        - allOf:
+            - $ref: '#/components/schemas/success'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    response:
+                      $ref: '#/components/schemas/successType'
+                    data:
+                      type: array
+                      items:
+                        oneOf:
+                          - $ref: '#/components/schemas/topic'
+                          - $ref: '#/components/schemas/video'
+        - allOf:
+            - $ref: '#/components/schemas/success'
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    response:
+                      $ref: '#/components/schemas/successType'
+                    data:
+                      $ref: '#/components/schemas/about-me'
+paths:
+  /auth/api/login:
+    post:
+      description: >-
+        JSON response will include a token property that can be used in the HTTP
+        Request Authorization header as "Bearer [token]" in protected routes.
+        The token lasts for 1 hour.
+      tags:
+        - Authentication
+      requestBody:
+        description: Must include username and password.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginForm'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+        '400':
+          description: Bad Request - Example is when using incorrect credentials.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /home:
+    get:
+      description: >-
+        Returns recent topics and video added to site. Arrays will have a max
+        length of 7 for topics and 14 for videos.
+      tags:
+        - Home
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          title:
+                            type: string
+                            examples:
+                              - >-
+                                Programming Help | Your Source For Programming
+                                Tutorials
+                          videos:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/video'
+                          topics:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/topic'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /renderSearchScreen:
+    get:
+      description: >-
+        This endpoint only returns the initial results for the search query. Use
+        the endpoint /getMoreResults to return further paginated results.
+      tags:
+        - Search
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: Query string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          searchQuery:
+                            type: string
+                            examples:
+                              - Your search query
+                          videos:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/video'
+        '422':
+          description: Unprocessable Content - Occurs with empty or omitted search query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /search:
+    post:
+      description: >-
+        Returns paginated results of videos in array format. Must supply a
+        search query and page number in the Request body
+      tags:
+        - Search
+      requestBody:
+        description: Contains the search query and the page number of results to request.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/searchRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          videos:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/video'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /lib/{topic}/renderTopicScreen:
+    get:
+      description: >-
+        Returns metadata for topic as well as videos associated with topic. Use
+        hyphens for topic name.
+      tags:
+        - Library
+      parameters:
+        - in: path
+          name: topic
+          required: true
+          schema:
+            type: string
+          description: Topic name with hyphens
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          topic:
+                            $ref: '#/components/schemas/topic'
+                          videos:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/video'
+        '404':
+          description: Topic not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/notFound'
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the topic
+            name.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /lib/{topic}/{video}/renderVideoScreen:
+    get:
+      description: >-
+        Returns metadata for topic for which the video belongs. Also returns
+        metadata for the other videos in topic. Topic will be determined by the
+        video placed in path. Use hyphens for topic name.
+      tags:
+        - Library
+      parameters:
+        - in: path
+          name: topic
+          required: true
+          schema:
+            type: string
+          description: Topic name with hyphens
+        - in: path
+          name: video
+          required: true
+          schema:
+            type: string
+          description: Video youtube key.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          topic:
+                            $ref: '#/components/schemas/topic'
+                          video:
+                            $ref: '#/components/schemas/video'
+                          videos:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/video'
+        '404':
+          description: Topic or video not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/notFound'
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the topic
+            name or video key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /user/{username}/renderUserScreen:
+    get:
+      description: >-
+        Returns metadata regarding the user defined in the path. Also returns
+        user data if the client is signed into their account, null otherwise.
+      tags:
+        - User Page
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of dashboard.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          author:
+                            $ref: '#/components/schemas/user'
+                          user:
+                            oneOf:
+                              - type: 'null'
+                              - $ref: '#/components/schemas/user'
+        '400':
+          description: Bad Request - Occurs if user data is malformed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/notFound'
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /user/{username}/getUserContent:
+    get:
+      description: >-
+        Returns paginated results for a user's topics or videos or the user's
+        About Me
+      tags:
+        - User Page
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of dashboard.
+        - in: query
+          name: content
+          schema:
+            type: string
+            enum:
+              - topics
+              - videos
+              - about-me
+          description: Which content from the user should be loaded?
+        - in: query
+          name: viewAll
+          schema:
+            type: boolean
+          description: >-
+            Did the client click the View All button on the UI to see additional
+            results?
+        - in: query
+          name: page
+          schema:
+            type: number
+          description: Page number for results.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userContent'
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/notFound'
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /subscribe/{username}:
+    post:
+      description: Subscribe to a user.
+      tags:
+        - Subscriptions
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of dashboard.
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/created'
+        '400':
+          description: >-
+            Bad Request - Occurs when trying to subscribe to yourself or a
+            non-existent user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '401':
+          description: Unauthenticated
+        '404':
+          description: User not found. Occurs if username in path does not exist.
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+    delete:
+      description: Unsubscribe from a user.
+      tags:
+        - Subscriptions
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of dashboard.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+        '401':
+          description: Unauthenticated
+        '404':
+          description: User not found. Occurs if username in path does not exist.
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /topics/{username}/create:
+    post:
+      description: Create a topic.
+      tags:
+        - Topics
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: >-
+          Name and description require a minimum of 3 characters and difficulty
+          must be Beginner, Intermediate, or Advanced. Uploading a topic banner
+          is optional but must be of type JPG, PNG, GIF, TIF, or WEBP.
+        content:
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/createTopic'
+                - type: object
+                  properties:
+                    topic[file]:
+                      type: string
+                      format: binary
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of dashboard.
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/created'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/createTopicResponse'
+        '400':
+          description: >-
+            Bad request. Occurs if validation of topic name, description, or
+            difficulty fails.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found. Occurs if username in path does not exist.
+        '409':
+          description: Conflict - Occurs if topic with same name already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conflict'
+        '413':
+          description: Payload too large - Occurs if uploaded file exceeds 1MB.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tooLarge'
+        '415':
+          description: Unsupported file type - Files must be JPG, PNG, GIF, TIF, or WEBP.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unsupportedMediaType'
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /topics/{username}/{topic}:
+    put:
+      description: Edit a topic.
+      tags:
+        - Topics
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: >-
+          Edit the topic. Requires a topic name, difficulty, and description.
+          Same validation rules apply.
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/createTopic'
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of dashboard.
+        - in: path
+          name: topic
+          required: true
+          schema:
+            type: string
+          description: Name of topic to update.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/createTopic'
+        '400':
+          description: >-
+            Bad request. Occurs if validation of topic name, description, or
+            difficulty fails.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found. Occurs if username in path does not exist.
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or topic name.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+    delete:
+      description: Delete a topic.
+      tags:
+        - Topics
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of dashboard.
+        - in: path
+          name: topic
+          required: true
+          schema:
+            type: string
+          description: Name of topic to delete.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found. Occurs if username in path does not exist.
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or topic name.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /topics/{username}/deleteSelected:
+    delete:
+      description: >-
+        Delete topics based on name. Topics must be sent as an array of strings.
+        Limit 100 topics at a time.
+      tags:
+        - Topics
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: >-
+          Topic names must be sent as an array of strings. Limit 100 names per
+          request.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                topics:
+                  type: array
+                  items:
+                    type: string
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+        '400':
+          description: Bad Request - Occurs if the body is not an array of strings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found. Occurs if username in path does not exist.
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or topics in body (e.g. malformed array, sending over 100
+            topics).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /topics/{username}/{topic}/image:
+    put:
+      description: Update topic image.
+      tags:
+        - Topics
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Images must be of type JPG, PNG, GIF, TIF, or WEBP.
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                topic[file]:
+                  type: string
+                  format: binary
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+        - in: path
+          name: topic
+          required: true
+          schema:
+            type: string
+          description: Name of topic to update image.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        type: string
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found. Occurs if username in path does not exist.
+        '413':
+          description: Payload too large - Occurs if uploaded file exceeds 1MB.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tooLarge'
+        '415':
+          description: Unsupported file type - Files must be JPG, PNG, GIF, TIF, or WEBP.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unsupportedMediaType'
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /video/{username}/{topic}/create:
+    post:
+      description: Add a video or playlist
+      tags:
+        - Videos
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: YouTube key or full URL of video/playlist to add.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/videoKey'
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+        - in: path
+          name: topic
+          required: true
+          schema:
+            type: string
+          description: Name of topic to add video.
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/created'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/createVideoResponse'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: >-
+            Unauthorized. Also occurs when trying to add a video to someone
+            else's topic.
+        '404':
+          description: User or topic not found.
+        '409':
+          description: Conflict - Occurs if video already exists in topic.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conflict'
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username, topic, or YouTube URL sent in the body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /video/{username}/{video}:
+    put:
+      description: Update a video.
+      tags:
+        - Videos
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: YouTube key or full URL of video to add.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateVideo'
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+        - in: path
+          name: video
+          required: true
+          schema:
+            type: string
+          description: Video id
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User or video not found.
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or video ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+    delete:
+      description: Delete a video.
+      tags:
+        - Videos
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+        - in: path
+          name: video
+          required: true
+          schema:
+            type: string
+          description: Video id
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User or video not found.
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or video ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /video/{username}/swapVideos:
+    put:
+      description: Swap places of two videos in topic.
+      tags:
+        - Videos
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+      requestBody:
+        description: IDs of the two videos you wish to swap places.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/swapVideos'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+        '400':
+          description: Bad Request - Example if trying to swap videos in different topics.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: >-
+            Unauthorized. Also occurs when tring to swap videos with another
+            user.
+        '404':
+          description: User or videos not found.
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or video IDs in request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /video/{username}/refreshMetadata:
+    put:
+      description: >-
+        Refresh the title, description, and thumbnail of a video from it's
+        source. Helpful if the metadata has been updated on the source service.
+      tags:
+        - Videos
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: >-
+          Array of strings representing the IDs of the videos you wish to
+          refresh.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                videos:
+                  type: array
+                  items:
+                    type: string
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found.
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or video IDs in request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /video/{username}/deleteSelected:
+    delete:
+      description: Delete multiple videos by Id
+      tags:
+        - Videos
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: >-
+          Array of strings representing the IDs of the videos you wish to
+          delete.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                videos:
+                  type: array
+                  items:
+                    type: string
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/deleteSelectedVideosResponse'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found.
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or video IDs in request body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /user/{username}/settings/updateRefreshMetadata:
+    patch:
+      description: >-
+        Toggle whether updating a video's metadata will include the title,
+        description, and thumbnail.
+      tags:
+        - User Settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: >-
+          Setting must be of value Title, Description, or Thumbnail. Value must
+          be 1 = enable or 0 = disable.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateRefreshMetadataRequest'
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found.
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or the settings in the body is missing or is not of the
+            value 0 or 1.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /user/{username}/settings/updateDisplayName:
+    patch:
+      description: Update display name
+      tags:
+        - User Settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Display name must be between 3 and 24 characters.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateDisplayName'
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found.
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or if the validation of the display name fails.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /user/{username}/settings/updateEmail:
+    patch:
+      description: Update email address
+      tags:
+        - User Settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Enter a valid email.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateEmail'
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found.
+        '409':
+          description: Conflict - Email already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conflict'
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or if the validation of the email fails.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /user/{username}/settings/updateAboutMe:
+    patch:
+      description: Update user's About Me section
+      tags:
+        - User Settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Enter an About Me. Can also be empty if you wish.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateAboutMe'
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          aboutMe:
+                            type: string
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found.
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or if the validation for the About Me fails.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /user/{username}/settings/updateProfilePic:
+    patch:
+      description: Update the user's profile picture
+      tags:
+        - User Settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Profile picture must be of type JPG, PNG, GIF, TIF, or WEBP.
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                profileImage:
+                  type: string
+                  format: binary
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/uploadImageResponse'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found.
+        '413':
+          description: Payload too large - Occurs if uploaded file exceeds 1MB.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tooLarge'
+        '415':
+          description: Unsupported file type - Files must be JPG, PNG, GIF, TIF, or WEBP.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unsupportedMediaType'
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or if the no file was uploaded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+    delete:
+      description: Delete user's profile picture
+      tags:
+        - User Settings
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/deleteImageResponse'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+  /user/{username}/settings/updateBanner:
+    patch:
+      description: Update the user's banner
+      tags:
+        - User Settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Banner must be of type JPG, PNG, GIF, TIF, or WEBP.
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                bannerImage:
+                  type: string
+                  format: binary
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/success'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/uploadImageResponse'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found.
+        '413':
+          description: Payload too large - Occurs if uploaded file exceeds 1MB.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tooLarge'
+        '415':
+          description: Unsupported file type - Files must be JPG, PNG, GIF, TIF, or WEBP.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unsupportedMediaType'
+        '422':
+          description: >-
+            Unprocessable Content - Occurs when there is an error with the
+            username or if the no file was uploaded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unprocessableEntity'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'
+    delete:
+      description: Delete user's banner
+      tags:
+        - User Settings
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username found in path of URL.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found.
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalServerError'

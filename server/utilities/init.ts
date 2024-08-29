@@ -8,8 +8,10 @@ import session from 'express-session'
 const MySQLStore = require('express-mysql-session')(session);
 import passport from 'passport';
 import './ppStrategies';
-import cookieParser from 'cookie-parser'
-import rateLimit from 'express-rate-limit'
+import cookieParser from 'cookie-parser';
+import rateLimit from 'express-rate-limit';
+import YAML from 'yamljs';
+import swaggerUi from 'swagger-ui-express';
 import { apiRouter } from '../routes/apiRoute';
 import { verifyUser } from './validators/middleware/userAuth';
 import { setCors } from './validators/middleware/setHeaders';
@@ -27,6 +29,9 @@ const addCloseProcessHandlers = (server: Server) => {
     process.on('unhandledRejection', exitHandler(1, 'Unhandled Promise'));
     process.on('SIGTERM', exitHandler(0, 'SIGTERM'));
     process.on('SIGINT', exitHandler(0, 'SIGINT'));
+}
+const addSwagger = (app: Express): void => {
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(YAML.load('./server/swagger.yml')));
 }
 const addRoutes = (app: Express): void => {
     try {
@@ -46,7 +51,8 @@ const addRoutes = (app: Express): void => {
             if (res.headersSent) return;
             if (err.message === 'Authentication Failed. Logging out.') req.logout((err) => { });
             res.locals.message = err.message;
-            const status = err.status || 500;
+            let status = err.status || 500;
+            if (err.message === 'File too large') status = 413;
             const pageStyles = null;
             const message = (process.env.NODE_ENV === 'production') ? err.message : err.stack;
             res.status(status).render("error", { title: `${status} Error`, status, message, pageStyles, PATH_CSS, PATH_ASSETS, API_PATH, user: req.user });
@@ -64,7 +70,7 @@ const addSecurityPolicy = (app: Express) => {
             directives: {
                 imgSrc: ["'self'", "data:", "https://res.cloudinary.com", "https://storage.googleapis.com", `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com`, "https://i.ytimg.com"],
                 scriptSrc: ["'self'", "'unsafe-inline'"],
-                frameSrc: ["'self'", "https://www.youtube.com"],
+                frameSrc: ["'self'", "https://www.youtube.com"]
             }
         },
     }));
@@ -109,6 +115,7 @@ const initializePassport = (app: Express): void => {
 
 export {
     addCloseProcessHandlers,
+    addSwagger,
     addRoutes,
     addSecurityPolicy,
     addRateLimit,

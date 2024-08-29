@@ -30,7 +30,7 @@ router.route('/:username/:topic')
   .all(verifyMethods(['PUT,DELETE']));
 
 router.route('/:username/:topic/image')
-  .post(isLoggedIn, isAuthor, parser.single('topic[file]'), editTopicImage)
-  .all(verifyMethods(['POST']));
+  .put(isLoggedIn, isAuthor, parser.single('topic[file]'), editTopicImage)
+  .all(verifyMethods(['PUT']));
 
 export { router };

@@ -45,13 +45,18 @@ const renderTopicScreen = async (req: Request, res: Response): Promise<void> => 
       let topic = await getTopic(topicName);
       if (topic instanceof AppError) throw topic;
 
-      const videos = await getTopicVideos(topicName);
-      if (videos instanceof AppError) throw videos;
-      for (let video of videos) {
-        video.topicUrl = enableHyphens(video.topic, true);
-      }
+      if (topic.length !== 0) {
+        const videos = await getTopicVideos(topicName);
+        if (videos instanceof AppError) throw videos;
+        for (let video of videos) {
+          video.topicUrl = enableHyphens(video.topic, true);
+        }
 
-      Response.setApiResponse('success', 200, 'Successfully retrieved topic.', '/', { topic: topic[0], videos });
+        Response.setApiResponse('success', 200, 'Successfully retrieved topic.', '/', { topic: topic[0], videos });
+      } else {
+        Response.setStatus = 404;
+        Response.setMessage = 'Topic doesn\'t exist.';
+      }
     } else {
       Response.setStatus = 422;
       Response.setMessage = "Invalid arguments.";
@@ -122,36 +127,41 @@ const renderVideoScreen = async (req: Request, res: Response): Promise<void> => 
       let topic = await getTopic(topicName);
       if (topic instanceof AppError) throw topic;
 
-      const videos = await getTopicVideos(topicName);
-      if (videos instanceof AppError) throw videos;
-      for (let video of videos) {
-        video.topicUrl = enableHyphens(video.topic, true);
-      }
-
-      let videoId = escapeHTML(paramVideo);
-      res.locals.prevUrl = `/lib/${topicName}/${videoId}`;
-      let timestamp = null;
-      if (videoId.includes('&t=')) {
-        if (videoId.charAt(videoId.length - 1) === 's') {
-          timestamp = videoId.substring(videoId.indexOf('=') + 1, videoId.length - 1);
+      if (topic.length !== 0) {
+        const videos = await getTopicVideos(topicName);
+        if (videos instanceof AppError) throw videos;
+        for (let video of videos) {
+          video.topicUrl = enableHyphens(video.topic, true);
         }
-      }
-      videoId = removeParams(videoId);
 
-      let video = await getVideo(videoId, topicName, true);
-      if (video instanceof AppError) throw video;
-
-      video[0].videoId = videoId;
-      video[0].topicUrl = enableHyphens(video[0].topic, true)
-      let subscribed = null;
-      if (req.user) {
-        userId = req.user.user_id;
-        if (userId !== video[0].user_id) {
-          subscribed = await isSubscribed(userId, video[0].user_id);
-          if (subscribed instanceof AppError) throw subscribed;
+        let videoId = escapeHTML(paramVideo);
+        res.locals.prevUrl = `/lib/${topicName}/${videoId}`;
+        let timestamp = null;
+        if (videoId.includes('&t=')) {
+          if (videoId.charAt(videoId.length - 1) === 's') {
+            timestamp = videoId.substring(videoId.indexOf('=') + 1, videoId.length - 1);
+          }
         }
+        videoId = removeParams(videoId);
+
+        let video = await getVideo(videoId, topicName, true);
+        if (video instanceof AppError) throw video;
+
+        video[0].videoId = videoId;
+        video[0].topicUrl = enableHyphens(video[0].topic, true)
+        let subscribed = null;
+        if (req.user) {
+          userId = req.user.user_id;
+          if (userId !== video[0].user_id) {
+            subscribed = await isSubscribed(userId, video[0].user_id);
+            if (subscribed instanceof AppError) throw subscribed;
+          }
+        }
+        Response.setApiResponse('success', 200, 'Successfully retrieved video.', '/', { topic: topic[0], video: video[0], videos, subscribed });
+      } else {
+        Response.setStatus = 404;
+        Response.setMessage = 'Video not found';
       }
-      Response.setApiResponse('success', 200, 'Successfully retrieved video.', '/', { topic: topic[0], videos, video: video[0], subscribed });
     } else {
       Response.setStatus = 422;
       Response.setMessage = "Invalid arguments.";

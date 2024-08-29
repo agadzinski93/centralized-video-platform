@@ -509,7 +509,7 @@ const addBasicInfoEvents = () => {
             toggleBackdrop(true, '#fff', '10%');
             toggleModal(true, 'Deleting Banner...');
 
-            let result = await fetch(`${API_PATH}/user/${USERNAME}/settings/deleteBanner`,{
+            let result = await fetch(`${API_PATH}/user/${USERNAME}/settings/updateBanner`,{
                 method:'DELETE',
                 headers:{
                     'Content-Type':'application/json'
@@ -528,9 +528,35 @@ const addBasicInfoEvents = () => {
     }
     deleteBannerEvent();
 }
+const deleteAccount = async (e) => {
+    e.preventDefault();
+    try {
+        let result = await fetch(`${API_PATH}/user/${USERNAME}`,{
+            method: 'DELETE'
+        });
+        result = await result.json();
+        if (result.response === 'success') {
+            result = await fetch(`${API_PATH}/auth/logoutUser`,{
+                method: 'POST'
+            });
+            result = await result.json();
+            if (result.response === 'success') {
+                window.location.href = `${API_PATH}/`;
+            } else {
+                console.error(result.message);
+            }
+        } else {
+            console.error(result.message);
+        }
+    } catch(err) {
+        console.error(err.message);
+    }
+}
 const addDeleteAccountEvent = () => {
     document.getElementById('deleteAccountButton').addEventListener('click', toggleDisplayDeleteModal);
     document.getElementById('btnCancelDeleteAcct').addEventListener('click', toggleDisplayDeleteModal);
+
+    document.getElementById('btnDeleteAccount').addEventListener('click',deleteAccount);
 }
 const init = () => {
     setSettingsButtonEvents();

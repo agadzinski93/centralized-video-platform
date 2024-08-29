@@ -76,7 +76,7 @@ const toggleNewTopicForm = () => {
       input[k] = v;
     });
     try {
-      const result = await fetch(`${API_PATH}/video/${USERNAME}/${TOPIC_URL}/${id}`,{
+      const result = await fetch(`${API_PATH}/video/${USERNAME}/${id}`,{
         method:'PUT',
         headers:{
           'Content-Type':'application/json'
@@ -596,7 +596,7 @@ const addSwapVideoEvents = async () => {
         toggleBackdrop(true, '#fff', '10%');
         toggleModal(true, 'Updating image...');
         let result = await fetch(`${API_PATH}/topics/${USERNAME}/${TOPIC_URL}/image`, {
-          method:'POST',
+          method:'PUT',
           body: formData,
         });
         let data = await result.json();
@@ -836,7 +836,7 @@ const addSwapVideoEvents = async () => {
     toggleModal(true, 'Adding video(s). Please be patient.');
     const el = e.target.parentElement.parentElement.parentElement.parentElement.parentElement;
     const id = el.getAttribute('id').substring(16);
-    const result = await fetch(`${API_PATH}/video/${USERNAME}/${TOPIC_URL}/${id}`,{
+    const result = await fetch(`${API_PATH}/video/${USERNAME}/${id}`,{
       method:'DELETE'
     });
     const data = await result.json();

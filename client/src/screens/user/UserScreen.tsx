@@ -9,6 +9,7 @@ import {
 import { castApiResponse } from "../../types/types";
 import TopicTile from "../../components/Topic/TopicTile";
 import VideoTile from "../../components/Video/VideoTile";
+import ErrorMessage from "../../components/Error/ErrorMessage";
 
 import "./UserScreen.scss";
 
@@ -43,6 +44,7 @@ interface Action {
 const UserScreen = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [fetchLoading, setFetchLoading] = useState<boolean>(false);
+  const [userExists, setUserExists] = useState<boolean>(true);
   const [fetchingMoreResults, setFetchingMoreResults] =
     useState<boolean>(false);
   const [author, setAuthor] = useState<author | null>(null);
@@ -206,7 +208,6 @@ const UserScreen = () => {
             pageNum: pageNum,
           },
         });
-        console.log(`AFTER page: ${pageNum}`);
       }
     }
   };
@@ -219,7 +220,6 @@ const UserScreen = () => {
     gettingMoreResults = false,
   }: searchOptions) => {
     try {
-      console.log(`Page: ${page}`);
       if (gettingMoreResults) {
         setFetchingMoreResults(true);
       } else {
@@ -262,6 +262,7 @@ const UserScreen = () => {
 
   useEffect(() => {
     try {
+      setUserExists(true);
       if (userParam) {
         renderUserScreen({ username: userParam })
           .then((data) => {
@@ -282,14 +283,19 @@ const UserScreen = () => {
                   throw err;
                 });
             } else {
-              dispatch(
-                addMessage({
-                  type: "error",
-                  message: res.error?.error
-                    ? res.error.error
-                    : "Something went wrong",
-                })
-              );
+              if (res?.error?.data?.status === 404) {
+                setUserExists(false);
+              } else {
+                dispatch(
+                  addMessage({
+                    type: "error",
+                    message: res.error?.data?.message
+                      ? res.error.data.message
+                      : "Something went wrong",
+                  })
+                );
+                navigate("/");
+              }
               setIsLoading(false);
             }
           })
@@ -384,7 +390,12 @@ const UserScreen = () => {
     <>
       <div
         className="author-banner"
-        style={{ backgroundImage: `url('${author.banner_url}')` }}
+        style={{
+          backgroundImage:
+            author.banner_url.substring(0, 4) === "http"
+              ? `url('${author.banner_url}')`
+              : `url('/api/v1${author.banner_url}')`,
+        }}
       ></div>
       <section className="author">
         <div
@@ -424,7 +435,13 @@ const UserScreen = () => {
 
   return (
     <div className="user-page-container">
-      {isLoading ? <div>Loading...</div> : userScreen}
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : userExists ? (
+        userScreen
+      ) : (
+        <ErrorMessage status={404} msg={"User not found"} />
+      )}
     </div>
   );
 };

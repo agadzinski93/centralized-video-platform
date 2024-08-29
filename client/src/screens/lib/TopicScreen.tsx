@@ -6,6 +6,7 @@ import { useRenderTopicScreenMutation } from "../../redux/api/libApi";
 import { castApiResponse } from "../../types/types";
 import VideoPlaylistTile from "../../components/Video/VideoPlaylistTile";
 import LoadingTopicScreen from "../loaders/LoadingTopicScreen";
+import ErrorMessage from "../../components/Error/ErrorMessage";
 
 import "./TopicScreen.scss";
 
@@ -13,6 +14,7 @@ import type { topic, video, ApiResponseTopicScreen } from "../../types/types";
 
 const TopicScreen = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [topicExists, setTopicExists] = useState<boolean>(true);
   const [currentTopic, setCurrentTopic] = useState<topic | null>(null);
   const videos = useRef<video[] | null>(null);
   const [bg, setBg] = useState<string | null>(null);
@@ -24,6 +26,7 @@ const TopicScreen = () => {
 
   useEffect(() => {
     if (topic) {
+      setTopicExists(true);
       renderTopicScreen({ topic })
         .then((data) => {
           const res = castApiResponse<ApiResponseTopicScreen>(data);
@@ -34,7 +37,10 @@ const TopicScreen = () => {
 
               document.title = `${res.data.data.topic.name} | ${res.data.data.topic.username} | Centralized Video Platform`;
 
-              const TOPIC_BACKGROUND = res.data.data.topic.imageUrl;
+              const TOPIC_BACKGROUND =
+                res.data.data.topic.imageUrl.substring(0, 4) === "http"
+                  ? res.data.data.topic.imageUrl
+                  : "/api/v1" + res.data.data.topic.imageUrl;
 
               if (TOPIC_BACKGROUND) {
                 const img = new Image();
@@ -56,10 +62,13 @@ const TopicScreen = () => {
             }
           } else {
             setIsLoading(false);
-            if (res.error) console.error(res.error.error);
-            dispatch(
-              addMessage({ type: "error", message: "Something went wrong." })
-            );
+            if (res.error?.data.status === 404) {
+              setTopicExists(false);
+            } else {
+              dispatch(
+                addMessage({ type: "error", message: "Something went wrong." })
+              );
+            }
           }
         })
         .catch((err) => {
@@ -84,7 +93,14 @@ const TopicScreen = () => {
         <>
           <div className="topic-info">
             <div className="topic-image-container">
-              <img src={currentTopic.imageUrl} alt="topic image" />
+              <img
+                src={
+                  currentTopic.imageUrl.substring(0, 4) === "http"
+                    ? currentTopic.imageUrl
+                    : `/api/v1${currentTopic.imageUrl}`
+                }
+                alt="topic image"
+              />
             </div>
             <div>
               <h1>{currentTopic.name}</h1>
@@ -113,7 +129,7 @@ const TopicScreen = () => {
     <div className="topic-page-container">
       {isLoading === true ? (
         <LoadingTopicScreen />
-      ) : (
+      ) : topicExists ? (
         <>
           <div
             className="topic-background"
@@ -124,6 +140,8 @@ const TopicScreen = () => {
           ></div>
           {topicScreen}
         </>
+      ) : (
+        <ErrorMessage status={404} msg={"Topic not found"} />
       )}
     </div>
   );

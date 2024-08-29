@@ -7,6 +7,7 @@ import { castApiResponse } from "../../types/types";
 import VideoPlaylistTile from "../../components/Video/VideoPlaylistTile";
 import { scanForLinks } from "../../assets/scripts/scripts";
 import LoadingVideoScreen from "../loaders/LoadingVideoScreen";
+import ErrorMessage from "../../components/Error/ErrorMessage";
 
 import "./VideoScreen.scss";
 
@@ -14,6 +15,7 @@ import type { topic, video } from "../../types/types";
 
 const VideoScreen = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [videoExists, setVideoExists] = useState<boolean>(true);
   const [currentTopic, setCurrentTopic] = useState<topic | null>(null);
   const [currentVideo, setCurrentVideo] = useState<
     (video & { videoId: string; subscribers: number }) | null
@@ -32,6 +34,7 @@ const VideoScreen = () => {
 
   useEffect(() => {
     setIsLoading(true);
+    setVideoExists(true);
     if (topic && video) {
       renderVideoScreen({ topic, video })
         .then((data) => {
@@ -55,10 +58,13 @@ const VideoScreen = () => {
             }
           } else {
             setIsLoading(false);
-            if (res.error) console.error(res.error.error);
-            dispatch(
-              addMessage({ type: "error", message: "Something went wrong." })
-            );
+            if (res.error?.data?.status === 404) {
+              setVideoExists(false);
+            } else {
+              dispatch(
+                addMessage({ type: "error", message: "Something went wrong." })
+              );
+            }
           }
         })
         .catch((err) => {
@@ -102,7 +108,12 @@ const VideoScreen = () => {
               <Link to={`/user/${currentVideo.username}`}>
                 <div
                   className="avatar"
-                  style={{ backgroundImage: `url('${currentVideo.pic_url}')` }}
+                  style={{
+                    backgroundImage:
+                      currentVideo.pic_url.substring(0, 4) === "http"
+                        ? `url('${currentVideo.pic_url}')`
+                        : `url('/api/v1${currentVideo.pic_url}')`,
+                  }}
                 ></div>
               </Link>
 
@@ -157,7 +168,13 @@ const VideoScreen = () => {
 
   return (
     <div className="video-page-container">
-      {isLoading ? <LoadingVideoScreen /> : videoScreen}
+      {isLoading ? (
+        <LoadingVideoScreen />
+      ) : videoExists ? (
+        videoScreen
+      ) : (
+        <ErrorMessage status={404} msg={"Video not found"} />
+      )}
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { userLogger } from "../utilities/logger";
 import { AppError } from "../utilities/AppError";
 import { paramsExist } from "../utilities/validators/paramsExist";
 import { escapeHTML } from "../utilities/helpers/sanitizers";
+import { getUser } from "../utilities/helpers/authHelpers";
 import {
     subscribeUser,
     unsubscribeUser
@@ -13,12 +14,16 @@ import { Request, Response } from "express";
 const subscribe = async (req: Request, res: Response) => {
     const Response = new ApiResponse('error', 500, 'Something went wrong.', '/');
     let userId = null;
+    const user = (req.user) ? req.user : res.locals.user;
     try {
-        if (req.user && paramsExist([req.body.author_id])) {
+        if (user && paramsExist([req.params.username])) {
             let result;
 
-            userId = escapeHTML(req.user.user_id.toString());
-            const authorId = escapeHTML(req.body.author_id.toString());
+            userId = escapeHTML(user.user_id.toString());
+            const author = await getUser(req.params.username, 'user_id');
+            if (author instanceof AppError) throw author;
+            const authorId = author.user_id;
+
             if (userId !== authorId) {
                 result = await subscribeUser(userId, authorId);
                 if (result instanceof AppError) {
@@ -41,8 +46,9 @@ const subscribe = async (req: Request, res: Response) => {
             Response.setApiResponse('error', 422, 'Invalid Arguments.', '/');
         }
     } catch (err) {
-        userLogger.log('error', `User ID: ${userId} -> Invalid Arguments.`);
-        Response.setApiResponse('error', 422, 'Invalid Arguments.', '/');
+        if (err instanceof AppError) Response.setStatus = err.status;
+        if (Response.getStatus === 404) Response.setMessage = 'User not found.';
+        userLogger.log('error', `User ID: ${userId} -> ${Response.getMessage}.`);
     }
 
     res.status(Response.getStatus).json(Response.getApiResponse());
@@ -51,12 +57,15 @@ const subscribe = async (req: Request, res: Response) => {
 const unsubscribe = async (req: Request, res: Response) => {
     const Response = new ApiResponse('error', 500, 'Something went wrong.', '/');
     let userId = null;
+    const user = (req.user) ? req.user : res.locals.user;
     try {
-        if (req.user && paramsExist([req.body.author_id])) {
+        if (user && paramsExist([req.params.username])) {
             let result;
 
-            userId = escapeHTML(req.user.user_id.toString());
-            const authorId = escapeHTML(req.body.author_id.toString());
+            userId = escapeHTML(user.user_id.toString());
+            const author = await getUser(req.params.username, 'user_id');
+            if (author instanceof AppError) throw author;
+            const authorId = author.user_id;
             result = await unsubscribeUser(userId as string, authorId as string);
             if (result instanceof AppError) {
                 userLogger.log('error', `User ID: ${userId} -> ${result.message}`);
@@ -72,7 +81,9 @@ const unsubscribe = async (req: Request, res: Response) => {
             Response.setApiResponse('error', 422, 'Invalid Arguments.', '/');
         }
     } catch (err) {
-
+        if (err instanceof AppError) Response.setStatus = err.status;
+        if (Response.getStatus === 404) Response.setMessage = 'User not found.';
+        userLogger.log('error', `User ID: ${userId} -> ${Response.getMessage}.`);
     }
 
     res.status(Response.getStatus).json(Response.getApiResponse());

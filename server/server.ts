@@ -10,7 +10,8 @@ import {
   addRateLimit,
   addCloseProcessHandlers,
   addRoutes,
-  initializePassport
+  initializePassport,
+  addSwagger
 } from './utilities/init';
 
 //Set proxy
@@ -39,6 +40,7 @@ app.get("/_health", (req, res) => {
   res.status(200).send('App is running.');
 });
 
+addSwagger(app);
 addRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {

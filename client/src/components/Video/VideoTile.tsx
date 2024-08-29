@@ -43,7 +43,12 @@ const VideoTile = ({
             <div className="upload-info">
               <div
                 className="avatar"
-                style={{ backgroundImage: `url('${video.pic_url}')` }}
+                style={{
+                  backgroundImage:
+                    video.pic_url.substring(0, 4) === "http"
+                      ? `url('${video.pic_url}')`
+                      : `url('/api/v1${video.pic_url}')`,
+                }}
               ></div>
               <div>
                 <div className="username">{video.username}</div>

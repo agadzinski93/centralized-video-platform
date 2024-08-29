@@ -2,7 +2,7 @@ import { getDatabase } from "../db/mysql-connect";
 import { escapeSQL } from "./sanitizers";
 import { AppError } from "../AppError";
 import { deleteFile } from "./uploads";
-import { RowDataPacket } from "mysql2";
+import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { topicLogger } from "../logger";
 
 /**
@@ -115,7 +115,7 @@ const updateTopic = async (
   topicDifficulty: string,
   topicDescription: string,
   originalTopicName: string
-): Promise<void | AppError> => {
+): Promise<number | AppError> => {
   try {
     const db = await getDatabase();
     if (db instanceof AppError) return db;
@@ -125,7 +125,8 @@ const updateTopic = async (
       WHERE name = ?`;
     const values = [topicName, topicDifficulty, topicDescription, originalTopicName];
 
-    await db.execute(sql, values);
+    const result = await db.execute<ResultSetHeader>(sql, values);
+    return result[0].affectedRows;
   } catch (err) {
     return new AppError(500, `Error Updating Topic: ${(err as Error).message}`);
   }
@@ -159,19 +160,23 @@ const removeTopic = async (topic: string) => {
     const values = [topic];
 
     let topicInfo = await db.execute<RowDataPacket[]>(sql, values);
-    const topicfilename: string = topicInfo[0][0].filename;
+    if (topicInfo[0][0]) {
+      const topicfilename: string = topicInfo[0][0].filename;
 
-    if (topicInfo) {
-      const result = await deleteFile(topicfilename);
-      if (result instanceof AppError) throw result;
+      if (topicfilename) {
+        const result = await deleteFile(topicfilename);
+        if (result instanceof AppError) throw result;
+      }
+
+      const sqlTwo = `DELETE FROM topics WHERE name = ?`;
+      const valuesTwo = [topic];
+
+      await db.execute(sqlTwo, valuesTwo);
+
+      return null;
+    } else {
+      return new AppError(404, 'Topic does not exist.');
     }
-
-    const sqlTwo = `DELETE FROM topics WHERE name = ?`;
-    const valuesTwo = [topic];
-
-    await db.execute(sqlTwo, valuesTwo);
-
-    return null;
   } catch (err) {
     if (err instanceof Error) topicLogger.log('error', err.message);
     return new AppError(500, "Error Deleting Topic");
@@ -202,12 +207,12 @@ const deleteTopicImage = async (topicName: string) => {
     return new AppError(500, (err as Error).message);
   }
 }
-const removeSelectedTopics = async (topics: string): Promise<void | AppError> => {
+const removeSelectedTopics = async (topics: string): Promise<number | AppError> => {
   try {
     const db = await getDatabase();
     if (db instanceof AppError) return db;
     if (!(Array.isArray(topics))) {
-      return new AppError(422, 'Invalid Arguments.');
+      return new AppError(400, 'Argument must be an array of strings.');
     }
     else if (topics.length > 100) {
       return new AppError(422, 'Can\'t delete more than 100 topics at a time.');
@@ -237,7 +242,9 @@ const removeSelectedTopics = async (topics: string): Promise<void | AppError> =>
 
       const sqlTwo = `DELETE FROM topics WHERE name IN (${preparedLength})`;
       const valuesTwo = stmt;
-      await db.execute(sqlTwo, valuesTwo);
+      const deleted = await db.execute<ResultSetHeader>(sqlTwo, valuesTwo);
+
+      return deleted[0].affectedRows;
     }
   } catch (err) {
     return new AppError(500, "Error Deleting Topics");

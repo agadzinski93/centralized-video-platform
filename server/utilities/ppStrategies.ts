@@ -80,8 +80,11 @@ passport.use(
       secretOrKey: (COOKIE_SECRET as string),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
     },
-    async (token: { user: string }, done: any) => {
-      return done(null, token.user);
+    (token: { user: string }, done: any) => {
+      if (token) {
+        return done(null, token);
+      }
+      return done(null, null);
     }
   )
 );

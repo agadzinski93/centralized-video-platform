@@ -157,7 +157,7 @@ const updateRefreshSettings = async (userId: string, setting: string, value: str
                 result = await db.execute(sqlThree, valuesThree);
                 break;
             default:
-                result = null;
+                result = new AppError(422, "Value for Setting must be Title, Description, or Thumbnail");
         };
     } catch (err) {
         result = new AppError(500, "Something went wrong!");

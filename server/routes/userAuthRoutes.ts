@@ -8,6 +8,7 @@ import {
   renderLogin,
   login,
   loginUser,
+  loginApiUser,
   getUserCredentials,
   logout,
   logoutUser,
@@ -30,6 +31,10 @@ router.route('/login')
 router.route('/loginUser')
   .post(loginUser)
   .all(verifyMethods(['POST']))
+
+router.route('/api/login')
+  .post(loginApiUser)
+  .all(verifyMethods(['POST']));
 
 router.route('/login/google')
   .get(passport.authenticate('google', { scope: ["email", "profile"] }))

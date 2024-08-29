@@ -16,12 +16,13 @@ import {
   enableHyphens
 } from "../utilities/helpers/topicHelpers";
 
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 
-const createTopic = async (req: Request, res: Response, next: NextFunction) => {
+const createTopic = async (req: Request, res: Response) => {
   const Response = new ApiResponse('error', 500, 'Something went wrong.', '/');
+  const user = (req.user) ? req.user : res.locals.user;
   try {
-    if (req.user && paramsExist([req.body.name, req.body.difficulty, req.body.description])) {
+    if (user && paramsExist([req.body.name, req.body.difficulty, req.body.description])) {
       const topicName = escapeHTML(req.body.name);
       const topicDifficulty = req.body.difficulty;
       const topicDescription = escapeHTML(req.body.description);
@@ -43,7 +44,7 @@ const createTopic = async (req: Request, res: Response, next: NextFunction) => {
           topicName,
           topicDifficulty,
           topicDescription,
-          req.user.username,
+          user.username,
           topicImage,
           filename,
         );
@@ -71,26 +72,35 @@ const createTopic = async (req: Request, res: Response, next: NextFunction) => {
 }
 const editTopic = async (req: Request, res: Response) => {
   const Response = new ApiResponse('error', 500, 'Something went wrong.', '/');
+  const user = (req.user) ? req.user : res.locals.user;
   try {
-    if (paramsExist([req.user?.username, req.body.name, req.body.difficulty, req.body.description])) {
+    if (user && paramsExist([user.username, req.body.name, req.body.difficulty, req.body.description])) {
       const originalTopicName = enableHyphens(escapeHTML(req.params.topic), false);
       const topicName = escapeHTML(req.body.name);
       const topicDifficulty = req.body.difficulty;
       const topicDescription = escapeHTML(req.body.description);
 
-      const result = await updateTopic(
-        topicName,
-        topicDifficulty,
-        topicDescription,
-        originalTopicName
-      );
-      if (result instanceof AppError) {
-        topicLogger.log('error', result.message);
-        Response.setStatus = result.status;
-        Response.applyMessage(result.message, 'Error updating topic.');
-      }
-      else {
-        Response.setApiResponse('success', 200, 'Topic updated.', '/');
+      const exists = await topicExists(originalTopicName);
+      if (exists instanceof AppError) throw exists;
+
+      if (exists) {
+        const result = await updateTopic(
+          topicName,
+          topicDifficulty,
+          topicDescription,
+          originalTopicName
+        );
+        if (result instanceof AppError) {
+          topicLogger.log('error', result.message);
+          Response.setStatus = result.status;
+          Response.applyMessage(result.message, 'Error updating topic.');
+        }
+        else {
+          Response.setApiResponse('success', 200, 'Topic updated.', '/', { name: topicName, description: topicDescription, difficulty: topicDifficulty });
+        }
+      } else {
+        Response.setStatus = 404;
+        Response.setMessage = 'Topic doesn\'t exist.';
       }
     }
     else {
@@ -124,7 +134,7 @@ const editTopicImage = async (req: Request, res: Response) => {
       }
       else if (exists === 0) {
         topicLogger.log('error', 'Topic does not exist.');
-        Response.setStatus = 400;
+        Response.setStatus = 404;
         Response.setMessage = 'Topic does not exist.';
       }
       else {
@@ -166,16 +176,16 @@ const editTopicImage = async (req: Request, res: Response) => {
 }
 const deleteTopic = async (req: Request, res: Response) => {
   const Response = new ApiResponse('error', 500, 'Something went wrong.', '/');
+  const user = (req.user) ? req.user : res.locals.user;
   try {
-    if (req.user && paramsExist([req.params.topic])) {
+    if (user && paramsExist([req.params.topic])) {
       const topicName = enableHyphens(escapeHTML(req.params.topic), false);
       const result = await removeTopic(topicName);
       if (result instanceof AppError) {
         topicLogger.log('error', result.message);
         Response.setStatus = result.status;
         Response.applyMessage(result.message, 'Error deleting topic.');
-      }
-      else {
+      } else {
         Response.setApiResponse('success', 200, 'Topic deleted.', '/');
       }
     }
@@ -204,11 +214,11 @@ const deleteSelectedTopics = async (req: Request, res: Response) => {
         Response.applyMessage(result.message, 'Error deleting topics.');
       }
       else {
-        if (topics.length === 1) {
-          Response.setApiResponse('success', 200, `Successfully deleted ${topics.length} topic.`);
+        if (result === 1) {
+          Response.setApiResponse('success', 200, `Successfully deleted ${result} topic.`);
         }
         else {
-          Response.setApiResponse('success', 200, `Successfully deleted ${topics.length} topics.`);
+          Response.setApiResponse('success', 200, `Successfully deleted ${result} topics.`);
         }
       }
     }
