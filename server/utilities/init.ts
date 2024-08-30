@@ -15,9 +15,11 @@ import swaggerUi from 'swagger-ui-express';
 import { apiRouter } from '../routes/apiRoute';
 import { verifyUser } from './validators/middleware/userAuth';
 import { setCors } from './validators/middleware/setHeaders';
+import { useEjsErrorRoute } from './validators/useEjsErrorRoute';
 import { PATH_CSS, PATH_ASSETS, API_PATH, NODE_ENV, SESSION_SECRET, COOKIE_SECRET } from './config/config';
 
 import { Request, Response, NextFunction } from 'express';
+import { ApiResponse } from './ApiResponse';
 
 const addCloseProcessHandlers = (server: Server) => {
     const exitHandler = terminate(server, {
@@ -35,7 +37,7 @@ const addSwagger = (app: Express): void => {
 }
 const addRoutes = (app: Express): void => {
     try {
-        app.use(verifyUser); //Middleware to populate req.user if logged in         
+        app.use(verifyUser); //Middleware to populate req.user if logged in
 
         const apiPath = (process.env.NODE_ENV === 'production') ? '/api/v1' : '/';
         app.use(apiPath, apiRouter);
@@ -53,9 +55,17 @@ const addRoutes = (app: Express): void => {
             res.locals.message = err.message;
             let status = err.status || 500;
             if (err.message === 'File too large') status = 413;
-            const pageStyles = null;
-            const message = (process.env.NODE_ENV === 'production') ? err.message : err.stack;
-            res.status(status).render("error", { title: `${status} Error`, status, message, pageStyles, PATH_CSS, PATH_ASSETS, API_PATH, user: req.user });
+            if (useEjsErrorRoute(req.route.path)) {
+                const pageStyles = null;
+                const message = (process.env.NODE_ENV === 'production') ? err.message : err.stack;
+                res.status(status).render("error", { title: `${status} Error`, status, message, pageStyles, PATH_CSS, PATH_ASSETS, API_PATH, user: req.user });
+            } else {
+                const Response = new ApiResponse('error', 500, err.message);
+                if (err instanceof AppError) {
+                    Response.setStatus = err.status;
+                }
+                res.status(Response.getStatus).json(Response.getApiResponse());
+            }
         });
     } catch (err) {
         console.error(`${new Date().toString()} -> Import Routes Failed: ${(err as Error).stack}`);

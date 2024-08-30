@@ -11,7 +11,7 @@ info:
   version: 1.0.0
 servers:
   - url: https://cvp.programminghelp.org/api/v1
-  - url: http://localhost:3000/api/v1
+  - url: http://localhost:5000
     description: Development Server
 components:
   securitySchemes:
@@ -300,6 +300,24 @@ components:
           type: string
           examples:
             - /
+    unauthorized:
+      properties:
+        response:
+          $ref: '#/components/schemas/successType'
+          examples:
+            - error
+        status:
+          type: number
+          examples:
+            - 401
+        message:
+          type: string
+          examples:
+            - Unauthorized.
+        prevPath:
+          type: string
+          examples:
+            - /
     notFound:
       properties:
         response:
@@ -477,12 +495,12 @@ paths:
                         properties:
                           token:
                             type: string
-        '400':
-          description: Bad Request - Example is when using incorrect credentials.
+        '401':
+          description: Unauthorized - Example is when using incorrect credentials.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/badRequest'
+                $ref: '#/components/schemas/unauthorized'
         '500':
           description: Internal Server Error
           content:

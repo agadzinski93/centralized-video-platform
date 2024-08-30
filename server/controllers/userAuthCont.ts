@@ -76,12 +76,10 @@ const loginUser = async (req: Request, res: Response, next: NextFunction): Promi
       Response.setMessage = `Login Error: ${err.message}`;
     }
     else if (!user) {
-      Response.setStatus = 400;
       if (info && info.message && ['Account has not been activated. Please check your email for confirmation link.', 'Account has been disabled.'].some(msg => msg === info.message)) {
-        Response.setStatus = 403;
-        Response.setMessage = info.message;
+        return next(new AppError(403, info.message));
       } else {
-        Response.setMessage = 'No applicable user.';
+        return next(new AppError(400, 'No applicable user.'));
       }
     }
     else {
@@ -113,12 +111,10 @@ const loginApiUser = async (req: Request, res: Response, next: NextFunction): Pr
       Response.setMessage = `Login Error: ${err.message}`;
     }
     else if (!user) {
-      Response.setStatus = 400;
       if (info && info.message && ['Account has not been activated. Please check your email for confirmation link.', 'Account has been disabled.'].some(msg => msg === info.message)) {
-        Response.setStatus = 403;
-        Response.setMessage = info.message;
+        return next(new AppError(403, info.message));
       } else {
-        Response.setMessage = 'No applicable user.';
+        return next(new AppError(401, 'No applicable user.'));
       }
     }
     else {
