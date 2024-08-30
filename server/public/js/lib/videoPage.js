@@ -1,19 +1,12 @@
-//Globals Required:UserId, AuthorId, API_PATH
+//Globals Required:UserId, AUTHOR_USERNAME, API_PATH
 const addSubscribeEvents = () => {
     const btnSubscribe = document.getElementById('btnSubscribe');
     const btnUnsubscribe = document.getElementById('btnUnsubscribe');
     btnSubscribe.addEventListener('click',async()=>{
         btnSubscribe.disabled = true;
         toggleBackgroundLoading(true,btnSubscribe,true);
-        let result = await fetch(`${API_PATH}/subscribe`,{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify({
-                user_id:USER_ID,
-                author_id:AUTHOR_ID
-            })
+        let result = await fetch(`${API_PATH}/subscribe/${AUTHOR_USERNAME}`,{
+            method:'POST'
         });
         let data = await result.json();
         toggleBackgroundLoading(false,btnSubscribe,false,'Subscribe');
@@ -29,15 +22,8 @@ const addSubscribeEvents = () => {
     btnUnsubscribe.addEventListener('click',async()=>{
         btnUnsubscribe.disabled = true;
         toggleBackgroundLoading(true,btnUnsubscribe,true);
-        let result = await fetch(`${API_PATH}/subscribe`,{
-            method:'DELETE',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify({
-                user_id:USER_ID,
-                author_id:AUTHOR_ID
-            })
+        let result = await fetch(`${API_PATH}/subscribe/${AUTHOR_USERNAME}`,{
+            method:'DELETE'
         });
         let data = await result.json();
         toggleBackgroundLoading(false,btnUnsubscribe,false,'Unsubscribe');
