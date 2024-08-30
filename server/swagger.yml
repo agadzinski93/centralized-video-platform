@@ -7,7 +7,7 @@ info:
     ## 1. Sign In Via Client App
     You can sign in on a client app which will place a cookie in your browser giving you access to protected routes.
     ## 2. Sign In With Swagger
-    You can also use the **/auth/api/login** path below and provide your username and password in the request body. The response will include a token you can copy/paste into the Authorize button. Alternately, you can use an API tool like Postman and apply the token in the Authorization header with the value ```bearer [token]```
+    You can also use the **/auth/api/login** path below and provide your username and password in the request body. The response will include a token you can copy/paste into the Authorize button. Alternatively, you can use an API tool like Postman and apply the token in the Authorization header with the value ```bearer [token]```
   version: 1.0.0
 servers:
   - url: https://cvp.programminghelp.org/api/v1
