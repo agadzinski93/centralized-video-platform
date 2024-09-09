@@ -15,7 +15,7 @@ const searchApi = api.injectEndpoints({
     endpoints: build => ({
         renderSearchScreen: build.mutation<ApiResponseSearchScreen, searchQuery>({
             query: query => ({
-                url: `/renderSearchScreen/?q=${query.q}`,
+                url: `/renderSearchScreen?q=${query.q}`,
                 method: 'GET'
             })
         }),
