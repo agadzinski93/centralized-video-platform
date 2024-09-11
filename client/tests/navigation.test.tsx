@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { test, expect, beforeAll, afterEach, afterAll, vitest } from "vitest";
@@ -44,38 +44,37 @@ test("User loads home page and navigates to topic and video pages.", async () =>
   });
 
   //Load Home Page
-  render(
+  const { findByText, queryAllByRole, findByRole } = render(
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>
   );
 
   //Test Home Page Content
-  let topicLinks: HTMLElement | HTMLElement[] | null = null;
-  let heading = screen.getByRole("heading", { level: 1 });
+  let heading = await findByRole("heading", { level: 1 });
 
-  waitFor(() =>
-    expect(screen.getByText("Java Programming")).toBeInTheDocument()
+  waitFor(async () =>
+    expect(await findByText("Java Programming")).toBeInTheDocument()
   );
 
-  topicLinks = screen.queryAllByRole("link", { name: "Watch Now →" });
+  let topicLinks = queryAllByRole("link", { name: "Watch Now →" });
   waitFor(() => expect(topicLinks).toHaveLength(6));
 
   //Navigate to Topic Page
-  if (topicLinks && Array.isArray(topicLinks)) await user.click(topicLinks[1]);
+  await user.click(topicLinks[1]);
 
   heading = await waitFor(
-    async () => await screen.findByRole("heading", { level: 1 })
+    async () => await findByRole("heading", { level: 1 })
   );
   waitFor(() => expect(heading.textContent).toBe("Java Programming"));
-  topicLinks = screen.queryAllByRole("link");
+  topicLinks = queryAllByRole("link");
   waitFor(() => expect(topicLinks).toHaveLength(5));
 
   //Navigate to Video Page
-  if (topicLinks && Array.isArray(topicLinks)) await user.click(topicLinks[3]);
+  await user.click(topicLinks[3]);
 
   heading = await waitFor(
-    async () => await screen.findByRole("heading", { level: 1 })
+    async () => await findByRole("heading", { level: 1 })
   );
   waitFor(() => expect(heading.textContent).toBe("Constants in Java"));
 });

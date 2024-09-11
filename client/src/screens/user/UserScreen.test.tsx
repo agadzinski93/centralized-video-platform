@@ -36,7 +36,7 @@ beforeAll(() => {
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-test("Testing Health Screen", async () => {
+test("Testing User Screen", async () => {
   const user = userEvent.setup();
   const router = createMemoryRouter(routes, {
     initialEntries: ["/user/admin"],
@@ -51,15 +51,10 @@ test("Testing Health Screen", async () => {
     )
   );
 
-  await waitFor(
-    () => {
-      expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
-        "admin"
-      );
-      expect(screen.queryByText("View All")).toBeNull();
-    },
-    { timeout: 1000 }
-  );
+  await waitFor(() => {
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("admin");
+    expect(screen.queryByText("View All")).toBeNull();
+  });
 
   const results = await axe.run(container, {
     rules: { "color-contrast": { enabled: false } },
@@ -68,19 +63,20 @@ test("Testing Health Screen", async () => {
   expect(results.violations.length).toBe(0);
 
   //Test clicking the 'Videos' button
-  await user.click(screen.getByRole("button", { name: "Videos" }));
-  await waitFor(
-    () => {
-      expect(screen.getByText("View All")).toBeInTheDocument();
-      expect(
-        screen.getByText("How ELECTRICITY works - working principle")
-      ).toBeInTheDocument();
-    },
-    { timeout: 1000 }
+  await act(
+    async () => await user.click(screen.getByRole("button", { name: "Videos" }))
   );
+  await waitFor(() => {
+    expect(screen.getByText("View All")).toBeInTheDocument();
+    expect(
+      screen.getByText("How ELECTRICITY works - working principle")
+    ).toBeInTheDocument();
+  });
 
   //Test clicking the 'About' button
-  await user.click(screen.getByRole("button", { name: "About" }));
+  await act(
+    async () => await user.click(screen.getByRole("button", { name: "About" }))
+  );
   await waitFor(() => {
     expect(
       screen.queryByText("How ELECTRICITY works - working principle")
