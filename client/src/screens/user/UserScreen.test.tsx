@@ -1,4 +1,4 @@
-import { render, screen, act, waitFor } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { test, expect, beforeAll, afterEach, afterAll, vitest } from "vitest";
@@ -43,17 +43,14 @@ test("Testing User Screen", async () => {
     initialIndex: 1,
   });
 
-  const { container } = await act(async () =>
-    render(
-      <Provider store={store}>
-        <RouterProvider router={router} />
-      </Provider>
-    )
+  const { container, getByRole, findByText, queryByText } = render(
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   );
-
   await waitFor(() => {
-    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("admin");
-    expect(screen.queryByText("View All")).toBeNull();
+    expect(getByRole("heading", { level: 1 }).textContent).toBe("admin");
+    expect(queryByText("View All")).toBeNull();
   });
 
   const results = await axe.run(container, {
@@ -63,25 +60,19 @@ test("Testing User Screen", async () => {
   expect(results.violations.length).toBe(0);
 
   //Test clicking the 'Videos' button
-  await act(
-    async () => await user.click(screen.getByRole("button", { name: "Videos" }))
-  );
-  await waitFor(() => {
-    expect(screen.getByText("View All")).toBeInTheDocument();
+  await user.click(getByRole("button", { name: "Videos" }));
+  await waitFor(async () => {
+    expect(await findByText("View All")).toBeInTheDocument();
     expect(
-      screen.getByText("How ELECTRICITY works - working principle")
+      await findByText("How ELECTRICITY works - working principle")
     ).toBeInTheDocument();
   });
 
   //Test clicking the 'About' button
-  await act(
-    async () => await user.click(screen.getByRole("button", { name: "About" }))
-  );
-  await waitFor(() => {
-    expect(
-      screen.queryByText("How ELECTRICITY works - working principle")
-    ).toBeNull();
-    expect(screen.getByText("Joined")).toBeInTheDocument();
-    expect(screen.getByText("Tue Jan 03 2023")).toBeInTheDocument();
+  await user.click(getByRole("button", { name: "About" }));
+  await waitFor(async () => {
+    expect(queryByText("How ELECTRICITY works - working principle")).toBeNull();
+    expect(await findByText("Subscriptions")).toBeInTheDocument();
+    expect(await findByText("1")).toBeInTheDocument();
   });
 });
