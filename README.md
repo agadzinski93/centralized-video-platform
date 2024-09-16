@@ -25,7 +25,10 @@ This is a long-term project.
         * [DB in Development without Docker](#DB-in-Development-without-Docker)
         * [DB in Production](#DB-in-Production)
     * [Google OAuth](#Google-OAuth)
-    * [Cloudinary and Files](#Cloudinary-and-Files)
+    * [Files and Uploads](#Files-and-Uploads)
+    * [Cloudinary](#Cloudinary)
+    * [Google Cloud Storage](#Google-Cloud-Storage)
+    * [AWS S3](#AWS-S3)
     * [Email](#Email)
 5. [React Environment Variables](#React-Environment-Variables)
 
@@ -82,7 +85,7 @@ By default the server should be running on localhost:5000, the client on localho
 Redis is optional. The application will still run without it. Make sure the env variable `REDIS_ENABLED` is set to `false` otherwise the web app will try to connect to it for some routes. It won't cause a crash, but will go through the 10-second connection timeout process before continuing through the code.
 
 ### Additional Setup
-1. To satisfy the environemnt variables below, you will need to create a Cloudinary account and get an account name, API key, and secret.
+1. When in development, uploaded files will be stored in `/server/public/uploads` or what you define in the Env variable `LOCAL_UPLOADS_DIR`.
 2. This app uses Nodemailer for sending emails to new users. Make sure you have some sort of email server set up. It doesn't need to be remote. You can set up an IMAP/SMTP server like Mercury included in [XAMPP](https://www.apachefriends.org/download.html) locally on your machine to handle this requirement. You can also use an email client such as [Mozilla Thunderbird](https://www.thunderbird.net/en-US/) to access your local email.
 
 ### Env Setup
@@ -215,7 +218,20 @@ These variables are provided by Google when creating your credentials in Google 
 3. `GOOGLE_CALLBACK_URL`
     * The callback URL you provided when creating the above credentials
 
-### Cloudinary and Files
+### Files and Uploads
+In development, local files will be uploaded wherever you define the Env variable `LOCAL_UPLOADS_DIR`. In production, you must either define the Env variables for Cloudinary, Google Cloud Storage, or AWS S3.
+
+1. `DEFAULT_PIC_FILENAME`
+    * Filename associated with the aforementioned image, this is only necessary with the Cloudinary API
+
+2. `LOCAL_UPLOADS_DIR`
+    * Default: ./server/public/uploads
+    * Directory for uploading files locally on your PC when in development
+
+3. `DEFAULT_PROFILE_PIC`
+    * URL for default profile pic for new accounts
+
+### Cloudinary
 
 1. `CLOUDINARY_NAME`
     * Name of Cloudinary Account
@@ -226,15 +242,31 @@ These variables are provided by Google when creating your credentials in Google 
 3. `CLOUDINARY_SECRET`
     * Secret from Cloudinary
 
-4. `DEFAULT_PROFILE_PIC`
-    * URL for default profile pic for new accounts
+### Google Cloud Storage
 
-5. `DEFAULT_PIC_FILENAME`
-    * Filename associated with the aforementioned image, this is necessary to interact with the Cloudinary API
+1. `GCS_KEY_PATH`
+    * This is the path to the key.json file for your Google account starting from the root of the application
 
-6. `LOCAL_UPLOADS_DIR`
-    * Default: ./server/public/uploads
-    * Directory for uploading files locally on your PC when in development
+2. `GCS_PROJECT_ID`
+    * The project ID that is associated with the bucket you will use
+
+3. `GCS_BUCKET`
+    * Name of GCS bucket that will store your files
+
+### AWS S3
+
+1. `AWS_S3_ACCESS_KEY`
+    * S3 Access key
+
+2. `AWS_S3_SECRET_KEY`
+    * S3 secret key
+
+3. `AWS_S3_BUCKET`
+    * Name of S3 bucket that will store your files
+
+4. `AWS_S3_REGION`
+    * Region of S3 storage
+    * Example: us-west-1
 
 ### Email
 These variables are for connecting to a SMTP server responsible for sending emails (e.g. email verification upon registration)
@@ -281,3 +313,6 @@ Create the `.env`  file in `./client`.
 
 1. `VITE_PROXY_TARGET_HOST`
     * Target hostname (service/IP/domain name). Do NOT include protocol or port number. When in development via Docker, this will be the service name found in the compose YAML file (e.g. server). If not in Docker, this value will likely be localhost.
+
+2. `VITE_PROXY_TARGET_PORT`
+    * Target port used for testing in the deployment workflow. This port is needed when running mock API calls during testing in Github Actions.

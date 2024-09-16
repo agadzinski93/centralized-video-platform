@@ -50,9 +50,19 @@ const GOOGLE_SUCCESS_URL: string = (NODE_ENV === 'production') ? '/auth/login/go
 
 
 //Storage in Production
+//Cloudinary
 const CLOUDINARY_NAME: string | undefined = process.env.CLOUDINARY_NAME;
 const CLOUDINARY_API_KEY: string | undefined = process.env.CLOUDINARY_API_KEY;
 const CLOUDINARY_SECRET: string | undefined = process.env.CLOUDINARY_SECRET;
+//Google Cloud Storage
+const GCS_KEY_PATH: string | undefined = process.env.GCS_KEY_PATH;
+const GCS_PROJECT_ID: string | undefined = process.env.GCS_PROJECT_ID;
+const GCS_BUCKET: string | undefined = process.env.GCS_BUCKET;
+//AWS S3
+const AWS_S3_ACCESS_KEY: string | undefined = process.env.AWS_S3_ACCESS_KEY;
+const AWS_S3_SECRET_KEY: string | undefined = process.env.AWS_S3_SECRET_KEY;
+const AWS_S3_BUCKET: string | undefined = process.env.AWS_S3_BUCKET;
+const AWS_S3_REGION: string | undefined = process.env.AWS_S3_REGION;
 
 const DEFAULT_PROFILE_PIC: string | undefined = process.env.DEFAULT_PROFILE_PIC;
 const DEFAULT_PIC_FILENAME: string | undefined = process.env.DEFAULT_PIC_FILENAME;
@@ -105,6 +115,13 @@ export {
     CLOUDINARY_NAME,
     CLOUDINARY_API_KEY,
     CLOUDINARY_SECRET,
+    GCS_KEY_PATH,
+    GCS_PROJECT_ID,
+    GCS_BUCKET,
+    AWS_S3_ACCESS_KEY,
+    AWS_S3_SECRET_KEY,
+    AWS_S3_BUCKET,
+    AWS_S3_REGION,
     DEFAULT_PROFILE_PIC,
     DEFAULT_PIC_FILENAME,
     EMAIL_HOST,
