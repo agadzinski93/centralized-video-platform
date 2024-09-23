@@ -1,5 +1,5 @@
 import { rm } from "fs";
-import { Cloudinary } from "../config/storage";
+import { storage } from "../config/storage";
 import { NODE_ENV } from "../config/config"
 import { LOCAL_UPLOADS_DIR } from "../config/storage";
 import { AppError } from "../AppError";
@@ -15,7 +15,7 @@ const setPathAndFilename = (path: string | undefined, filename: string | undefin
 const deleteFile = async (filename: string): Promise<AppError | void> => {
     try {
         if (NODE_ENV === 'production') {
-            await Cloudinary.uploader.destroy(filename);
+            await storage.delete(filename);
         } else {
             rm(`${LOCAL_UPLOADS_DIR}/${filename}`, (err) => {
                 if (err) throw err;

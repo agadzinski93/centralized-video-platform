@@ -3,7 +3,7 @@ import { paramsExist } from "../paramsExist";
 import registerValidator from "../registerValidator";
 import registerUsernameValidator from "../registerUsernameValidator";
 import topicValidator from "../topicValidator";
-import { Cloudinary } from "../../config/storage";
+import { topicStorage } from "../../config/storage";
 
 import { Request, Response, NextFunction } from "express";
 
@@ -36,7 +36,7 @@ const topicValidation = (req: Request, res: Response, next: NextFunction): void 
     let { error } = topicValidator.validate(req.body);
     if (error) {
       if (req.file) {
-        Cloudinary.uploader.destroy(req.file.filename);
+        topicStorage.delete(req.file.filename);
       }
       Response.setApiResponse('error', 400, error.details[0].message, '/');
     } else {
