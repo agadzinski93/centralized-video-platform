@@ -35,7 +35,7 @@ const topicValidation = (req: Request, res: Response, next: NextFunction): void 
   if (paramsExist([req.body])) {
     let { error } = topicValidator.validate(req.body);
     if (error) {
-      if (req.file) {
+      if (req.file && req.file.path) {
         topicStorage.delete(req.file.filename);
       }
       Response.setApiResponse('error', 400, error.details[0].message, '/');
