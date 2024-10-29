@@ -10,6 +10,13 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), nodePolyfills()],
     base: '/',
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler'
+        }
+      }
+    },
     test: {
       environment: 'jsdom',
       globals: true,
