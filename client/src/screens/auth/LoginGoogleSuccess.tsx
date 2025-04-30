@@ -63,7 +63,7 @@ const LoginGoogleSuccess = () => {
         if (result.error) {
           if (result.error.data?.status === 400) {
             setError(result.error.data.message);
-          } else {
+          } else if (result.error.data) {
             dispatch(
               addMessage({
                 type: result.error.data.response,
@@ -80,7 +80,7 @@ const LoginGoogleSuccess = () => {
             google_id: data["google_id"],
           });
           const register_response = castApiResponse(response);
-          if (register_response.error) {
+          if (register_response.error?.data) {
             dispatch(
               addMessage({
                 type: register_response.error.data.response,

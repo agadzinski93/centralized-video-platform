@@ -29,7 +29,7 @@ const LoginScreen = () => {
       password: data["password"],
     });
     const result = castApiResponse(output);
-    if (result.error) {
+    if (result.error?.data) {
       dispatch(logout());
       setError(
         result.error.data.status === 400

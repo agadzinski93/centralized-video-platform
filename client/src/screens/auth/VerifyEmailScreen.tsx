@@ -25,7 +25,7 @@ const VerifyEmailScreen = () => {
                 message: response.data.message,
               })
             );
-          } else if (response.error) {
+          } else if (response.error && response.error.data) {
             dispatch(
               addMessage({
                 type: response.error.data.response,

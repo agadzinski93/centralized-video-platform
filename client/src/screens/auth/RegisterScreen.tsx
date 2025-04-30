@@ -38,7 +38,7 @@ const RegisterScreen = () => {
     });
     const result = castApiResponse(output);
 
-    if (result.error) {
+    if (result.error && result.error.data) {
       if (result.error.data.status === 400) {
         setError(result.error.data.message);
       } else {
