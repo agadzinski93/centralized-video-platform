@@ -388,15 +388,19 @@ const UserScreen = () => {
 
   const userScreen = author && (
     <>
-      <div
-        className="author-banner"
-        style={{
-          backgroundImage:
-            author.banner_url.substring(0, 4) === "http"
-              ? `url('${author.banner_url}')`
-              : `url('/api/v1${author.banner_url}')`,
-        }}
-      ></div>
+      {author.banner_url ? (
+        <div
+          className="author-banner"
+          style={{
+            backgroundImage:
+              author.banner_url.substring(0, 4) === "http"
+                ? `url('${author.banner_url}')`
+                : `url('/api/v1${author.banner_url}')`,
+          }}
+        ></div>
+      ) : (
+        <div className="author-banner"></div>
+      )}
       <section className="author">
         <div
           className="author-avatar"
